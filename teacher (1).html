@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>まいにちピアノ｜せんせいダッシュボード</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   まいにちピアノ 先生ダッシュボード v1
+   ・メールログイン（Supabase Auth REST）
+   ・生徒管理（登録・生徒IDコピー・ランキング表示設定）
+   ・練習状況（今週XP・直近7日・最終練習日）
+   ・レッスン枠の作成と予約一覧
+   ========================================================= */
+:root{
+  --main:#FF8FAB; --main-d:#e56b8c; --ink:#2B2B33; --paper:#FFF9F5;
+  --blue:#2E7FB0; --gold:#c98a1e; --purple:#7B6FE0; --good:#3FB98A;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Zen Maru Gothic',sans-serif;background:var(--paper);color:var(--ink);
+  padding-bottom:60px}
+header{background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.06);padding:14px 20px;
+  display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
+header h1{font-size:18px;color:var(--main-d)}
+header .who{margin-left:auto;font-size:12px;font-weight:700;color:#8a7a74}
+#logoutBtn{border:2px solid #d9cfc4;background:#fff;border-radius:999px;padding:6px 14px;
+  font-family:inherit;font-weight:900;font-size:12px;cursor:pointer}
+main{max-width:920px;margin:0 auto;padding:16px}
+.tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.tab{border:none;border-radius:999px;padding:10px 20px;font-family:inherit;font-weight:900;
+  font-size:14px;cursor:pointer;background:#fff;color:#8a7a74;box-shadow:0 2px 6px rgba(0,0,0,.05)}
+.tab.on{background:var(--main);color:#fff}
+.card{background:#fff;border-radius:18px;padding:18px;margin-bottom:14px;
+  box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.card h2{font-size:16px;margin-bottom:12px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:11px;color:#a99;padding:6px 8px;border-bottom:2px solid #f0e8e2}
+td{padding:10px 8px;border-bottom:1.5px solid #f7f1ec;font-weight:700;vertical-align:middle}
+.btn{border:none;border-radius:10px;padding:8px 14px;font-family:inherit;font-weight:900;
+  font-size:12px;cursor:pointer;color:#fff;background:var(--blue)}
+.btn.p{background:var(--main-d)}
+.btn.g{background:var(--good)}
+.btn.gray{background:#b8aca4}
+.btn.sm{padding:5px 10px;font-size:11px}
+input,select{font-family:inherit;font-weight:700;font-size:14px;border:2px solid #e5dcd4;
+  border-radius:10px;padding:9px 10px}
+label{font-size:12px;font-weight:900;color:#8a7a74;display:block;margin-bottom:3px}
+.frow{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:8px}
+.muted{font-size:12px;color:#a99;font-weight:700}
+.pill{display:inline-block;border-radius:999px;padding:2px 10px;font-size:11px;font-weight:900}
+.pill.ok{background:#E8F8F0;color:var(--good)}
+.pill.off{background:#f4eeea;color:#b8aca4}
+.dots{letter-spacing:2px;font-size:13px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);
+  color:#fff;font-weight:900;font-size:13px;border-radius:999px;padding:10px 22px;
+  opacity:0;transition:opacity .3s;pointer-events:none;z-index:99;white-space:nowrap}
+#toast.show{opacity:1}
+/* ログイン画面 */
+#loginScreen{max-width:380px;margin:60px auto;padding:0 16px}
+#loginScreen .card{padding:26px}
+#loginScreen h1{font-size:22px;color:var(--main-d);text-align:center;margin-bottom:4px}
+#loginScreen .sub{text-align:center;font-size:12px;font-weight:700;color:#a99;margin-bottom:18px}
+#loginScreen input{width:100%;margin-bottom:10px}
+#loginBtn{width:100%;padding:13px;font-size:15px;border-radius:12px}
+#loginErr{color:#e5484d;font-weight:900;font-size:12px;text-align:center;min-height:1.4em;margin-top:8px}
+.hidden{display:none !important}
+</style>
+</head>
+<body>
+
+<!-- ログイン -->
+<div id="loginScreen">
+  <div class="card">
+    <h1>🎹 まいにちピアノ</h1>
+    <div class="sub">せんせいダッシュボード</div>
+    <label>メールアドレス</label>
+    <input id="email" type="email" autocomplete="username">
+    <label>パスワード</label>
+    <input id="password" type="password" autocomplete="current-password">
+    <button class="btn p" id="loginBtn">ログイン</button>
+    <div id="loginErr"></div>
+  </div>
+</div>
+
+<!-- 本体 -->
+<div id="app" class="hidden">
+<header>
+  <h1>🎹 まいにちピアノ｜せんせい</h1>
+  <span class="who" id="whoami"></span>
+  <button id="logoutBtn">ログアウト</button>
+</header>
+<main>
+  <div class="tabs">
+    <button class="tab on" data-tab="students">👧 生徒</button>
+    <button class="tab" data-tab="practice">📈 練習状況</button>
+    <button class="tab" data-tab="lessons">📅 レッスン枠・予約</button>
+  </div>
+
+  <!-- ===== 生徒タブ ===== -->
+  <section id="tab-students">
+    <div class="card">
+      <h2>➕ 生徒を登録</h2>
+      <div class="frow">
+        <div><label>ニックネーム（アプリでの表示名）</label>
+          <input id="newName" placeholder="例：ゆいちゃん"></div>
+        <div><label>生年月日（任意・同意取得後に）</label>
+          <input id="newBirth" type="date"></div>
+        <button class="btn p" id="addStudentBtn">登録する</button>
+      </div>
+      <div class="muted">登録すると「生徒ID」が発行されます。保護者にIDを渡し、アプリの「おうちのかたへ →
+        教室とつなぐ」に貼ってもらうと、練習記録が届き始めます。</div>
+    </div>
+    <div class="card">
+      <h2>👧 生徒一覧</h2>
+      <div style="overflow-x:auto"><table id="studentTable">
+        <thead><tr><th>なまえ</th><th>生年月日</th><th>ランキング</th><th>生徒ID</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- ===== 練習状況タブ ===== -->
+  <section id="tab-practice" class="hidden">
+    <div class="card">
+      <h2>📈 今週の練習状況 <span class="muted">（月曜リセット・●=練習した日）</span></h2>
+      <div style="overflow-x:auto"><table id="practiceTable">
+        <thead><tr><th>なまえ</th><th>今週XP</th><th>直近7日</th><th>最終練習</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </div>
+    <div class="card">
+      <h2>🗒 最近の記録（新しい順・30件）</h2>
+      <div style="overflow-x:auto"><table id="logTable">
+        <thead><tr><th>日付</th><th>なまえ</th><th>メニュー</th><th>⭐</th><th>XP</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- ===== レッスン枠タブ ===== -->
+  <section id="tab-lessons" class="hidden">
+    <div class="card">
+      <h2>➕ レッスン枠を作る</h2>
+      <div class="frow">
+        <div><label>日付</label><input id="slotDate" type="date"></div>
+        <div><label>開始</label><input id="slotTime" type="time" value="15:00"></div>
+        <div><label>長さ</label>
+          <select id="slotDur"><option value="30">30分</option><option value="45">45分</option>
+          <option value="60">60分</option></select></div>
+        <div><label>種類</label>
+          <select id="slotKind"><option value="private">個人</option>
+          <option value="group">グループ</option></select></div>
+        <div><label>定員</label>
+          <input id="slotCap" type="number" value="1" min="1" max="10" style="width:70px"></div>
+        <button class="btn p" id="addSlotBtn">作成</button>
+      </div>
+      <div class="muted">グループの場合は定員を2以上に。保護者はアプリから空き枠を予約できるようになります（予約画面は次のアップデートで保護者側に追加）。</div>
+    </div>
+    <div class="card">
+      <h2>📅 今後の枠と予約</h2>
+      <div style="overflow-x:auto"><table id="slotTable">
+        <thead><tr><th>日時</th><th>種類</th><th>予約</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </div>
+  </section>
+</main>
+</div>
+
+<div id="toast"></div>
+
+<script>
+(() => {
+'use strict';
+const SB_URL  = 'https://ikmxtrkymoukkxujfcys.supabase.co';
+const SB_ANON = 'sb_publishable_OcVU5vc5YM0UIQvDFylZsw_nKngVK3E';
+const $ = id => document.getElementById(id);
+
+function toast(msg){
+  const t = $('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+/* ===== 認証（Supabase Auth REST） ===== */
+let session = null;
+try{ session = JSON.parse(localStorage.getItem('mp_teacher_session') || 'null'); }catch(e){}
+
+function saveSession(s){
+  session = s;
+  try{
+    if(s) localStorage.setItem('mp_teacher_session', JSON.stringify(s));
+    else localStorage.removeItem('mp_teacher_session');
+  }catch(e){}
+}
+async function login(email, password){
+  const res = await fetch(SB_URL + '/auth/v1/token?grant_type=password', {
+    method: 'POST',
+    headers: { 'apikey': SB_ANON, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  });
+  const data = await res.json();
+  if(!res.ok) throw new Error(data.error_description || data.msg || 'ログインできませんでした');
+  saveSession({ access_token: data.access_token, refresh_token: data.refresh_token, email });
+}
+async function refreshSession(){
+  if(!session?.refresh_token) return false;
+  const res = await fetch(SB_URL + '/auth/v1/token?grant_type=refresh_token', {
+    method: 'POST',
+    headers: { 'apikey': SB_ANON, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ refresh_token: session.refresh_token })
+  });
+  if(!res.ok) return false;
+  const data = await res.json();
+  saveSession({ access_token: data.access_token, refresh_token: data.refresh_token, email: session.email });
+  return true;
+}
+/* 認証つきREST呼び出し（401なら1回だけリフレッシュして再試行） */
+async function sb(path, opts = {}, retried = false){
+  const res = await fetch(SB_URL + path, {
+    ...opts,
+    headers: {
+      'apikey': SB_ANON,
+      'Authorization': 'Bearer ' + (session?.access_token || SB_ANON),
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation',
+      ...(opts.headers || {})
+    }
+  });
+  if(res.status === 401 && !retried && await refreshSession())
+    return sb(path, opts, true);
+  if(!res.ok){
+    const t = await res.text();
+    throw new Error('APIエラー ' + res.status + ': ' + t.slice(0, 200));
+  }
+  if(res.status === 204) return null;
+  try{ return await res.json(); }catch(e){ return null; }
+}
+
+/* ===== 画面制御 ===== */
+function showApp(){
+  $('loginScreen').classList.add('hidden');
+  $('app').classList.remove('hidden');
+  $('whoami').textContent = session.email;
+  loadAll();
+}
+function showLogin(){
+  $('app').classList.add('hidden');
+  $('loginScreen').classList.remove('hidden');
+}
+$('loginBtn').addEventListener('click', async () => {
+  $('loginErr').textContent = '';
+  try{
+    await login($('email').value.trim(), $('password').value);
+    showApp();
+  }catch(e){ $('loginErr').textContent = e.message; }
+});
+$('password').addEventListener('keydown', e => { if(e.key === 'Enter') $('loginBtn').click(); });
+$('logoutBtn').addEventListener('click', () => { saveSession(null); showLogin(); });
+
+/* タブ切り替え（開くたびに最新データを再読み込み） */
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('on'));
+  t.classList.add('on');
+  ['students','practice','lessons'].forEach(id =>
+    $('tab-' + id).classList.toggle('hidden', id !== t.dataset.tab));
+  if(t.dataset.tab === 'students') loadStudents();
+  if(t.dataset.tab === 'practice') loadStudents().then(loadPractice);
+  if(t.dataset.tab === 'lessons') loadSlots();
+}));
+
+/* ===== データ ===== */
+let schoolId = null, students = [];
+
+async function loadAll(){
+  try{
+    const schools = await sb('/rest/v1/schools?select=id,name');
+    if(!schools?.length){ toast('教室が見つかりません'); return; }
+    schoolId = schools[0].id;
+    await loadStudents();                      /* 先に生徒（名前の解決に必要） */
+    await Promise.all([loadPractice(), loadSlots()]);
+  }catch(e){ toast('読み込みエラー：' + e.message); console.error(e); }
+}
+
+/* --- 生徒 --- */
+async function loadStudents(){
+  students = await sb('/rest/v1/students?select=*&order=created_at') || [];
+  const tb = $('studentTable').querySelector('tbody');
+  tb.innerHTML = '';
+  students.forEach(s => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${esc(s.display_name)}</td>
+      <td class="muted">${s.birthdate || '—'}</td>
+      <td><span class="pill ${s.ranking_opt_out ? 'off' : 'ok'}">${s.ranking_opt_out ? '非表示' : '表示'}</span></td>
+      <td><code style="font-size:11px">${s.id.slice(0, 8)}…</code></td>
+      <td style="white-space:nowrap">
+        <button class="btn sm" data-copy="${s.id}">IDコピー</button>
+        <button class="btn sm gray" data-rank="${s.id}" data-cur="${s.ranking_opt_out}">
+          ランキング${s.ranking_opt_out ? '表示に' : '非表示に'}</button>
+      </td>`;
+    tb.appendChild(tr);
+  });
+  tb.querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click', async () => {
+    try{ await navigator.clipboard.writeText(b.dataset.copy); toast('生徒IDをコピーしました'); }
+    catch(e){ prompt('この生徒IDをコピーしてください', b.dataset.copy); }
+  }));
+  tb.querySelectorAll('[data-rank]').forEach(b => b.addEventListener('click', async () => {
+    const cur = b.dataset.cur === 'true';
+    await sb('/rest/v1/students?id=eq.' + b.dataset.rank, {
+      method: 'PATCH', body: JSON.stringify({ ranking_opt_out: !cur })
+    });
+    toast('変更しました'); loadStudents();
+  }));
+}
+$('addStudentBtn').addEventListener('click', async () => {
+  const name = $('newName').value.trim();
+  if(!name){ toast('ニックネームを入力してください'); return; }
+  try{
+    const rows = await sb('/rest/v1/students', {
+      method: 'POST',
+      body: JSON.stringify({
+        school_id: schoolId,
+        display_name: name,
+        birthdate: $('newBirth').value || null
+      })
+    });
+    $('newName').value = ''; $('newBirth').value = '';
+    toast('登録しました！IDコピーで保護者に渡してください');
+    loadStudents();
+  }catch(e){ toast('登録エラー：' + e.message); }
+});
+
+/* --- 練習状況 --- */
+function mondayStr(){
+  const d = new Date();
+  const diff = (d.getDay() + 6) % 7;   /* 月=0 */
+  d.setDate(d.getDate() - diff);
+  return d.toISOString().slice(0, 10);
+}
+async function loadPractice(){
+  const logs = await sb('/rest/v1/practice_logs?select=*&order=day.desc,created_at.desc&limit=500') || [];
+  const monday = mondayStr();
+  /* 生徒ごとの集計 */
+  const byS = {};
+  logs.forEach(l => {
+    const o = byS[l.student_id] = byS[l.student_id] ||
+      { weekXp: 0, days: new Set(), last: null };
+    if(l.day >= monday) o.weekXp += (l.xp || 0);
+    o.days.add(l.day);
+    if(!o.last || l.day > o.last) o.last = l.day;
+  });
+  const tb = $('practiceTable').querySelector('tbody');
+  tb.innerHTML = '';
+  students.forEach(s => {
+    const o = byS[s.id] || { weekXp: 0, days: new Set(), last: null };
+    let dots = '';
+    for(let i = 6; i >= 0; i--){
+      const d = new Date(); d.setDate(d.getDate() - i);
+      dots += o.days.has(d.toISOString().slice(0, 10)) ? '●' : '○';
+    }
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${esc(s.display_name)}</td>
+      <td style="color:var(--purple)">${o.weekXp} XP</td>
+      <td class="dots">${dots}</td>
+      <td class="muted">${o.last || 'まだ'}</td>`;
+    tb.appendChild(tr);
+  });
+  /* 最近の記録 */
+  const nameOf = {};
+  students.forEach(s => nameOf[s.id] = s.display_name);
+  const partJa = { rhythm: '🥁リズム', note: '🎵おんぷ', piano: '🎹けんばん',
+                   challenge: '🏅チャレンジ', full: '🎉ぜんぶ' };
+  const lt = $('logTable').querySelector('tbody');
+  lt.innerHTML = '';
+  logs.slice(0, 30).forEach(l => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="muted">${l.day}</td>
+      <td>${esc(nameOf[l.student_id] || '?')}</td>
+      <td>${partJa[l.part] || l.part}</td>
+      <td>${'⭐'.repeat(l.stars || 0)}</td>
+      <td class="muted">${l.xp}</td>`;
+    lt.appendChild(tr);
+  });
+}
+
+/* --- レッスン枠・予約 --- */
+async function loadSlots(){
+  const now = new Date().toISOString();
+  const slots = await sb('/rest/v1/lesson_slots?select=*,bookings(id,status,students(display_name))' +
+    '&starts_at=gte.' + now + '&order=starts_at') || [];
+  const tb = $('slotTable').querySelector('tbody');
+  tb.innerHTML = '';
+  if(!slots.length){
+    tb.innerHTML = '<tr><td colspan="4" class="muted">今後の枠はまだありません</td></tr>';
+    return;
+  }
+  slots.forEach(sl => {
+    const d = new Date(sl.starts_at);
+    const wd = ['日','月','火','水','木','金','土'][d.getDay()];
+    const t2 = new Date(sl.ends_at);
+    const pad = n => String(n).padStart(2, '0');
+    const booked = (sl.bookings || []).filter(b => b.status === 'booked');
+    const names = booked.map(b => esc(b.students?.display_name || '?')).join('・') || '—';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${d.getMonth()+1}/${d.getDate()}(${wd}) ${pad(d.getHours())}:${pad(d.getMinutes())}〜${pad(t2.getHours())}:${pad(t2.getMinutes())}</td>
+      <td>${sl.kind === 'group' ? '👥グループ' : '👤個人'}（${booked.length}/${sl.capacity}）</td>
+      <td>${names}</td>
+      <td><button class="btn sm gray" data-del="${sl.id}">削除</button></td>`;
+    tb.appendChild(tr);
+  });
+  tb.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', async () => {
+    if(!confirm('この枠を削除しますか？（予約も消えます）')) return;
+    await sb('/rest/v1/lesson_slots?id=eq.' + b.dataset.del, { method: 'DELETE',
+      headers: { 'Prefer': 'return=minimal' } });
+    toast('削除しました'); loadSlots();
+  }));
+}
+$('addSlotBtn').addEventListener('click', async () => {
+  const date = $('slotDate').value, time = $('slotTime').value;
+  if(!date || !time){ toast('日付と時間を入れてください'); return; }
+  const start = new Date(date + 'T' + time);
+  const end = new Date(start.getTime() + (+$('slotDur').value) * 60000);
+  try{
+    await sb('/rest/v1/lesson_slots', {
+      method: 'POST',
+      body: JSON.stringify({
+        school_id: schoolId,
+        starts_at: start.toISOString(),
+        ends_at: end.toISOString(),
+        kind: $('slotKind').value,
+        capacity: +$('slotCap').value
+      })
+    });
+    toast('枠を作成しました'); loadSlots();
+  }catch(e){ toast('作成エラー：' + e.message); }
+});
+
+function esc(s){ return String(s ?? '').replace(/[&<>"']/g,
+  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* init */
+if(session?.access_token) showApp(); else showLogin();
+})();
+</script>
+</body>
+</html>
