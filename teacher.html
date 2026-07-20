@@ -108,13 +108,12 @@ label{font-size:12px;font-weight:900;color:#8a7a74;display:block;margin-bottom:3
           <input id="newBirth" type="date"></div>
         <button class="btn p" id="addStudentBtn">登録する</button>
       </div>
-      <div class="muted">登録すると「生徒ID」が発行されます。保護者にIDを渡し、アプリの「おうちのかたへ →
-        教室とつなぐ」に貼ってもらうと、練習記録が届き始めます。</div>
+      <div class="muted">登録すると「招待コード」（8文字）が発行されます。「コードコピー」で案内文ごとコピーして保護者にLINEで送るだけ。保護者が教室公式LINEのメニューからアプリを開いてコードを入れると、自動で接続されます。</div>
     </div>
     <div class="card">
       <h2>👧 生徒一覧</h2>
       <div style="overflow-x:auto"><table id="studentTable">
-        <thead><tr><th>なまえ</th><th>生年月日</th><th>ランキング</th><th>生徒ID</th><th></th></tr></thead>
+        <thead><tr><th>なまえ</th><th>生年月日</th><th>ランキング</th><th>招待コード</th><th></th></tr></thead>
         <tbody></tbody>
       </table></div>
     </div>
@@ -294,14 +293,22 @@ async function loadStudents(){
       <td>${esc(s.display_name)}</td>
       <td class="muted">${s.birthdate || '—'}</td>
       <td><span class="pill ${s.ranking_opt_out ? 'off' : 'ok'}">${s.ranking_opt_out ? '非表示' : '表示'}</span></td>
-      <td><code style="font-size:11px">${s.id.slice(0, 8)}…</code></td>
+      <td><code style="font-size:13px;font-weight:900">${s.invite_code || '—'}</code></td>
       <td style="white-space:nowrap">
+        <button class="btn sm p" data-code="${s.invite_code || ''}">コードコピー</button>
         <button class="btn sm" data-copy="${s.id}">IDコピー</button>
         <button class="btn sm gray" data-rank="${s.id}" data-cur="${s.ranking_opt_out}">
           ランキング${s.ranking_opt_out ? '表示に' : '非表示に'}</button>
       </td>`;
     tb.appendChild(tr);
   });
+  tb.querySelectorAll('[data-code]').forEach(b => b.addEventListener('click', async () => {
+    if(!b.dataset.code) return;
+    const msg = '【まいにちピアノ】教室公式LINEのメニューからアプリを開き、しょうたいコード「' +
+      b.dataset.code + '」を入力してください🎹';
+    try{ await navigator.clipboard.writeText(msg); toast('案内文つきでコピーしました'); }
+    catch(e){ prompt('コピーしてください', msg); }
+  }));
   tb.querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click', async () => {
     try{ await navigator.clipboard.writeText(b.dataset.copy); toast('生徒IDをコピーしました'); }
     catch(e){ prompt('この生徒IDをコピーしてください', b.dataset.copy); }

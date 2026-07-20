@@ -6,6 +6,7 @@
 <title>まいにちピアノ</title>
 <meta name="description" content="ピアノ教室のレッスンを、おうちで毎日10分。4〜7歳のための練習アプリ。">
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <style>
 /* =========================================================
    まいにちピアノ MVP v0.1（STEP 2：こどもモード）
@@ -341,6 +342,24 @@ button{font-family:inherit}
   padding:10px 20px;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
 #paToast.show{opacity:1}
 
+/* しょうたいコード入力（LIFF初回接続） */
+#linkOv{position:fixed;inset:0;background:rgba(43,43,51,.55);z-index:130;display:none;
+  align-items:center;justify-content:center;padding:20px}
+#linkOv.show{display:flex}
+#linkBox{background:#fff;border-radius:26px;padding:28px 24px;text-align:center;
+  max-width:340px;width:100%;animation:pop .45s}
+#inviteInput{width:100%;border:2.5px solid #e5dcd4;border-radius:14px;padding:14px;
+  font-size:22px;font-weight:900;text-align:center;font-family:inherit;
+  letter-spacing:.12em;margin-top:14px}
+#inviteBtn{width:100%;border:none;border-radius:999px;margin-top:12px;padding:15px;
+  font-size:17px;font-weight:900;color:#fff;font-family:inherit;cursor:pointer;
+  background:linear-gradient(180deg,#FFA6BD,var(--main-d));
+  box-shadow:inset 0 -6px 0 rgba(0,0,0,.12)}
+#inviteBtn:disabled{opacity:.5}
+#inviteErr{color:#e5484d;font-weight:900;font-size:12px;min-height:1.6em;margin-top:8px}
+#inviteLater{border:none;background:none;color:#b8aca4;font-weight:900;font-size:12px;
+  font-family:inherit;cursor:pointer;margin-top:6px;text-decoration:underline}
+
 /* かみふぶき */
 .confetti{position:fixed;top:-14px;font-size:20px;z-index:99;pointer-events:none;
   animation:fall linear forwards}
@@ -580,7 +599,7 @@ button{font-family:inherit}
 
   <div class="paCard">
     <h3>🔗 教室とつなぐ（はじめに1回だけ）</h3>
-    <p>先生から届いた<b>生徒ID</b>を貼り付けて保存すると、練習の記録が教室に届き、ランキングにも参加できます。</p>
+    <p>教室の公式LINEのメニューからこのアプリを開くと、先生から届いた<b>しょうたいコード（8文字）</b>を入れるだけで自動接続されます。うまくいかない場合の予備として、下に<b>生徒ID</b>を直接貼ることもできます。</p>
     <input id="studentIdInput" placeholder="生徒IDを貼り付け" style="width:100%;border:2.5px solid #e5dcd4;border-radius:12px;padding:10px;font-family:inherit;font-weight:700;font-size:13px;margin-top:8px">
     <button class="paBtn g" id="studentIdSave">💾 ほぞんする</button>
     <div id="studentIdState" style="font-weight:900;font-size:12px;color:#3FB98A;margin-top:6px"></div>
@@ -645,6 +664,20 @@ button{font-family:inherit}
   </div>
 </div>
 <div id="paToast"></div>
+
+<!-- しょうたいコード（LIFF初回接続） -->
+<div id="linkOv">
+  <div id="linkBox">
+    <div style="font-size:44px">🎹</div>
+    <div style="font-weight:900;font-size:20px;color:var(--main-d);margin-top:6px">はじめまして!</div>
+    <div style="font-weight:900;font-size:14px;color:#8a7a74;line-height:1.9;margin-top:8px">
+      せんせいから もらった<br>「しょうたいコード」を いれてね</div>
+    <input id="inviteInput" placeholder="れい：a1b2c3d4" autocomplete="off">
+    <div id="inviteErr"></div>
+    <button id="inviteBtn">🎵 きょうしつと つなぐ</button>
+    <button id="inviteLater">あとで いれる</button>
+  </div>
+</div>
 
 <script>
 (() => {
@@ -716,9 +749,13 @@ function renderHome(){
   /* レベルバッジ（たからばこが あると 🎁 が つく） */
   const lv = levelFromXp(S.xp);
   $('lvBadge').innerHTML = 'Lv' + lv.level + (S.chest > 0 ? '<span class="chestDot">🎁</span>' : '');
-  /* おとも */
+  /* おとも＆なまえ入りあいさつ */
   const bd = ITEMS.find(i => i.id === S.buddy);
-  $('buddyEmoji').textContent = bd ? bd.e + ' ' : '';
+  let sName = null;
+  try{ sName = localStorage.getItem('mp_student_name'); }catch(e){}
+  const sn = (sName || '').replace(/[<>&"]/g, '');
+  $('greet').innerHTML = '<span id="buddyEmoji">' + (bd ? bd.e + ' ' : '') + '</span>' +
+    (sn ? sn + '、' : '') + 'きょうも いっしょに れんしゅうしよう!';
   /* きょうのチャレンジ */
   const done = !!S.challenge[todayStr()];
   $('challengeText').textContent = todayChallenge().text;
@@ -2378,6 +2415,79 @@ try{ sbStudentId = localStorage.getItem('mp_student_id'); }catch(e){}
 })();
 /* 起動時：ID設定済みなら、きょうのクリア済み分を補完送信 */
 if(sbStudentId) setTimeout(backfillToday, 1500);
+
+/* =========================================================
+   LIFFログイン：LINEから開くと自動で教室とつながる
+   ・登録済み → 何も入力せず即接続（おかえり!）
+   ・初回のみ → しょうたいコード（8文字）を入力
+   ・通常ブラウザで開いた場合は従来どおり（後方互換）
+   ========================================================= */
+const LIFF_ID = '2010762594-sO3Q74yB';
+let lineUserId = null;
+
+async function sbRpc(name, args){
+  return sbFetch('/rest/v1/rpc/' + name, {
+    method: 'POST',
+    headers: { 'Prefer': 'return=representation' },
+    body: JSON.stringify(args)
+  });
+}
+function setStudent(id, name){
+  sbStudentId = id;
+  try{
+    localStorage.setItem('mp_student_id', id);
+    if(name) localStorage.setItem('mp_student_name', name);
+  }catch(e){}
+  const inp = document.getElementById('studentIdInput');
+  if(inp) inp.value = id;
+  backfillToday();
+  renderHome();
+}
+async function initLiff(){
+  if(!window.liff) return;
+  try{
+    await liff.init({ liffId: LIFF_ID });
+    if(!liff.isLoggedIn()) return;           /* 通常ブラウザは従来どおり */
+    const prof = await liff.getProfile();
+    lineUserId = prof.userId;
+    if(sbStudentId) return;                  /* すでに接続済み */
+    const rows = await sbRpc('get_my_student', { p_line_user_id: lineUserId });
+    if(rows && rows.length){
+      setStudent(rows[0].student_id, rows[0].student_name);
+      say(rows[0].student_name + '、おかえり!');
+    } else {
+      document.getElementById('linkOv').classList.add('show');
+    }
+  }catch(e){ console.warn('LIFF init error', e); }
+}
+initLiff();
+
+/* しょうたいコード入力 */
+(function wireInvite(){
+  const btn = $('inviteBtn');
+  btn.addEventListener('click', async () => {
+    const code = ($('inviteInput').value || '').trim();
+    const err = $('inviteErr');
+    if(!code){ err.textContent = 'コードを いれてね'; return; }
+    if(!lineUserId){ err.textContent = 'LINEから ひらきなおしてね'; return; }
+    err.textContent = '';
+    btn.disabled = true;
+    try{
+      const rows = await sbRpc('link_guardian_by_code',
+        { p_line_user_id: lineUserId, p_code: code, p_display_name: null });
+      if(rows && rows.length){
+        $('linkOv').classList.remove('show');
+        setStudent(rows[0].student_id, rows[0].student_name);
+        say(rows[0].student_name + '、これから いっしょに れんしゅうしようね!');
+        confetti();
+      } else {
+        err.textContent = 'コードが みつからないよ。せんせいに かくにんしてね';
+      }
+    }catch(e){ err.textContent = 'つながりませんでした。もういちど ためしてね'; }
+    btn.disabled = false;
+  });
+  $('inviteLater').addEventListener('click', () => $('linkOv').classList.remove('show'));
+})();
 
 async function syncPracticeLog(day, part, stars, xp, detail){
   if(!sbStudentId) return;   /* 未登録時はスキップ */
