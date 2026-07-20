@@ -259,12 +259,15 @@ $('loginBtn').addEventListener('click', async () => {
 $('password').addEventListener('keydown', e => { if(e.key === 'Enter') $('loginBtn').click(); });
 $('logoutBtn').addEventListener('click', () => { saveSession(null); showLogin(); });
 
-/* タブ切り替え */
+/* タブ切り替え（開くたびに最新データを再読み込み） */
 document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
   document.querySelectorAll('.tab').forEach(x => x.classList.remove('on'));
   t.classList.add('on');
   ['students','practice','lessons'].forEach(id =>
     $('tab-' + id).classList.toggle('hidden', id !== t.dataset.tab));
+  if(t.dataset.tab === 'students') loadStudents();
+  if(t.dataset.tab === 'practice') loadStudents().then(loadPractice);
+  if(t.dataset.tab === 'lessons') loadSlots();
 }));
 
 /* ===== データ ===== */
@@ -275,7 +278,8 @@ async function loadAll(){
     const schools = await sb('/rest/v1/schools?select=id,name');
     if(!schools?.length){ toast('教室が見つかりません'); return; }
     schoolId = schools[0].id;
-    await Promise.all([loadStudents(), loadPractice(), loadSlots()]);
+    await loadStudents();                      /* 先に生徒（名前の解決に必要） */
+    await Promise.all([loadPractice(), loadSlots()]);
   }catch(e){ toast('読み込みエラー：' + e.message); console.error(e); }
 }
 
