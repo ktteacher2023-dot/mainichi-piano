@@ -1,0 +1,2494 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>まいにちピアノ</title>
+<meta name="description" content="ピアノ教室のレッスンを、おうちで毎日10分。4〜7歳のための練習アプリ。">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   まいにちピアノ MVP v0.1（STEP 2：こどもモード）
+   ・今日のメニュー画面（ホーム）
+   ・①リズムたたき（はくたたきエンジン移植・4〜7歳向け調整）
+   ・②おんぷカード ③けんばんタイム は じゅんびちゅう
+   カリキュラム位置：リズム力／四分音符→二分音符（導入期）
+   ========================================================= */
+:root{
+  --main:#FF8FAB;      /* まいにちピアノのキーカラー（さくら） */
+  --main-d:#e56b8c;
+  --sub:#7BD3EA;
+  --ink:#2B2B33;
+  --paper:#FFF9F5;
+  --gold:#FFB731;
+  --good:#7BE0AD;
+  --gray:#c9c2bd;
+  /* ドレミの7色（おんぷタワーから移植） */
+  --do:#FF6B5E; --re:#FF9E43; --mi:#FFC53D; --fa:#3FB98A;
+  --so:#3E9BD0; --la:#7B6FE0; --si:#E066B0;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:'Zen Maru Gothic',sans-serif;background:var(--paper);color:var(--ink);
+  user-select:none;-webkit-user-select:none;touch-action:manipulation;overflow:hidden;height:100dvh}
+button{font-family:inherit}
+
+/* ===== 画面切り替え ===== */
+.screen{display:none;height:100dvh;flex-direction:column}
+.screen.show{display:flex}
+
+/* =========================================================
+   ホーム画面（今日のメニュー）
+   ========================================================= */
+#home{overflow-y:auto;padding:14px 16px calc(20px + env(safe-area-inset-bottom))}
+#homeTop{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+#logo{font-size:clamp(22px,6vw,30px);font-weight:900;color:var(--main);letter-spacing:.04em}
+#logo small{font-size:.5em;color:#b99;letter-spacing:.1em}
+#coinBox{display:flex;align-items:center;gap:5px;background:#fff;border-radius:999px;
+  padding:7px 14px;font-weight:900;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,.07)}
+#greet{font-weight:900;font-size:clamp(15px,4vw,18px);color:#8a7a74;margin:6px 2px 12px}
+
+/* ストリーク */
+#streakCard{background:linear-gradient(135deg,#FFF1E0,#FFE3EE);border-radius:22px;
+  padding:14px 18px;display:flex;align-items:center;gap:14px;margin-bottom:16px;
+  box-shadow:0 3px 10px rgba(0,0,0,.05)}
+#streakNum{font-size:clamp(34px,9vw,46px);font-weight:900;color:#FF8C42;line-height:1}
+#streakNum small{font-size:.4em;color:#b9987e}
+#weekDots{display:flex;gap:7px;margin-top:7px}
+.dot{width:26px;height:26px;border-radius:50%;background:#fff;border:2.5px solid #eedcd2;
+  display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#cbb}
+.dot.done{background:var(--gold);border-color:#e8a01f;color:#fff}
+.dot.today{border-color:var(--main)}
+
+/* 今日のメニュー */
+#menuTitle{font-size:clamp(17px,4.6vw,21px);font-weight:900;margin:0 2px 10px}
+.menuCard{width:100%;display:flex;align-items:center;gap:14px;background:#fff;border:none;
+  border-radius:22px;padding:16px;margin-bottom:12px;cursor:pointer;text-align:left;
+  box-shadow:0 3px 10px rgba(0,0,0,.06);transition:transform .1s;min-height:88px}
+.menuCard:active{transform:scale(.97)}
+.menuCard .icon{width:60px;height:60px;border-radius:18px;display:flex;align-items:center;
+  justify-content:center;font-size:32px;flex:0 0 auto}
+.menuCard .txt{flex:1;min-width:0}
+.menuCard .name{font-size:clamp(17px,4.8vw,21px);font-weight:900}
+.menuCard .sub{font-size:clamp(12px,3.2vw,14px);font-weight:700;color:#a99;margin-top:2px}
+.menuCard .state{font-size:26px;flex:0 0 auto}
+.menuCard.locked{opacity:.55;box-shadow:none;background:#f6efe9;cursor:default}
+.menuCard.locked:active{transform:none}
+.menuCard.doneToday{background:linear-gradient(135deg,#F0FFF6,#E6FFF0);
+  box-shadow:inset 0 0 0 3px var(--good)}
+#card-rhythm .icon{background:#FFE3E9}
+#card-note .icon{background:#E3F4FF}
+#card-piano .icon{background:#FFF4DC}
+
+/* 全部できたバナー */
+#allDone{display:none;background:linear-gradient(135deg,var(--gold),#FF9F1C);color:#fff;
+  border-radius:22px;padding:18px;text-align:center;font-weight:900;
+  font-size:clamp(16px,4.6vw,20px);margin-top:4px;box-shadow:0 4px 14px rgba(255,159,28,.35)}
+#allDone.show{display:block;animation:pop .4s}
+@keyframes pop{0%{transform:scale(.7)}70%{transform:scale(1.06)}100%{transform:scale(1)}}
+
+#homeFoot{margin-top:22px;text-align:center;font-size:11px;font-weight:700;color:#c0b4ac;line-height:2}
+
+/* =========================================================
+   リズムたたき（はくたたき移植・導入期版）
+   ========================================================= */
+#rhythm{background:var(--paper)}
+#rTop,.topBar{display:flex;align-items:center;gap:8px;padding:10px 12px 6px;flex:0 0 auto}
+#backBtn{border:none;background:#fff;border-radius:999px;width:44px;height:44px;font-size:20px;
+  font-weight:900;color:var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.1);cursor:pointer;flex:0 0 auto}
+#rTitle{font-size:clamp(17px,4.6vw,22px);font-weight:900;color:var(--main-d);flex:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#rStats{font-weight:900;font-size:12px;white-space:nowrap;color:#8a8a94}
+#rStats b{color:var(--main-d);font-size:17px}
+
+/* レベル選択チップ */
+#lvRow{display:flex;gap:7px;padding:4px 12px 8px;flex:0 0 auto;overflow-x:auto}
+.lvChip{border:2.5px solid #eedcd2;background:#fff;border-radius:999px;padding:8px 14px;
+  font-weight:900;font-size:13px;white-space:nowrap;cursor:pointer;color:#b9a79d;min-height:40px}
+.lvChip.on{background:var(--main);border-color:var(--main);color:#fff}
+.lvChip.lock{opacity:.45;cursor:default}
+.lvChip .st{font-size:10px;letter-spacing:.05em}
+
+#gameWrap{flex:0 0 auto;height:clamp(170px,32dvh,300px);position:relative;margin:0 10px}
+#game{position:absolute;inset:0;width:100%;height:100%;border-radius:20px;
+  background:linear-gradient(#FFFFFF,#FFF0F4);box-shadow:inset 0 0 0 3px #F9DFE6}
+
+/* あそびかた（①体験の入口：ことばではなく音声＋デモで） */
+#intro{position:absolute;inset:0;border-radius:20px;background:rgba(255,249,245,.96);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  text-align:center;padding:16px;z-index:5}
+#intro.hide{display:none}
+#introChar{font-size:44px}
+#introMsg{font-weight:900;font-size:clamp(16px,4.4vw,20px);line-height:1.8}
+#introMsg small{display:block;font-size:.72em;color:#a99;margin-top:2px}
+#goBtn{border:none;border-radius:999px;padding:16px 40px;font-size:clamp(18px,5vw,22px);
+  font-weight:900;color:#fff;background:linear-gradient(180deg,#FFA6BD,var(--main-d));
+  box-shadow:inset 0 -6px 0 rgba(0,0,0,.12),0 5px 12px rgba(229,107,140,.3);cursor:pointer;min-height:60px}
+#goBtn:active{transform:translateY(3px)}
+
+/* けっか */
+#result{position:absolute;inset:0;border-radius:20px;background:rgba(255,249,245,.97);
+  display:none;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  text-align:center;padding:16px;z-index:6}
+#result.show{display:flex}
+#resultStars{font-size:clamp(34px,9vw,54px);letter-spacing:.1em}
+#resultTitle{font-size:clamp(20px,5vw,28px);font-weight:900;color:var(--main-d)}
+#resultCoin{font-weight:900;font-size:clamp(15px,4vw,18px);color:#c98a1e}
+#resultDetail{font-weight:900;font-size:clamp(12px,3.2vw,15px);color:#8a8a94;line-height:1.9}
+.rBtnRow{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+.rBtn{border:none;border-radius:999px;padding:13px 22px;font-weight:900;
+  font-size:clamp(14px,3.8vw,16px);cursor:pointer;min-height:50px}
+.rBtn.p{background:var(--main);color:#fff;box-shadow:inset 0 -5px 0 rgba(0,0,0,.12)}
+.rBtn.s{background:#fff;color:var(--ink);border:2.5px solid var(--ink)}
+
+/* たたくボタン（80px以上・画面下全部） */
+#tapBtn{flex:1 1 auto;min-height:120px;margin:8px 10px calc(10px + env(safe-area-inset-bottom));
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  border-radius:22px;border:none;color:#fff;
+  background:linear-gradient(180deg,#FFA6BD,var(--main-d));cursor:pointer;
+  position:relative;overflow:hidden;touch-action:none;
+  box-shadow:inset 0 -8px 0 rgba(0,0,0,.14),0 6px 14px rgba(229,107,140,.25);
+  transition:transform .05s,filter .05s}
+#tapBtn .big{font-size:clamp(26px,6vw,40px);font-weight:900;letter-spacing:.15em;
+  text-shadow:0 2px 3px rgba(0,0,0,.18)}
+#tapBtn .small{font-size:clamp(12px,2.6vw,15px);font-weight:700;opacity:.92}
+#tapBtn:active{transform:translateY(3px);filter:brightness(1.15)}
+#tapBtn:disabled{background:linear-gradient(180deg,#eed3ca,#e8c9c0);
+  box-shadow:inset 0 -8px 0 rgba(0,0,0,.06);cursor:default}
+#tapBtn .ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.45);
+  transform:translate(-50%,-50%);animation:tapRip .45s ease-out forwards;pointer-events:none}
+@keyframes tapRip{from{width:0;height:0;opacity:.9}to{width:300px;height:300px;opacity:0}}
+
+/* おしゃべりオン/オフ */
+#voiceBtn{border:none;background:#fff;border-radius:999px;width:42px;height:42px;font-size:18px;
+  box-shadow:0 2px 8px rgba(0,0,0,.07);cursor:pointer}
+#voiceBtn.off{opacity:.45}
+
+/* =========================================================
+   おんぷカード（おんぷタワー移植・導入期版）
+   ========================================================= */
+#note{background:var(--paper)}
+#noteStage{flex:1;display:flex;flex-direction:column;margin:0 10px calc(10px + env(safe-area-inset-bottom));
+  border-radius:20px;background:linear-gradient(#FFFFFF,#F0F8FF);
+  box-shadow:inset 0 0 0 3px #DCEEF8;position:relative;overflow:hidden;min-height:0}
+#staffBox{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;padding:4px 6px 0}
+#staff{width:100%;max-width:560px;height:auto;max-height:100%;touch-action:manipulation}
+#nFeedback{text-align:center;font-weight:900;font-size:clamp(16px,4.4vw,20px);min-height:1.6em;
+  color:#8a8a94}
+#nFeedback.good{color:#3FB98A}
+#nFeedback.bad{color:#FF6B5E}
+/* タワーゲージ（つみあがる演出） */
+#towerRow{display:flex;align-items:center;gap:8px;padding:2px 14px 6px}
+#towerTrack{flex:1;height:14px;background:#E7EFF3;border-radius:999px;overflow:hidden}
+#towerFill{height:100%;width:0;border-radius:999px;transition:width .4s cubic-bezier(.3,1.4,.5,1);
+  background:linear-gradient(90deg,var(--mi),var(--fa),var(--so))}
+#towerCount{font-weight:900;font-size:13px;color:#7a94a3;white-space:nowrap}
+/* こたえボタン（80px以上・ドレミ色） */
+#nChoices{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:0 10px 14px}
+.nChoice{border:none;border-radius:18px;min-width:80px;min-height:64px;padding:8px 10px;
+  font-size:clamp(20px,5.6vw,26px);font-weight:900;color:#fff;cursor:pointer;
+  box-shadow:inset 0 -5px 0 rgba(0,0,0,.15);transition:transform .08s}
+.nChoice:active{transform:translateY(3px)}
+.nChoice.ok{outline:4px solid #2eae7f;outline-offset:2px}
+.nChoice.ng{filter:grayscale(.6) brightness(.8)}
+#nIntro,#nResult{position:absolute;inset:0;background:rgba(255,249,245,.97);z-index:5;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  text-align:center;padding:16px}
+#nIntro.hide{display:none}
+#nResult{display:none}
+#nResult.show{display:flex}
+
+/* =========================================================
+   けんばんタイム（バナナさん・さくらんぼさん移植）
+   ========================================================= */
+#piano{background:var(--paper)}
+#pianoStage{flex:1;display:flex;flex-direction:column;margin:0 10px calc(10px + env(safe-area-inset-bottom));
+  border-radius:20px;background:linear-gradient(#FFFFFF,#FFF8EC);
+  box-shadow:inset 0 0 0 3px #F5E6C8;position:relative;overflow:hidden;min-height:0}
+#pPrompt{text-align:center;font-weight:900;font-size:clamp(15px,4.2vw,19px);
+  min-height:2.4em;padding:10px 12px 2px;line-height:1.5}
+#pPrompt .hl{color:#e5484d}
+#pPrompt .hlb{color:#c98a1e}
+#pBoard{flex:1;position:relative;margin:2px 10px 6px;min-height:0;user-select:none}
+#pChars{position:absolute;left:0;top:0;right:0;z-index:3;pointer-events:none}
+#pChars .char{position:absolute;transform:translateX(-50%);pointer-events:auto;cursor:pointer;
+  transition:opacity .4s}
+#pChars.hideFruit .char{opacity:0;pointer-events:none}
+#pChars .char.peek{opacity:1 !important}
+#pChars .char .say{position:absolute;left:50%;top:-8px;transform:translate(-50%,-100%);
+  background:#fff;border:2.5px solid #F5C963;border-radius:12px;padding:4px 9px;
+  font-size:12px;font-weight:900;white-space:nowrap;opacity:0;transition:opacity .2s}
+#pChars .char.showSay .say{opacity:1}
+#pChars .char.hop{animation:pHop .5s}
+@keyframes pHop{0%{transform:translateX(-50%)}35%{transform:translateX(-50%) translateY(-14px)}70%{transform:translateX(-50%) translateY(0)}100%{transform:translateX(-50%)}}
+.wkey{position:absolute;bottom:0;background:#fff;border:2.5px solid #d9cfc4;border-radius:0 0 10px 10px;
+  cursor:pointer;box-shadow:inset 0 -7px 0 rgba(0,0,0,.05)}
+.wkey .lbl{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);
+  font-weight:900;font-size:clamp(13px,3.4vw,17px);color:#c9535f;opacity:0}
+.wkey.showlbl .lbl{opacity:1}
+.wkey .fing{position:absolute;left:50%;top:8px;transform:translateX(-50%);
+  width:26px;height:26px;border-radius:50%;background:#FFB731;color:#fff;
+  font-weight:900;font-size:15px;display:none;align-items:center;justify-content:center}
+.wkey.showFing .fing{display:flex}
+.bkey{position:absolute;top:0;background:#3a3440;border-radius:0 0 8px 8px;cursor:pointer;z-index:2;
+  box-shadow:inset 0 -6px 0 rgba(255,255,255,.08)}
+.wkey.press{background:#FFF3D9}
+.bkey.press{background:#5a5266}
+.wkey.correctKey{background:#D9F7E8;border-color:#3FB98A}
+.wkey.wrongKey,.bkey.wrongKey{animation:pShake .3s}
+@keyframes pShake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+#pArrow{position:absolute;transform:translate(-50%,-100%);font-size:34px;z-index:4;
+  opacity:0;pointer-events:none;transition:opacity .25s;animation:pPoint 1s infinite}
+#pArrow.show{opacity:1}
+@keyframes pPoint{50%{margin-top:8px}}
+#pProgRow{display:flex;align-items:center;gap:8px;padding:2px 14px 10px}
+#pProgTrack{flex:1;height:14px;background:#F1E7D4;border-radius:999px;overflow:hidden}
+#pProgFill{height:100%;width:0;border-radius:999px;transition:width .4s cubic-bezier(.3,1.4,.5,1);
+  background:linear-gradient(90deg,#FFB731,#FF8FAB)}
+#pProgCount{font-weight:900;font-size:13px;color:#a08a5f;white-space:nowrap}
+#pIntro,#pResult{position:absolute;inset:0;background:rgba(255,249,245,.97);z-index:6;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  text-align:center;padding:16px}
+#pIntro.hide{display:none}
+#pResult{display:none}
+#pResult.show{display:flex}
+.pFloat{position:absolute;z-index:5;font-weight:900;font-size:16px;color:#e5484d;
+  pointer-events:none;transition:transform 1s ease-out,opacity 1s}
+
+/* =========================================================
+   レベルバッジ・きょうのチャレンジ・マイページ・ガチャ
+   ========================================================= */
+#lvBadge{border:none;background:linear-gradient(135deg,#7B6FE0,#9d8ff0);color:#fff;
+  border-radius:999px;padding:0 14px;height:42px;font-weight:900;font-size:14px;
+  box-shadow:0 2px 8px rgba(123,111,224,.35);cursor:pointer;white-space:nowrap}
+#lvBadge .chestDot{margin-left:4px}
+#challengeCard{background:linear-gradient(135deg,#EFEBFF,#FFF0FA);border-radius:18px;
+  padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;
+  box-shadow:0 3px 10px rgba(0,0,0,.05);font-weight:900}
+#challengeCard .t{flex:1;font-size:clamp(13px,3.6vw,15px);line-height:1.5}
+#challengeCard .t small{display:block;color:#9c8fd8;font-size:.8em}
+#challengeCard.done{opacity:.75}
+#parentBtn{display:block;margin:18px auto 0;border:2.5px solid #e3d5cb;background:#fff;
+  color:#a08a7c;border-radius:999px;padding:11px 22px;font-weight:900;font-size:14px;cursor:pointer}
+
+/* マイページ */
+#mypage{overflow-y:auto;padding:14px 16px calc(20px + env(safe-area-inset-bottom))}
+.mpCard{background:#fff;border-radius:22px;padding:16px;margin-bottom:14px;
+  box-shadow:0 3px 10px rgba(0,0,0,.06)}
+#mpBuddy{font-size:56px;line-height:1}
+#mpTitle{font-weight:900;font-size:clamp(18px,5vw,23px)}
+#mpRank{font-weight:900;color:#7B6FE0;font-size:clamp(13px,3.6vw,15px)}
+#xpTrack{height:12px;background:#EFEBFF;border-radius:999px;overflow:hidden;margin-top:8px}
+#xpFill{height:100%;background:linear-gradient(90deg,#7B6FE0,#FF8FAB);border-radius:999px;
+  transition:width .5s}
+.mpBtn{border:none;border-radius:16px;padding:14px;font-weight:900;font-size:15px;
+  cursor:pointer;width:100%;min-height:56px;color:#fff;margin-top:8px;
+  box-shadow:inset 0 -5px 0 rgba(0,0,0,.12)}
+.mpBtn:disabled{opacity:.45;box-shadow:none}
+#chestBtn{background:linear-gradient(180deg,#FFC963,#e0961e)}
+#gachaBtn{background:linear-gradient(180deg,#b3a5ff,#7B6FE0)}
+#zukan{display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:8px;margin-top:10px}
+.zkItem{background:#FBF7F2;border:2.5px solid transparent;border-radius:14px;padding:8px 4px;
+  text-align:center;cursor:pointer;min-height:74px}
+.zkItem .e{font-size:28px;line-height:1.2}
+.zkItem .n{font-size:10px;font-weight:900;color:#8a7a74;margin-top:2px}
+.zkItem.none{opacity:.4;cursor:default}
+.zkItem.buddy{border-color:#7B6FE0;background:#F1EDFF}
+#gachaOv{position:fixed;inset:0;background:rgba(43,43,51,.55);z-index:120;display:none;
+  align-items:center;justify-content:center;padding:20px}
+#gachaOv.show{display:flex}
+#gachaBox{background:#fff;border-radius:26px;padding:30px 34px;text-align:center;
+  animation:pop .45s;max-width:320px;width:100%}
+#gachaEmoji{font-size:72px;line-height:1.2}
+#gachaName{font-weight:900;font-size:22px;margin-top:6px}
+#gachaRare{font-size:18px;letter-spacing:.15em;margin-top:2px}
+#gachaSub{font-weight:900;font-size:13px;color:#8a8a94;margin-top:6px;line-height:1.7}
+#gachaClose{margin-top:14px;border:none;border-radius:999px;background:var(--main);color:#fff;
+  font-weight:900;font-size:16px;padding:12px 34px;cursor:pointer}
+
+/* =========================================================
+   おうちのかたモード
+   ========================================================= */
+#parent{overflow-y:auto;padding:14px 16px calc(20px + env(safe-area-inset-bottom));
+  background:#F7F4F0}
+.paCard{background:#fff;border-radius:18px;padding:16px;margin-bottom:14px;
+  box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.paCard h3{font-size:15px;margin-bottom:8px;color:#5c5049}
+.paCard p,.paCard li{font-size:13px;font-weight:700;color:#6e625a;line-height:1.9}
+.paCard ul{padding-left:1.2em}
+.paBtn{border:none;border-radius:14px;padding:13px 16px;font-weight:900;font-size:14px;
+  cursor:pointer;color:#fff;background:#8a7a74;width:100%;margin-top:8px;min-height:50px}
+.paBtn.g{background:#3FB98A}
+.paBtn:disabled{opacity:.4}
+#vidPrev{width:100%;border-radius:12px;margin-top:8px;max-height:220px;background:#000}
+#vidMemo,#teachMsg{width:100%;border:2.5px solid #e5dcd4;border-radius:12px;padding:10px;
+  font-family:inherit;font-weight:700;font-size:14px;margin-top:8px}
+#teachMsg{min-height:80px;resize:vertical}
+.paLog{font-size:12px;font-weight:700;color:#8a7a74;line-height:2;margin-top:8px;
+  border-top:1.5px dashed #e5dcd4;padding-top:8px}
+.paNote{background:#F1EDFF;border-radius:12px;padding:10px 12px;font-size:12px;
+  font-weight:700;color:#6a5fc0;line-height:1.8;margin-top:8px}
+#gateOv{position:fixed;inset:0;background:rgba(43,43,51,.55);z-index:120;display:none;
+  align-items:center;justify-content:center;padding:20px}
+#gateOv.show{display:flex}
+#gateBox{background:#fff;border-radius:22px;padding:24px;text-align:center;max-width:300px;width:100%}
+#gateBox .q{font-weight:900;font-size:20px;margin:8px 0}
+#gateAns{width:100px;border:2.5px solid #e5dcd4;border-radius:12px;padding:10px;
+  font-size:20px;font-weight:900;text-align:center;font-family:inherit}
+#gateBox.ng #gateAns{animation:pShake .3s;border-color:#FF6B5E}
+#paToast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);z-index:130;
+  background:#2B2B33;color:#fff;font-weight:900;font-size:13px;border-radius:999px;
+  padding:10px 20px;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+#paToast.show{opacity:1}
+
+/* かみふぶき */
+.confetti{position:fixed;top:-14px;font-size:20px;z-index:99;pointer-events:none;
+  animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110dvh) rotate(540deg);opacity:.6}}
+@media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
+</style>
+</head>
+<body>
+
+<!-- =========================================================
+     ホーム：今日のメニュー
+     ========================================================= -->
+<div class="screen show" id="home">
+  <div id="homeTop">
+    <div id="logo">まいにちピアノ <small>β</small></div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button id="lvBadge" aria-label="マイページ">Lv1</button>
+      <button id="voiceBtn" aria-label="おしゃべりのオン・オフ">🔊</button>
+      <div id="coinBox">🪙 <span id="coinNum">0</span></div>
+    </div>
+  </div>
+  <div id="greet"><span id="buddyEmoji"></span>きょうも いっしょに れんしゅうしよう!</div>
+
+  <div id="streakCard">
+    <div>
+      <div id="streakNum">0<small> にち</small></div>
+      <div style="font-weight:900;font-size:12px;color:#b9987e">れんぞく れんしゅう</div>
+    </div>
+    <div style="flex:1">
+      <div style="font-weight:900;font-size:12px;color:#b9987e;margin-bottom:2px">こんしゅうの あしあと</div>
+      <div id="weekDots"></div>
+    </div>
+  </div>
+
+  <div id="challengeCard">
+    <span style="font-size:26px">🏅</span>
+    <div class="t"><small>きょうの チャレンジ（＋20コイン）</small><span id="challengeText"></span></div>
+    <span id="challengeState" style="font-size:22px"></span>
+  </div>
+
+  <div id="menuTitle">🎵 きょうの メニュー</div>
+
+  <!-- ①リズム力：はくたたきエンジン（四分音符→二分音符） -->
+  <button class="menuCard" id="card-rhythm">
+    <div class="icon">🥁</div>
+    <div class="txt">
+      <div class="name">リズムたたき</div>
+      <div class="sub" id="rhythmCardSub">はくに あわせて たたこう</div>
+    </div>
+    <div class="state" id="rhythmState">▶</div>
+  </button>
+
+  <!-- ②読譜力：おんぷタワー移植 -->
+  <button class="menuCard" id="card-note">
+    <div class="icon">🎵</div>
+    <div class="txt">
+      <div class="name">おんぷカード</div>
+      <div class="sub" id="noteCardSub">おんぷの なまえを あてよう</div>
+    </div>
+    <div class="state" id="noteState">▶</div>
+  </button>
+
+  <!-- ③奏力：バナナさん・さくらんぼさん移植 -->
+  <button class="menuCard" id="card-piano">
+    <div class="icon">🎹</div>
+    <div class="txt">
+      <div class="name">けんばんタイム</div>
+      <div class="sub" id="pianoCardSub">ドを さがして ならそう</div>
+    </div>
+    <div class="state" id="pianoState">▶</div>
+  </button>
+
+  <div id="allDone">🎉 きょうの れんしゅう かんぺき!<br>
+    <span style="font-size:.75em">また あした あそぼうね</span></div>
+
+  <button id="parentBtn">👨‍👩‍👧 おうちのかたへ（きろく・せんせいへの そうしん）</button>
+
+  <div id="homeFoot">
+    🔒 きろくは この たんまつの中だけに ほぞんされます<br>
+    まいにちピアノ｜© けいてぃの音楽ツールズ
+  </div>
+</div>
+
+<!-- =========================================================
+     リズムたたき（はくたたき移植）
+     ========================================================= -->
+<div class="screen" id="rhythm">
+  <div id="rTop">
+    <button id="backBtn" aria-label="メニューにもどる">←</button>
+    <div id="rTitle">リズムたたき</div>
+    <div id="rStats">コンボ <b id="combo">0</b></div>
+  </div>
+  <div id="lvRow"></div>
+  <div id="gameWrap">
+    <canvas id="game"></canvas>
+    <div id="intro">
+      <div id="introChar">♪</div>
+      <div id="introMsg">はくに あわせて タップ!<br>
+        <small>おんぷちゃんと いっしょに たたこう</small></div>
+      <button id="goBtn">▶ はじめる</button>
+    </div>
+    <div id="result">
+      <div id="resultStars"></div>
+      <div id="resultTitle"></div>
+      <div id="resultCoin"></div>
+      <div id="resultDetail"></div>
+      <div class="rBtnRow">
+        <button class="rBtn s" id="retryBtn">もういっかい</button>
+        <button class="rBtn p" id="nextBtn">つぎへ ▶</button>
+      </div>
+    </div>
+  </div>
+  <button id="tapBtn" disabled><span class="big">タップ!</span>
+    <span class="small">はくに あわせて たたこう</span></button>
+</div>
+
+<!-- =========================================================
+     おんぷカード（おんぷタワー移植）
+     ========================================================= -->
+<div class="screen" id="note">
+  <div class="topBar">
+    <button id="nBackBtn" class="backLike" aria-label="メニューにもどる" style="border:none;background:#fff;border-radius:999px;width:44px;height:44px;font-size:20px;font-weight:900;box-shadow:0 2px 6px rgba(0,0,0,.1);cursor:pointer;flex:0 0 auto">←</button>
+    <div id="nTitle" style="font-size:clamp(17px,4.6vw,22px);font-weight:900;color:#2E7FB0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">おんぷカード</div>
+    <div id="nStats" style="font-weight:900;font-size:12px;white-space:nowrap;color:#8a8a94">れんぞく <b id="nCombo" style="color:#2E7FB0;font-size:17px">0</b></div>
+  </div>
+  <div id="nLvRow" class="lvRowLike" style="display:flex;gap:7px;padding:4px 12px 8px;flex:0 0 auto;overflow-x:auto"></div>
+  <div id="noteStage">
+    <div id="staffBox"><svg id="staff" viewBox="0 0 760 320" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div id="nFeedback"></div>
+    <div id="towerRow">
+      <span style="font-size:16px">🧱</span>
+      <div id="towerTrack"><div id="towerFill"></div></div>
+      <span id="towerCount">0 / 10</span>
+    </div>
+    <div id="nChoices"></div>
+    <div id="nIntro">
+      <div style="font-size:44px">🎵</div>
+      <div id="nIntroMsg" style="font-weight:900;font-size:clamp(16px,4.4vw,20px);line-height:1.8">おんぷの なまえを あてよう!</div>
+      <button id="nGoBtn" style="border:none;border-radius:999px;padding:16px 40px;font-size:clamp(18px,5vw,22px);font-weight:900;color:#fff;background:linear-gradient(180deg,#6FC3EA,#2E7FB0);box-shadow:inset 0 -6px 0 rgba(0,0,0,.12),0 5px 12px rgba(46,127,176,.3);cursor:pointer;min-height:60px">▶ はじめる</button>
+    </div>
+    <div id="nResult">
+      <div id="nResultStars" style="font-size:clamp(34px,9vw,54px);letter-spacing:.1em"></div>
+      <div id="nResultTitle" style="font-size:clamp(20px,5vw,28px);font-weight:900;color:#2E7FB0"></div>
+      <div id="nResultCoin" style="font-weight:900;font-size:clamp(15px,4vw,18px);color:#c98a1e"></div>
+      <div id="nResultDetail" style="font-weight:900;font-size:clamp(12px,3.2vw,15px);color:#8a8a94;line-height:1.9"></div>
+      <div class="rBtnRow">
+        <button class="rBtn s" id="nRetryBtn">もういっかい</button>
+        <button class="rBtn p" id="nNextBtn" style="background:#2E7FB0">つぎへ ▶</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================
+     けんばんタイム（バナナさん・さくらんぼさん移植）
+     ========================================================= -->
+<div class="screen" id="piano">
+  <div class="topBar">
+    <button id="pBackBtn" aria-label="メニューにもどる" style="border:none;background:#fff;border-radius:999px;width:44px;height:44px;font-size:20px;font-weight:900;box-shadow:0 2px 6px rgba(0,0,0,.1);cursor:pointer;flex:0 0 auto">←</button>
+    <div id="pTitle" style="font-size:clamp(17px,4.6vw,22px);font-weight:900;color:#c98a1e;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">けんばんタイム</div>
+    <div style="font-weight:900;font-size:12px;white-space:nowrap;color:#8a8a94">れんぞく <b id="pCombo" style="color:#c98a1e;font-size:17px">0</b></div>
+  </div>
+  <div id="pLvRow" style="display:flex;gap:7px;padding:4px 12px 8px;flex:0 0 auto;overflow-x:auto"></div>
+  <div id="pianoStage">
+    <div id="pPrompt"></div>
+    <div id="pBoard">
+      <div id="pChars"></div>
+      <div id="pArrow">👇</div>
+    </div>
+    <div id="pProgRow">
+      <span style="font-size:16px">🔑</span>
+      <div id="pProgTrack"><div id="pProgFill"></div></div>
+      <span id="pProgCount">0 / 10</span>
+    </div>
+    <div id="pIntro">
+      <div style="font-size:44px">🍒🍌</div>
+      <div id="pIntroMsg" style="font-weight:900;font-size:clamp(16px,4.4vw,20px);line-height:1.8">ドを さがして ならそう!</div>
+      <button id="pGoBtn" style="border:none;border-radius:999px;padding:16px 40px;font-size:clamp(18px,5vw,22px);font-weight:900;color:#fff;background:linear-gradient(180deg,#FFC963,#e0961e);box-shadow:inset 0 -6px 0 rgba(0,0,0,.12),0 5px 12px rgba(224,150,30,.3);cursor:pointer;min-height:60px">▶ はじめる</button>
+    </div>
+    <div id="pResult">
+      <div id="pResultStars" style="font-size:clamp(34px,9vw,54px);letter-spacing:.1em"></div>
+      <div id="pResultTitle" style="font-size:clamp(20px,5vw,28px);font-weight:900;color:#c98a1e"></div>
+      <div id="pResultCoin" style="font-weight:900;font-size:clamp(15px,4vw,18px);color:#c98a1e"></div>
+      <div id="pResultDetail" style="font-weight:900;font-size:clamp(12px,3.2vw,15px);color:#8a8a94;line-height:1.9"></div>
+      <div class="rBtnRow">
+        <button class="rBtn s" id="pRetryBtn">もういっかい</button>
+        <button class="rBtn p" id="pNextBtn" style="background:#c98a1e">つぎへ ▶</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================
+     マイページ（レベル・ずかん・たからばこ・ガチャ）
+     ========================================================= -->
+<div class="screen" id="mypage">
+  <div class="topBar" style="padding-left:0;padding-right:0">
+    <button id="mpBackBtn" style="border:none;background:#fff;border-radius:999px;width:44px;height:44px;font-size:20px;font-weight:900;box-shadow:0 2px 6px rgba(0,0,0,.1);cursor:pointer">←</button>
+    <div style="font-size:clamp(17px,4.6vw,22px);font-weight:900;color:#7B6FE0">マイページ</div>
+  </div>
+  <div class="mpCard" style="display:flex;gap:14px;align-items:center">
+    <div id="mpBuddy">🎹</div>
+    <div style="flex:1">
+      <div id="mpTitle">Lv1</div>
+      <div id="mpRank">ぴあの たまご</div>
+      <div id="xpTrack"><div id="xpFill"></div></div>
+      <div id="xpText" style="font-weight:900;font-size:11px;color:#a99;margin-top:3px"></div>
+    </div>
+  </div>
+  <div class="mpCard">
+    <div style="font-weight:900;font-size:15px">🏆 きろく</div>
+    <div id="mpStats" style="font-weight:900;font-size:13px;color:#8a7a74;line-height:2.1;margin-top:6px"></div>
+  </div>
+  <div class="mpCard">
+    <div style="font-weight:900;font-size:15px">🎁 たからばこ ＆ ガチャ</div>
+    <button class="mpBtn" id="chestBtn">🎁 たからばこを あける</button>
+    <button class="mpBtn" id="gachaBtn">✨ ガチャガチャ（🪙30）</button>
+    <div style="font-weight:900;font-size:11px;color:#a99;margin-top:8px;line-height:1.8">
+      たからばこは「きょうのメニュー」を ぜんぶクリアすると 1つ もらえるよ。<br>
+      おなじ おともだちが でたら コイン+10に へんしん!</div>
+  </div>
+  <div class="mpCard">
+    <div style="font-weight:900;font-size:15px">📖 おともだち ずかん</div>
+    <div style="font-weight:900;font-size:11px;color:#a99;margin-top:2px">タッチで「おとも」に えらべるよ（ホームに あそびに くる!）</div>
+    <div id="zukan"></div>
+  </div>
+</div>
+
+<!-- =========================================================
+     おうちのかたモード
+     ========================================================= -->
+<div class="screen" id="parent">
+  <div class="topBar" style="padding-left:0;padding-right:0">
+    <button id="paBackBtn" style="border:none;background:#fff;border-radius:999px;width:44px;height:44px;font-size:20px;font-weight:900;box-shadow:0 2px 6px rgba(0,0,0,.1);cursor:pointer">←</button>
+    <div style="font-size:clamp(16px,4.4vw,20px);font-weight:900;color:#5c5049">おうちのかたへ</div>
+  </div>
+
+  <div class="paCard">
+    <h3>🔗 教室とつなぐ（はじめに1回だけ）</h3>
+    <p>先生から届いた<b>生徒ID</b>を貼り付けて保存すると、練習の記録が教室に届き、ランキングにも参加できます。</p>
+    <input id="studentIdInput" placeholder="生徒IDを貼り付け" style="width:100%;border:2.5px solid #e5dcd4;border-radius:12px;padding:10px;font-family:inherit;font-weight:700;font-size:13px;margin-top:8px">
+    <button class="paBtn g" id="studentIdSave">💾 ほぞんする</button>
+    <div id="studentIdState" style="font-weight:900;font-size:12px;color:#3FB98A;margin-top:6px"></div>
+  </div>
+
+  <div class="paCard">
+    <h3>🗣 こんしゅうの こえかけポイント</h3>
+    <ul id="paTips"></ul>
+    <p style="margin-top:6px">合言葉は「<b>となりに すわって、みているだけでOK</b>」。正解・不正解の判定はアプリがします。</p>
+  </div>
+
+  <div class="paCard">
+    <h3>📈 れんしゅうの きろく（2しゅうかん）</h3>
+    <div id="paRecord" style="font-weight:900;font-size:13px;color:#6e625a;line-height:2"></div>
+  </div>
+
+  <div class="paCard">
+    <h3>🎥 えんそう動画を せんせいに おくる</h3>
+    <p>60びょう いないの動画がおすすめです。撮影→メモを書いて→送信ボタンを押し、<b>共有先で「教室の公式LINE」を選んでください</b>。</p>
+    <input type="file" id="vidInput" accept="video/*" style="display:none">
+    <button class="paBtn" id="vidPick">🎬 ビデオを とる・えらぶ</button>
+    <video id="vidPrev" controls playsinline style="display:none"></video>
+    <input id="vidMemo" placeholder="きょくめい・見てほしいところ（例：きらきら星の後半）">
+    <button class="paBtn g" id="vidSend" disabled>📤 教室の公式LINEに おくる</button>
+    <div class="paLog" id="vidLog"></div>
+    <div class="paNote">🔒 この動画はアプリのサーバーには保存されず、端末から直接、教室の公式LINEに共有されます。まだ友だち追加がお済みでない方は、先生から届いた案内のQRコードから追加してください。</div>
+  </div>
+
+  <div class="paCard">
+    <h3>✉️ せんせいへの メッセージ</h3>
+    <textarea id="teachMsg" placeholder="れんしゅうの様子・質問など（例：たーんの離すタイミングが早めですが大丈夫ですか？）"></textarea>
+    <button class="paBtn g" id="msgSend">📤 教室の公式LINEに おくる</button>
+  </div>
+
+  <div class="paCard">
+    <h3>💬 アプリ内れんらくちょう</h3>
+    <div class="paNote">先生からの返信やコメントをアプリの中で受け取れる「れんらくちょう」は、次のアップデート（アカウント対応）で使えるようになります。それまでは上のLINE送信をご利用ください。</div>
+  </div>
+</div>
+
+<!-- ガチャ結果 -->
+<div id="gachaOv">
+  <div id="gachaBox">
+    <div id="gachaEmoji">🎁</div>
+    <div id="gachaName"></div>
+    <div id="gachaRare"></div>
+    <div id="gachaSub"></div>
+    <button id="gachaClose">やったー!</button>
+  </div>
+</div>
+
+<!-- おとな かくにん -->
+<div id="gateOv">
+  <div id="gateBox">
+    <div style="font-weight:900;font-size:14px;color:#8a7a74">おうちのかた かくにん</div>
+    <div class="q" id="gateQ"></div>
+    <input id="gateAns" type="number" inputmode="numeric">
+    <div style="display:flex;gap:8px;justify-content:center;margin-top:14px">
+      <button class="rBtn s" id="gateCancel">やめる</button>
+      <button class="rBtn p" id="gateOk">OK</button>
+    </div>
+  </div>
+</div>
+<div id="paToast"></div>
+
+<script>
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+
+/* =========================================================
+   ほぞん（localStorage＋メモリ内フォールバック）
+   キー：mainichi_v1
+   ========================================================= */
+let memStore = null;
+function loadState(){
+  try{
+    const raw = localStorage.getItem('mainichi_v1');
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return memStore || { coins:0, streak:0, lastDate:null, days:{},
+    rhythmLv:1, rhythmStars:{}, noteLv:1, noteStars:{},
+    pianoLv:1, pianoStars:{}, voice:true,
+    xp:0, items:{}, buddy:null, chest:0, challenge:{}, videoLog:[] };
+}
+function saveState(s){
+  memStore = s;
+  try{ localStorage.setItem('mainichi_v1', JSON.stringify(s)); }catch(e){}
+}
+let S = loadState();
+/* 旧バージョンの保存データに新しい項目を補う */
+S.noteLv = S.noteLv || 1;
+S.noteStars = S.noteStars || {};
+S.pianoLv = S.pianoLv || 1;
+S.pianoStars = S.pianoStars || {};
+if(S.voice === undefined) S.voice = true;
+S.xp = S.xp || 0;
+S.items = S.items || {};
+S.chest = S.chest || 0;
+S.challenge = S.challenge || {};
+S.videoLog = S.videoLog || [];
+
+function todayStr(d = new Date()){
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function yesterdayStr(){
+  const d = new Date(); d.setDate(d.getDate() - 1); return todayStr(d);
+}
+
+/* =========================================================
+   おんせいガイド（もじが よめなくても わかるように）
+   ホームの🔊ボタンでオン・オフできる（設定は保存される）
+   ========================================================= */
+function say(text){
+  try{
+    if(S.voice === false) return;
+    if(!('speechSynthesis' in window)) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'ja-JP'; u.rate = .95; u.pitch = 1.15;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+/* =========================================================
+   ホーム画面
+   ========================================================= */
+function renderHome(){
+  $('coinNum').textContent = S.coins;
+  $('streakNum').innerHTML = S.streak + '<small> にち</small>';
+  $('voiceBtn').textContent = S.voice ? '🔊' : '🔇';
+  $('voiceBtn').classList.toggle('off', !S.voice);
+  /* レベルバッジ（たからばこが あると 🎁 が つく） */
+  const lv = levelFromXp(S.xp);
+  $('lvBadge').innerHTML = 'Lv' + lv.level + (S.chest > 0 ? '<span class="chestDot">🎁</span>' : '');
+  /* おとも */
+  const bd = ITEMS.find(i => i.id === S.buddy);
+  $('buddyEmoji').textContent = bd ? bd.e + ' ' : '';
+  /* きょうのチャレンジ */
+  const done = !!S.challenge[todayStr()];
+  $('challengeText').textContent = todayChallenge().text;
+  $('challengeState').textContent = done ? '✅' : '▶';
+  $('challengeCard').classList.toggle('done', done);
+
+  // こんしゅうの あしあと（にち〜ど）
+  const wd = $('weekDots'); wd.innerHTML = '';
+  const now = new Date();
+  const sunday = new Date(now); sunday.setDate(now.getDate() - now.getDay());
+  const labels = ['に','げ','か','す','も','き','ど'];
+  for(let i = 0; i < 7; i++){
+    const d = new Date(sunday); d.setDate(sunday.getDate() + i);
+    const ds = todayStr(d);
+    const full = !!partsOf(S.days[ds]).full;
+    const el = document.createElement('div');
+    el.className = 'dot' + (full ? ' done' : '') + (ds === todayStr() ? ' today' : '');
+    el.textContent = full ? '★' : labels[i];
+    wd.appendChild(el);
+  }
+
+  // きょうのメニューカードの状態
+  const p = partsOf(S.days[todayStr()]);
+  $('card-rhythm').classList.toggle('doneToday', !!p.rhythm);
+  $('rhythmState').textContent = p.rhythm ? '✅' : '▶';
+  $('rhythmCardSub').textContent = p.rhythm
+    ? 'きょうは クリアずみ! もっと あそんでも いいよ'
+    : 'レベル' + S.rhythmLv + '｜はくに あわせて たたこう';
+  $('card-note').classList.toggle('doneToday', !!p.note);
+  $('noteState').textContent = p.note ? '✅' : '▶';
+  $('noteCardSub').textContent = p.note
+    ? 'きょうは クリアずみ! もっと あそんでも いいよ'
+    : 'レベル' + S.noteLv + '｜おんぷの なまえを あてよう';
+  $('card-piano').classList.toggle('doneToday', !!p.piano);
+  $('pianoState').textContent = p.piano ? '✅' : '▶';
+  $('pianoCardSub').textContent = p.piano
+    ? 'きょうは クリアずみ! もっと あそんでも いいよ'
+    : 'レベル' + S.pianoLv + '｜ドを さがして ならそう';
+  $('allDone').classList.toggle('show', !!p.full);
+}
+/* おしゃべりオン・オフ */
+$('voiceBtn').addEventListener('click', () => {
+  S.voice = !S.voice;
+  saveState(S);
+  renderHome();
+  if(S.voice) say('おしゃべり オン!');
+  else try{ speechSynthesis.cancel(); }catch(e){}
+});
+
+/* きょうのメニュー完了：あそびごとに記録し、3つ全部できたらストリーク＆おいわい
+   S.days[日付] は 旧形式 true（＝全部完了）か {rhythm, note, piano, full} */
+function partsOf(v){
+  if(v === true) return {rhythm:true, note:true, piano:true, full:true};
+  return (v && typeof v === 'object') ? v : {};
+}
+function completePart(part){
+  const t = todayStr();
+  let v = S.days[t];
+  if(v === true) return false;                 /* 旧形式：すでに全部完了 */
+  v = (v && typeof v === 'object') ? v : {};
+  const wasNew = !v[part];
+  v[part] = true;
+  let res = wasNew ? 'part' : false;
+  if(v.rhythm && v.note && v.piano && !v.full){ /* 全メニュー完了! */
+    v.full = true;
+    S.streak = (S.lastDate === yesterdayStr()) ? S.streak + 1
+             : (S.lastDate === t ? S.streak : 1);
+    S.lastDate = t;
+    res = 'full';
+  }
+  S.days[t] = v;
+  saveState(S);
+  return res;
+}
+/* まだの メニューを やさしく さそう */
+function nextPartMsg(){
+  const p = partsOf(S.days[todayStr()]);
+  if(!p.rhythm) return 'つぎは リズムたたき!';
+  if(!p.note) return 'つぎは おんぷカード!';
+  if(!p.piano) return 'つぎは けんばんタイム!';
+  return '';
+}
+/* けっか画面の完了メッセージ（全部クリアで たからばこ+1） */
+function progMsg(prog){
+  if(prog === 'full'){
+    S.chest = (S.chest || 0) + 1;
+    saveState(S);
+    return '<br><b style="color:#e56b8c">きょうの れんしゅう ぜんぶクリア! 🎁たからばこ+1</b>';
+  }
+  if(prog === 'part') return '<br><b style="color:#2E7FB0">' + nextPartMsg() + '</b>';
+  return '';
+}
+
+/* =========================================================
+   レベルとXP：あそぶほど レベルが上がって 称号がかわる
+   （コインと同じ量のXPがたまる。レベルごとに必要量が少しずつ増える）
+   ========================================================= */
+function levelFromXp(xp){
+  let l = 1, need = 60, rem = xp || 0;
+  while(rem >= need && l < 99){ rem -= need; l++; need = 60 + (l - 1) * 20; }
+  return { level: l, cur: rem, need };
+}
+function rankOf(l){
+  return l >= 15 ? 'ぴあの マスター' : l >= 11 ? 'ぴあの きつね'
+       : l >= 8 ? 'ぴあの うさぎ' : l >= 5 ? 'ぴあの りす'
+       : l >= 3 ? 'ぴあの ひよこ' : 'ぴあの たまご';
+}
+function grantXp(coins){
+  const before = levelFromXp(S.xp).level;
+  S.xp += coins;
+  const now = levelFromXp(S.xp).level;
+  if(now > before){
+    say('レベルアップ! レベル' + now + '!');
+    return '<br>🎉 <b style="color:#7B6FE0">レベルアップ! Lv' + now + '（' + rankOf(now) + '）</b>';
+  }
+  return '';
+}
+
+/* =========================================================
+   きょうのチャレンジ：日がわりの おだい。たっせいで +20コイン
+   ========================================================= */
+const CHALLENGES = [
+  { text:'リズムたたきで ⭐⭐⭐を とろう', test:d => d.type === 'rhythm' && d.stars === 3 },
+  { text:'たーんの「ぎゅー」を 3かい きめよう', test:d => d.type === 'rhythm' && d.longOK >= 3 },
+  { text:'おんぷカードで 9もん いじょう せいかい!', test:d => d.type === 'note' && d.correct >= 9 },
+  { text:'けんばんタイムを おっとっと1かい いかで クリア!', test:d => d.type === 'piano' && d.miss <= 1 },
+  { text:'メニューを 3つ ぜんぶ クリアしよう', test:d => d.full === true },
+];
+function todayChallenge(){
+  const t = todayStr().split('-').map(Number);
+  const idx = Math.floor(new Date(t[0], t[1] - 1, t[2]).getTime() / 864e5) % CHALLENGES.length;
+  return CHALLENGES[((idx % CHALLENGES.length) + CHALLENGES.length) % CHALLENGES.length];
+}
+function checkChallenge(d){
+  const t = todayStr();
+  if(S.challenge[t]) return '';
+  if(todayChallenge().test(d)){
+    S.challenge[t] = true;
+    S.coins += 20; S.xp += 20;
+    say('チャレンジ たっせい!');
+    return '<br>🏅 <b style="color:#7B6FE0">きょうの チャレンジ たっせい! +20コイン</b>';
+  }
+  return '';
+}
+
+function confetti(){
+  const emo = ['🎉','⭐','🎵','🌸','✨'];
+  for(let i = 0; i < 26; i++){
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.textContent = emo[i % emo.length];
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.animationDuration = (1.6 + Math.random() * 1.6) + 's';
+    c.style.animationDelay = Math.random() * .5 + 's';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 3600);
+  }
+}
+
+/* 画面切り替え */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('show'));
+  $(id).classList.add('show');
+}
+$('card-rhythm').addEventListener('click', () => { openRhythm(); });
+$('backBtn').addEventListener('click', () => {
+  stopAll(); renderHome(); showScreen('home');
+});
+
+/* =========================================================
+   リズムたたき本体（はくたたきエンジン移植）
+   カリキュラム：リズム力レベル1〜4（四分音符→二分音符）
+   ①あそぶ：はくにあわせてタップ（ことばの説明なし・音声＋カウントで開始）
+   ②きづく：「たん」と「たーん」のちがいが○の大きさ・間かくで見える
+   ③なまえ：しぶおんぷ・にぶおんぷの名前はレベル説明にそっと添えるだけ
+   ========================================================= */
+
+/* --- 曲データ（すべてパブリックドメイン・導入期用に前半だけ） --- */
+function seq(list){ let t = 0; const out = [];
+  list.forEach(([m, d]) => { if(m !== null) out.push({t, d, m}); t += d; });
+  return out; }
+const N = {C4:60,D4:62,E4:64,F4:65,G4:67,A4:69};
+
+/* レベル設計（導入期）：
+   Lv1 はく・ゆっくり（きらきらぼし前半）＝四分音符の拍
+   Lv2 はく・すこしはやく（かえるのうた前半）
+   Lv3 リズム（きらきらぼし前半）＝たん と たーん（四分＋二分）
+   Lv4 リズム（ちょうちょう前半）＝たん と たーん まぜまぜ */
+const LEVELS = [
+  { lv:1, label:'レベル1', hint:'はくに あわせて たたこう', mode:'beat', bpm:76,
+    song:{ name:'きらきらぼし', beatsPerBar:4, notes: seq([
+      [N.C4,1],[N.C4,1],[N.G4,1],[N.G4,1],[N.A4,1],[N.A4,1],[N.G4,2],
+      [N.F4,1],[N.F4,1],[N.E4,1],[N.E4,1],[N.D4,1],[N.D4,1],[N.C4,2]])}},
+  { lv:2, label:'レベル2', hint:'すこし はやく なるよ', mode:'beat', bpm:92,
+    song:{ name:'かえるのうた', beatsPerBar:4, notes: seq([
+      [N.C4,1],[N.D4,1],[N.E4,1],[N.F4,1],[N.E4,1],[N.D4,1],[N.C4,2],
+      [N.E4,1],[N.F4,1],[N.G4,1],[N.A4,1],[N.G4,1],[N.F4,1],[N.E4,2]])}},
+  { lv:3, label:'レベル3', hint:'たーん は ぎゅー して おわりで ぱっ!', mode:'rhythm', bpm:80,
+    song:{ name:'きらきらぼし', beatsPerBar:4, notes: seq([
+      [N.C4,1],[N.C4,1],[N.G4,1],[N.G4,1],[N.A4,1],[N.A4,1],[N.G4,2],
+      [N.F4,1],[N.F4,1],[N.E4,1],[N.E4,1],[N.D4,1],[N.D4,1],[N.C4,2]])}},
+  { lv:4, label:'レベル4', hint:'たーん は おしたまま ぎゅー!', mode:'rhythm', bpm:84,
+    song:{ name:'ちょうちょう', beatsPerBar:4, notes: seq([
+      [N.G4,1],[N.E4,1],[N.E4,2],[N.F4,1],[N.D4,1],[N.D4,2],
+      [N.C4,1],[N.D4,1],[N.E4,1],[N.F4,1],[N.G4,1],[N.G4,1],[N.G4,2]])}},
+];
+let curLv = 1;
+
+/* --- レベルチップ描画（⭐⭐で次がひらく。もどるのは自由） --- */
+function renderLvRow(){
+  const row = $('lvRow'); row.innerHTML = '';
+  LEVELS.forEach(L => {
+    const chip = document.createElement('button');
+    const locked = L.lv > S.rhythmLv;
+    chip.className = 'lvChip' + (L.lv === curLv ? ' on' : '') + (locked ? ' lock' : '');
+    const stars = S.rhythmStars[L.lv] || 0;
+    chip.innerHTML = L.label + (locked ? ' 🔒'
+      : '<div class="st">' + '⭐'.repeat(stars) + '☆'.repeat(3 - stars) + '</div>');
+    if(!locked) chip.addEventListener('click', () => { curLv = L.lv; stopAll(); setupLevel(); });
+    row.appendChild(chip);
+  });
+}
+
+function openRhythm(){
+  curLv = S.rhythmLv;
+  showScreen('rhythm');
+  setupLevel();
+}
+
+function setupLevel(){
+  resetGame();
+  renderLvRow();
+  const L = LEVELS[curLv - 1];
+  $('rTitle').textContent = 'リズムたたき｜♪ ' + L.song.name;
+  $('intro').classList.remove('hide');
+  $('result').classList.remove('show');
+  $('introMsg').innerHTML = L.hint + '<br><small>♪ ' + L.song.name + '</small>';
+  document.querySelector('#tapBtn .small').textContent =
+    L.mode === 'rhythm' ? 'たーん は ぎゅー して おわりで ぱっ' : 'はくに あわせて たたこう';
+  setTimeout(resize, 80);
+}
+
+/* --- オーディオ（AudioContextはユーザー操作後にresume：iPad対策） --- */
+let audio = null, songGain = null;
+function ensureAudio(){
+  if(!audio) audio = new (window.AudioContext || window.webkitAudioContext)();
+  if(audio.state === 'suspended') audio.resume();
+}
+const mf = m => 440 * Math.pow(2, (m - 69) / 12);
+function melodyNote(m, t, dur){
+  const o = audio.createOscillator(), g = audio.createGain();
+  o.type = 'triangle'; o.frequency.value = mf(m);
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(.2, t + .03);
+  g.gain.setValueAtTime(.2, Math.max(t + .03, t + dur - .09));
+  g.gain.exponentialRampToValueAtTime(.001, t + dur);
+  o.connect(g).connect(songGain || audio.destination);
+  o.start(t); o.stop(t + dur + .05);
+}
+function beatClick(t, accent){
+  const dest = songGain || audio.destination;
+  if(accent){ /* 1拍目「ドン」：太鼓風キック（はくたたき実績パターン） */
+    const o = audio.createOscillator(), g = audio.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(170, t);
+    o.frequency.exponentialRampToValueAtTime(52, t + .13);
+    g.gain.setValueAtTime(.55, t);
+    g.gain.exponentialRampToValueAtTime(.001, t + .26);
+    o.connect(g).connect(dest); o.start(t); o.stop(t + .3);
+    const o2 = audio.createOscillator(), g2 = audio.createGain();
+    o2.type = 'triangle'; o2.frequency.value = 300;
+    g2.gain.setValueAtTime(.2, t);
+    g2.gain.exponentialRampToValueAtTime(.001, t + .05);
+    o2.connect(g2).connect(dest); o2.start(t); o2.stop(t + .06);
+  } else {
+    const o = audio.createOscillator(), g = audio.createGain();
+    o.type = 'square'; o.frequency.value = 640;
+    g.gain.setValueAtTime(.055, t);
+    g.gain.exponentialRampToValueAtTime(.001, t + .07);
+    o.connect(g).connect(dest); o.start(t); o.stop(t + .08);
+  }
+}
+function hitSound(kind){
+  const t = audio.currentTime;
+  if(kind === 'perfect'){
+    [880, 1318.5].forEach((f, i) => {
+      const o = audio.createOscillator(), g = audio.createGain();
+      o.type = 'sine'; o.frequency.value = f;
+      g.gain.setValueAtTime(.12, t + i * .04);
+      g.gain.exponentialRampToValueAtTime(.001, t + i * .04 + .2);
+      o.connect(g).connect(audio.destination);
+      o.start(t + i * .04); o.stop(t + i * .04 + .25);
+    });
+  } else {
+    const o = audio.createOscillator(), g = audio.createGain();
+    o.type = 'sine'; o.frequency.value = 740;
+    g.gain.setValueAtTime(.1, t);
+    g.gain.exponentialRampToValueAtTime(.001, t + .15);
+    o.connect(g).connect(audio.destination);
+    o.start(t); o.stop(t + .2);
+  }
+}
+
+/* --- たーん長押し中の「のびる音」：ゆびを押している間だけ鳴り続ける --- */
+function startHoldTone(midi){
+  stopHoldTone();
+  const t = audio.currentTime;
+  const o = audio.createOscillator(), g = audio.createGain();
+  o.type = 'triangle'; o.frequency.value = mf((midi || 60) + 12);
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(.06, t + .05);
+  o.connect(g).connect(audio.destination);
+  o.start(t);
+  holdOsc = {o, g};
+}
+function stopHoldTone(){
+  if(!holdOsc) return;
+  try{
+    const t = audio.currentTime;
+    holdOsc.g.gain.cancelScheduledValues(t);
+    holdOsc.g.gain.setValueAtTime(Math.max(holdOsc.g.gain.value, .001), t);
+    holdOsc.g.gain.exponentialRampToValueAtTime(.001, t + .12);
+    holdOsc.o.stop(t + .15);
+  }catch(e){}
+  holdOsc = null;
+}
+/* 「ぱっ!」とはなせた瞬間のあかるい音 */
+function popSound(){
+  const t = audio.currentTime;
+  const o = audio.createOscillator(), g = audio.createGain();
+  o.type = 'sine';
+  o.frequency.setValueAtTime(900, t);
+  o.frequency.exponentialRampToValueAtTime(1600, t + .08);
+  g.gain.setValueAtTime(.14, t);
+  g.gain.exponentialRampToValueAtTime(.001, t + .14);
+  o.connect(g).connect(audio.destination);
+  o.start(t); o.stop(t + .16);
+}
+
+/* --- ゲーム状態 --- */
+const cv = $('game'), ctx = cv.getContext('2d');
+let W = 0, H = 0;
+function resize(){
+  const r = cv.getBoundingClientRect();
+  W = r.width; H = r.height;
+  cv.width = W * devicePixelRatio; cv.height = H * devicePixelRatio;
+  ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+}
+window.addEventListener('resize', () => setTimeout(resize, 60));
+
+let playing = false, startTime = 0, markers = [], scheduled = [];
+let gBeatDur = .75;   /* いまのレベルの1拍の長さ（秒） */
+let combo = 0, maxCombo = 0, perfectN = 0, goodN = 0, missN = 0;
+let charJump = 0, charWobble = 0, popups = [], sparks = [];
+let holding = null, longOK = 0, holdOsc = null;   /* たーん長押しの状態 */
+const APPROACH = 2.6;          /* 導入期：ながめに見せて心の準備をさせる */
+const HIT_X_RATIO = .18;
+/* 判定は甘め（4〜7歳）：ぴったり.15 / いいね.30 / みのがし.34s */
+const WIN_PERFECT = .15, WIN_GOOD = .30, MISS_AFTER = .34;
+
+function buildMarkers(){
+  const L = LEVELS[curLv - 1], song = L.song;
+  const beatDur = 60 / L.bpm;
+  gBeatDur = beatDur;
+  const len = Math.ceil(Math.max(...song.notes.map(n => n.t + n.d)));
+  markers = [];
+  if(L.mode === 'rhythm'){
+    /* ②きづく：「たーん」はしっぽ付き。おしたままにする体験で音の長さを感じる */
+    song.notes.forEach(n => markers.push({
+      time: n.t * beatDur, dur: n.d * beatDur, hit: null,
+      long: n.d >= 2, midi: n.m, held: false}));
+  } else {
+    for(let b = 0; b < len; b++)
+      markers.push({time: b * beatDur, hit: null, accent: b % song.beatsPerBar === 0});
+  }
+}
+
+function resetGame(){
+  playing = false;
+  scheduled.forEach(id => clearTimeout(id)); scheduled = [];
+  if(songGain){ try{ songGain.disconnect(); }catch(e){} songGain = null; }
+  combo = 0; maxCombo = 0; perfectN = 0; goodN = 0; missN = 0;
+  popups = []; sparks = []; charJump = 0;
+  holding = null; longOK = 0; stopHoldTone();
+  $('combo').textContent = 0;
+  $('tapBtn').disabled = true;
+  $('result').classList.remove('show');
+  buildMarkers();
+}
+function stopAll(){ resetGame(); try{ speechSynthesis.cancel(); }catch(e){} }
+
+function startGame(){
+  ensureAudio(); resize(); resetGame();
+  $('intro').classList.add('hide');
+  songGain = audio.createGain(); songGain.gain.value = 1;
+  songGain.connect(audio.destination);
+  playing = true;
+  $('tapBtn').disabled = false;
+  const L = LEVELS[curLv - 1], song = L.song;
+  const beatDur = 60 / L.bpm;
+  const lead = 1.2;
+  startTime = audio.currentTime + lead + APPROACH;
+  song.notes.forEach(n => melodyNote(n.m, startTime + n.t * beatDur, Math.max(n.d * beatDur * .95, .12)));
+  const len = Math.ceil(Math.max(...song.notes.map(n => n.t + n.d)));
+  for(let b = 0; b < len; b++) beatClick(startTime + b * beatDur, b % song.beatsPerBar === 0);
+  for(let c = 0; c < song.beatsPerBar; c++)
+    beatClick(startTime - (song.beatsPerBar - c) * beatDur, c === 0);
+  const endS = Math.max(...markers.map(m => m.time)) + 1.6;
+  scheduled.push(setTimeout(showResult, (startTime - audio.currentTime + endS) * 1000));
+}
+$('goBtn').addEventListener('click', () => {
+  const L = LEVELS[curLv - 1];
+  say(L.hint);
+  setTimeout(startGame, 400);   /* 音声ガイドのあとにカウントが始まる */
+});
+
+/* --- タップ判定（甘め設定） --- */
+function tap(){
+  if(!playing) return;
+  ensureAudio();
+  const now = audio.currentTime - startTime;
+  let best = null, bestD = Infinity;
+  markers.forEach(mk => {
+    if(mk.hit !== null) return;
+    const d = Math.abs(now - mk.time);
+    if(d < bestD){ bestD = d; best = mk; }
+  });
+  if(!best || bestD > MISS_AFTER){ charWobble = 1; return; }
+  if(bestD < WIN_PERFECT){
+    best.hit = 'perfect'; perfectN++; combo++;
+    hitSound('perfect'); addPopup('ぴったり!', '#e56b8c'); addSparks(); charJump = 1;
+  } else if(bestD < WIN_GOOD){
+    best.hit = 'good'; goodN++; combo++;
+    hitSound('good'); addPopup('いいね!', '#FF9F1C'); charJump = .6;
+  } else {
+    best.hit = 'miss'; missN++; combo = 0;
+    addPopup('おっとっと', '#8a8a94'); charWobble = 1;
+  }
+  maxCombo = Math.max(maxCombo, combo);
+  $('combo').textContent = combo;
+  /* たーん（長い音）に当たったら、はなすまで「ぎゅー」の時間が始まる */
+  if((best.hit === 'perfect' || best.hit === 'good') && best.long){
+    holding = { mk: best, from: audio.currentTime - startTime };
+    startHoldTone(best.midi);
+  }
+}
+/* ゆびをはなした瞬間を判定する：
+   ポン(1拍目)・ぱっ(2拍目)——的は「音の さいごの拍の頭」。
+   2拍のたーんなら、おすのは1拍分で、2拍目の頭の「はなす動き」が2つ目の拍を数える。
+   （メロディの音は2拍分のびたまま。指の動きで拍を数える体の使い方）
+   反応のおくれを考えて、はやめの離しにはひろく、おそい離しにはせまい非対称の窓。 */
+function finishHold(late){
+  if(!holding) return;
+  const mk = holding.mk;
+  const target = mk.time + mk.dur - gBeatDur;          /* ぱっ の的＝さいごの拍の頭 */
+  const releaseT = late ? target + 1 : (audio.currentTime - startTime);
+  const diff = releaseT - target;
+  if(diff < -.40){
+    addPopup('もうすこし ながく〜', '#8a8a94');          /* はやすぎ */
+  } else if(diff >= -.20 && diff <= .16){
+    mk.held = true; longOK++;
+    popSound(); addPopup('ぱっ! ぴったり!', '#c98a1e');
+    addSparks(); charJump = 1;
+  } else if(diff <= .30){
+    mk.held = true; longOK++;
+    addPopup('ぎゅー できた!', '#e56b8c'); charJump = .6;
+  } else {
+    addPopup('おっと はなしそびれた〜', '#8a8a94');       /* おしすぎ。コンボは切らない */
+  }
+  stopHoldTone();
+  holding = null;
+}
+window.addEventListener('pointerup', () => { if(playing) finishHold(false); });
+window.addEventListener('pointercancel', () => { if(playing) finishHold(false); });
+window.addEventListener('keyup', e => {
+  if(e.code === 'Space' && playing) finishHold(false);
+});
+$('tapBtn').addEventListener('pointerdown', e => {
+  const btn = $('tapBtn');
+  if(!btn.disabled){
+    const r = btn.getBoundingClientRect();
+    const rip = document.createElement('span');
+    rip.className = 'ripple';
+    rip.style.left = (e.clientX - r.left) + 'px';
+    rip.style.top  = (e.clientY - r.top) + 'px';
+    btn.appendChild(rip);
+    setTimeout(() => rip.remove(), 500);
+  }
+  tap();
+});
+cv.addEventListener('pointerdown', tap);
+window.addEventListener('keydown', e => {
+  if(e.code === 'Space'){ e.preventDefault(); tap(); }
+});
+
+function addPopup(text, color){ popups.push({text, color, y: 0, a: 1}); }
+function addSparks(){
+  const hx = W * HIT_X_RATIO, hy = H * .42;
+  for(let i = 0; i < 7; i++){
+    const a = Math.random() * Math.PI * 2;
+    sparks.push({x: hx, y: hy, vx: Math.cos(a) * (1.5 + Math.random() * 2),
+                 vy: Math.sin(a) * (1.5 + Math.random() * 2) - 1, life: 1});
+  }
+}
+
+/* --- おんぷちゃん（はくたたきからそのまま移植した8分音符キャラ） --- */
+function drawChara(x, y, jump, wob){
+  const t = performance.now();
+  ctx.save();
+  ctx.translate(x, y - jump * 46);
+  ctx.rotate(wob * Math.sin(t * .04) * .18 + Math.sin(t * .002) * .03);
+  const squash = 1 + jump * .18;
+  ctx.scale(2 - squash, squash);
+  ctx.strokeStyle = '#d94f4f'; ctx.lineWidth = 5; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(16, -6); ctx.quadraticCurveTo(19, -22, 17, -38); ctx.stroke();
+  ctx.fillStyle = '#FFB731';
+  ctx.beginPath(); ctx.moveTo(17, -38);
+  ctx.quadraticCurveTo(34, -32, 28, -18);
+  ctx.quadraticCurveTo(26, -28, 16, -30);
+  ctx.closePath(); ctx.fill();
+  ctx.save(); ctx.rotate(-.25);
+  ctx.fillStyle = '#FF6B6B';
+  ctx.beginPath(); ctx.ellipse(0, 0, 21, 17, 0, 0, 6.29); ctx.fill();
+  ctx.strokeStyle = '#d94f4f'; ctx.lineWidth = 3; ctx.stroke();
+  ctx.restore();
+  const happy = jump > .25;
+  const blink = Math.sin(t * .003) > .992;
+  if(happy || blink){
+    ctx.strokeStyle = '#5c1717'; ctx.lineWidth = 2.5; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.arc(-8, -2, 4, Math.PI, 2 * Math.PI); ctx.stroke();
+    ctx.beginPath(); ctx.arc(6, -2, 4, Math.PI, 2 * Math.PI); ctx.stroke();
+  } else {
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(-8, -4, 5, 0, 6.29); ctx.fill();
+    ctx.beginPath(); ctx.arc(6, -4, 5, 0, 6.29); ctx.fill();
+    ctx.fillStyle = '#2B2B33';
+    ctx.beginPath(); ctx.arc(-7, -4, 2.4, 0, 6.29); ctx.fill();
+    ctx.beginPath(); ctx.arc(7, -4, 2.4, 0, 6.29); ctx.fill();
+  }
+  ctx.strokeStyle = '#5c1717'; ctx.lineWidth = 2.5; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.arc(-1, 3, happy ? 6 : 4.5, .18 * Math.PI, .82 * Math.PI); ctx.stroke();
+  ctx.fillStyle = 'rgba(255,220,130,.7)';
+  ctx.beginPath(); ctx.arc(-15, 2, 3.2, 0, 6.29); ctx.fill();
+  ctx.beginPath(); ctx.arc(13, 2, 3.2, 0, 6.29); ctx.fill();
+  ctx.restore();
+}
+/* 角丸のしっぽ描画（ctx.roundRect非対応の端末むけ自前実装） */
+function roundRect(x, y, w, h, r){
+  if(w <= 0) return;
+  r = Math.min(r, h / 2, w / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath(); ctx.fill();
+}
+function drawStar(x, y, r, color){
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  for(let i = 0; i < 10; i++){
+    const rr = i % 2 === 0 ? r : r * .45;
+    const a = -Math.PI / 2 + i * Math.PI / 5;
+    ctx[i === 0 ? 'moveTo' : 'lineTo'](x + Math.cos(a) * rr, y + Math.sin(a) * rr);
+  }
+  ctx.closePath(); ctx.fill();
+}
+
+/* --- 描画ループ --- */
+function render(){
+  requestAnimationFrame(render);
+  if(!document.getElementById('rhythm').classList.contains('show')) return;
+  if(!W) resize();
+  ctx.clearRect(0, 0, W, H);
+  const laneY = H * .42;
+  const hitX = W * HIT_X_RATIO;
+  const pxPerSec = (W - hitX) / APPROACH;
+
+  ctx.strokeStyle = '#F8D8E0'; ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.moveTo(10, laneY); ctx.lineTo(W - 10, laneY); ctx.stroke();
+
+  ctx.lineWidth = 6; ctx.strokeStyle = '#FF8FAB';
+  ctx.beginPath(); ctx.arc(hitX, laneY, 34, 0, 6.29); ctx.stroke();
+  ctx.fillStyle = 'rgba(255,143,171,.08)';
+  ctx.beginPath(); ctx.arc(hitX, laneY, 34, 0, 6.29); ctx.fill();
+
+  const now = playing ? audio.currentTime - startTime : -APPROACH;
+  const L = LEVELS[curLv - 1];
+
+  /* はなすのを わすれて おしすぎたら「はなしそびれ」判定（自動で正解にはしない） */
+  if(holding && now > holding.mk.time + holding.mk.dur - gBeatDur + .30) finishHold(true);
+
+  markers.forEach(mk => {
+    if(playing && mk.hit === null && (now - mk.time) > MISS_AFTER * .9){
+      mk.hit = 'miss'; missN++; combo = 0;
+      $('combo').textContent = 0;
+      addPopup('おっとっと', '#8a8a94'); charWobble = 1;
+    }
+    const x = hitX + (mk.time - now) * pxPerSec;
+    const tailPx = mk.long ? mk.dur * pxPerSec : 0;
+    if(x + tailPx < -60 || x > W + 60) return;
+    if(mk.hit === 'perfect' || mk.hit === 'good'){
+      /* たーんを当てたあと：「ぱっ」の位置までしっぽが残る（押していると金色に光る） */
+      if(mk.long && now < mk.time + mk.dur - gBeatDur + .3){
+        const px = hitX + (mk.time + mk.dur - gBeatDur - now) * pxPerSec;   /* ぱっ の位置 */
+        const glow = holding && holding.mk === mk;
+        ctx.fillStyle = glow ? 'rgba(255,183,49,.9)' : 'rgba(255,183,49,.3)';
+        roundRect(hitX - 6, laneY - 11, Math.max(px - hitX + 6, 12), 22, 11);
+        if(glow){
+          ctx.fillStyle = '#fff';
+          ctx.font = "900 13px 'Zen Maru Gothic'";
+          ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillText('ぎゅー', hitX + Math.min(Math.max((px - hitX) / 2, 30), 60), laneY + 1);
+          /* 「ぱっ」の的＝しっぽの端。判定の輪にとどいたら はなす! */
+          ctx.strokeStyle = '#fff'; ctx.lineWidth = 3.5;
+          ctx.beginPath(); ctx.arc(px, laneY, 13, 0, 6.29); ctx.stroke();
+          ctx.fillStyle = '#e56b8c';
+          ctx.font = "900 11px 'Zen Maru Gothic'";
+          ctx.fillText('ぱっ', px, laneY - 22);
+        }
+      }
+      return;
+    }
+    ctx.globalAlpha = mk.hit === 'miss' ? .25 : 1;
+    if(L.mode === 'rhythm'){
+      /* ②きづく：しっぽの ながさ ＝ 音の ながさ */
+      if(mk.long){
+        const ex = x + (mk.dur - gBeatDur) * pxPerSec;   /* しっぽは ぱっ の位置まで */
+        ctx.fillStyle = 'rgba(255,183,49,.4)';
+        roundRect(x, laneY - 11, ex - x, 22, 11);
+        /* はなすところ の しるし（しっぽの端） */
+        ctx.strokeStyle = 'rgba(229,107,140,.7)'; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.arc(ex, laneY, 10, 0, 6.29); ctx.stroke();
+        ctx.fillStyle = '#FFB731';
+        ctx.beginPath(); ctx.arc(x, laneY, 24, 0, 6.29); ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.font = "900 13px 'Zen Maru Gothic'";
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('たーん', x, laneY + 1);
+      } else {
+        ctx.fillStyle = '#FF9FB6';
+        ctx.beginPath(); ctx.arc(x, laneY, 20, 0, 6.29); ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.font = "900 12px 'Zen Maru Gothic'";
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('たん', x, laneY + 1);
+      }
+    } else {
+      const r = mk.accent ? 26 : 20;
+      ctx.fillStyle = mk.accent ? '#FFB731' : '#FF9FB6';
+      ctx.beginPath(); ctx.arc(x, laneY, r, 0, 6.29); ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.font = '900 ' + (mk.accent ? 15 : 12) + "px 'Zen Maru Gothic'";
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(mk.accent ? 'ドン' : 'たん', x, laneY + 1);
+    }
+    ctx.globalAlpha = 1;
+  });
+
+  charJump *= .88; charWobble *= .9;
+  drawChara(hitX, laneY - 6, charJump, charWobble);
+
+  sparks.forEach(s => { s.x += s.vx; s.y += s.vy; s.vy += .08; s.life -= .03; });
+  sparks = sparks.filter(s => s.life > 0);
+  sparks.forEach(s => {
+    ctx.globalAlpha = s.life; drawStar(s.x, s.y, 7, '#FFD23F'); ctx.globalAlpha = 1;
+  });
+
+  popups.forEach(p => { p.y += 1.4; p.a -= .025; });
+  popups = popups.filter(p => p.a > 0);
+  popups.forEach(p => {
+    ctx.globalAlpha = p.a; ctx.fillStyle = p.color;
+    ctx.font = "900 26px 'Zen Maru Gothic'";
+    ctx.textAlign = 'center';
+    ctx.fillText(p.text, hitX + 10, laneY - 70 - p.y);
+    ctx.globalAlpha = 1;
+  });
+
+  if(playing && now < 0){
+    ctx.fillStyle = '#FF8FAB';
+    ctx.font = "900 40px 'Zen Maru Gothic'";
+    ctx.textAlign = 'center';
+    const beatDur = 60 / L.bpm;
+    const c = Math.ceil(-now / beatDur);
+    if(c <= L.song.beatsPerBar) ctx.fillText(c, W * .5, H * .3);
+  }
+}
+requestAnimationFrame(render);
+
+/* --- けっか：ほめて・コインをあげて・きょうの完了につなぐ --- */
+function showResult(){
+  if(!playing) return;
+  playing = false;
+  stopHoldTone(); holding = null;
+  $('tapBtn').disabled = true;
+  const total = perfectN + goodN + missN || 1;
+  const rate = (perfectN + goodN) / total;
+  let stars = 1, title = 'よく がんばったね!';
+  if(rate >= .95 && perfectN / total >= .65){ stars = 3; title = 'リズムたたき めいじん!'; }
+  else if(rate >= .75){ stars = 2; title = 'すごい! あと すこし!'; }
+
+  /* コイン：⭐×10＋コンボボーナス */
+  const coins = stars * 10 + Math.min(maxCombo, 10);
+  S.coins += coins;
+  const lvMsg = grantXp(coins);
+
+  /* きろく更新：ベスト⭐・レベル解放（⭐⭐で次がひらく） */
+  if(stars > (S.rhythmStars[curLv] || 0)) S.rhythmStars[curLv] = stars;
+  if(stars >= 2 && curLv === S.rhythmLv && S.rhythmLv < LEVELS.length) S.rhythmLv = curLv + 1;
+
+  const prog = completePart('rhythm');    /* きょうのメニューに記録 */
+  const chMsg = checkChallenge({type:'rhythm', stars, longOK, full: prog === 'full'});
+  saveState(S);
+  syncPracticeLog(todayStr(), 'rhythm', stars, coins + (chMsg ? 20 : 0),
+    {lv: curLv, combo: maxCombo, gyu: longOK});
+  renderLvRow();
+
+  $('resultStars').textContent = '⭐'.repeat(stars);
+  $('resultTitle').textContent = title;
+  $('resultCoin').textContent = '🪙 +' + coins + ' コイン ゲット!';
+  $('resultDetail').innerHTML =
+    'ぴったり ' + perfectN + '　いいね ' + goodN + '　おっとっと ' + missN +
+    '<br>さいだいコンボ ' + maxCombo +
+    (LEVELS[curLv - 1].mode === 'rhythm' ? '　ぎゅー ' + longOK + 'かい' : '') +
+    progMsg(prog) + lvMsg + chMsg;
+  $('nextBtn').textContent = (curLv < S.rhythmLv && curLv < LEVELS.length)
+    ? 'つぎのレベルへ ▶' : 'メニューに もどる';
+  $('result').classList.add('show');
+  say(title);
+  if(prog === 'full') confetti();
+}
+$('retryBtn').addEventListener('click', () => { setupLevel(); });
+$('nextBtn').addEventListener('click', () => {
+  if(curLv < S.rhythmLv && curLv < LEVELS.length){
+    curLv++; setupLevel();
+  } else {
+    stopAll(); renderHome(); showScreen('home');
+  }
+});
+
+/* =========================================================
+   おんぷカード本体（おんぷタワー移植）
+   カリキュラム：読譜力（まんなかのドから・ドレミの色ことば）
+   1セッション10もん。せいかいで タワーが つみあがる。
+   ①あそぶ：おんぷを見て 色ボタンで こたえる（Lv1-2は色が おたすけ）
+   ②きづく：Lv3で 色が消えて「ばしょ」で よむ力に切りかわる
+   ③なまえ：ドレミの なまえは ボタンの ことばとして 自然に入る
+   ========================================================= */
+const NS = 'http://www.w3.org/2000/svg';
+const KANA = ['ド','レ','ミ','ファ','ソ','ラ','シ'];
+const KANA_COLOR = ['var(--do)','var(--re)','var(--mi)','var(--fa)','var(--so)','var(--la)','var(--si)'];
+const STEP_SEMI = [0, 2, 4, 5, 7, 9, 11];
+const kanaOf = dia => KANA[((dia % 7) + 7) % 7];
+const colorOf = dia => KANA_COLOR[((dia % 7) + 7) % 7];
+function midiOfDia(dia){
+  const oct = Math.floor(dia / 7), idx = ((dia % 7) + 7) % 7;
+  return 60 + oct * 12 + STEP_SEMI[idx];
+}
+const PRAISE = ['ピンポン!✨','せいかい!🎉','すごい!','ばっちり!','その ちょうし!','よく みえたね!'];
+
+/* レベル設計（導入期）：色つき→色なし→ヘ音記号 */
+const NLEVELS = [
+  { lv:1, label:'レベル1', name:'ドレミ',        clef:'treble', dias:[0,1,2],           color:true,
+    hint:'おんぷの なまえを あてよう' },
+  { lv:2, label:'レベル2', name:'ドレミファソ',  clef:'treble', dias:[0,1,2,3,4],       color:true,
+    hint:'ファ と ソ も でてくるよ' },
+  { lv:3, label:'レベル3', name:'ド〜たかいド',  clef:'treble', dias:[0,1,2,3,4,5,6,7], color:false,
+    hint:'いろの おたすけなしで ちょうせん!' },
+  { lv:4, label:'レベル4', name:'ヘおんきごう',  clef:'bass',   dias:[-4,-3,-2,-1,0],   color:true,
+    hint:'ひだりての きごうだよ' },
+  { lv:5, label:'レベル5', name:'ト音 むずかしい', clef:'treble',
+    dias:[-2,-1,0,1,2,3,4,5,6,7,8,9], color:false,
+    hint:'ひくい ラシ、たかい おとも でるよ!' },
+  { lv:6, label:'レベル6', name:'ヘ音 むずかしい', clef:'bass',
+    dias:[-10,-9,-8,-7,-6,-5,-4,-3,-2,-1,0], color:false,
+    hint:'ヘおんきごう ぜんぶに ちょうせん!' },
+];
+const N_QUESTIONS = 10;
+let nCurLv = 1, nPlaying = false, nQueue = [], nQi = 0, nCorrect = 0;
+let nCombo = 0, nBestCombo = 0, nLocked = false, nCurrent = null, nCurDraw = null;
+
+/* --- 五線譜（おんぷタワーのdia座標系をそのまま移植） --- */
+const NSTAFF = { x0:110, x1:660, top:100, gap:26 };
+function yOfDia(dia, clef){
+  const step = NSTAFF.gap / 2;
+  let refDia, refY = NSTAFF.top + NSTAFF.gap * 4;
+  refDia = (clef === 'treble') ? 2 : -10;   /* ト音:E4が最下線／ヘ音:G2が最下線 */
+  return refY - (dia - refDia) * step;
+}
+function drawStaffN(clef){
+  const svg = $('staff'); svg.innerHTML = '';
+  const {x0, x1, top, gap} = NSTAFF;
+  for(let i = 0; i < 5; i++){
+    const y = top + gap * i;
+    const l = document.createElementNS(NS, 'line');
+    l.setAttribute('x1', x0 - 46); l.setAttribute('x2', x1 + 30);
+    l.setAttribute('y1', y); l.setAttribute('y2', y);
+    l.setAttribute('stroke', '#B9CBD4'); l.setAttribute('stroke-width', '3');
+    svg.appendChild(l);
+  }
+  const clefT = document.createElementNS(NS, 'text');
+  clefT.setAttribute('x', x0 - 42);
+  clefT.setAttribute('y', top + gap * 4 + 8);
+  clefT.setAttribute('font-size', '104');
+  clefT.setAttribute('fill', '#2B2B33');
+  clefT.setAttribute('font-family', 'serif');
+  clefT.textContent = clef === 'treble' ? '\uD834\uDD1E' : '\uD834\uDD22';  /* 𝄞 / 𝄢 */
+  svg.appendChild(clefT);
+}
+function addLedgerN(g, cx, y){
+  const l = document.createElementNS(NS, 'line');
+  l.setAttribute('x1', cx - 26); l.setAttribute('x2', cx + 26);
+  l.setAttribute('y1', y); l.setAttribute('y2', y);
+  l.setAttribute('stroke', '#B9CBD4'); l.setAttribute('stroke-width', '3');
+  g.appendChild(l);
+}
+function drawNoteCard(dia, clef, color){
+  const svg = $('staff');
+  const {top, gap} = NSTAFF;
+  const step = gap / 2;
+  const cx = 400, cy = yOfDia(dia, clef);
+  const g = document.createElementNS(NS, 'g');
+  const botY = top + gap * 4;
+  for(let y = botY + gap; y <= cy + step * .6; y += gap) addLedgerN(g, cx, y);   /* 下の加線 */
+  for(let y = top - gap; y >= cy - step * .6; y -= gap) addLedgerN(g, cx, y);    /* 上の加線 */
+  const head = document.createElementNS(NS, 'ellipse');
+  head.setAttribute('cx', cx); head.setAttribute('cy', cy);
+  head.setAttribute('rx', 16); head.setAttribute('ry', 12);
+  head.setAttribute('transform', 'rotate(-18 ' + cx + ' ' + cy + ')');
+  head.setAttribute('fill', color || '#2B2B33');
+  g.appendChild(head);
+  const stem = document.createElementNS(NS, 'line');
+  const up = cy > top + gap * 2;
+  stem.setAttribute('x1', up ? cx + 14 : cx - 14);
+  stem.setAttribute('x2', up ? cx + 14 : cx - 14);
+  stem.setAttribute('y1', up ? cy - 2 : cy + 2);
+  stem.setAttribute('y2', up ? cy - 70 : cy + 70);
+  stem.setAttribute('stroke', color || '#2B2B33');
+  stem.setAttribute('stroke-width', '5');
+  stem.setAttribute('stroke-linecap', 'round');
+  g.appendChild(stem);
+  svg.appendChild(g);
+  return {head, cx, cy};
+}
+
+/* --- 正解・不正解の音（おんぷタワー移植） --- */
+function chime(ok){
+  ensureAudio();
+  if(ok){ [0, 4, 7].forEach((s, i) => setTimeout(() => melodyNote(72 + s, audio.currentTime, .25), i * 70)); }
+  else melodyNote(58, audio.currentTime, .25);
+}
+/* ボタンのまわりに キラキラ */
+function nBurst(el){
+  const r = el.getBoundingClientRect();
+  const marks = ['✨','⭐','🌟','💫'];
+  for(let i = 0; i < 6; i++){
+    const s = document.createElement('div');
+    s.textContent = marks[i % 4];
+    s.style.cssText = 'position:fixed;z-index:60;pointer-events:none;font-size:22px;' +
+      'transition:transform .8s ease-out,opacity .8s;left:' +
+      (r.left + r.width / 2 - 10 + (Math.random() * 44 - 22)) + 'px;top:' + (r.top - 6) + 'px;';
+    document.body.appendChild(s);
+    requestAnimationFrame(() => { s.style.transform = 'translateY(-60px) scale(1.3)'; s.style.opacity = '0'; });
+    setTimeout(() => s.remove(), 850);
+  }
+}
+
+/* --- セッション進行 --- */
+function renderNLvRow(){
+  const row = $('nLvRow'); row.innerHTML = '';
+  NLEVELS.forEach(L => {
+    const chip = document.createElement('button');
+    const locked = L.lv > S.noteLv;
+    chip.className = 'lvChip' + (L.lv === nCurLv ? ' on' : '') + (locked ? ' lock' : '');
+    const stars = S.noteStars[L.lv] || 0;
+    chip.innerHTML = L.label + (locked ? ' 🔒'
+      : '<div class="st">' + '⭐'.repeat(stars) + '☆'.repeat(3 - stars) + '</div>');
+    if(!locked) chip.addEventListener('click', () => { nCurLv = L.lv; setupNote(); });
+    row.appendChild(chip);
+  });
+}
+function openNote(){
+  nCurLv = Math.min(S.noteLv, NLEVELS.length);
+  showScreen('note');
+  setupNote();
+}
+function setupNote(){
+  nPlaying = false; nLocked = false;
+  nQi = 0; nCorrect = 0; nCombo = 0; nBestCombo = 0;
+  $('nCombo').textContent = 0;
+  renderNLvRow();
+  const L = NLEVELS[nCurLv - 1];
+  $('nTitle').textContent = 'おんぷカード｜' + L.name;
+  $('nIntroMsg').textContent = L.hint;
+  $('nIntro').classList.remove('hide');
+  $('nResult').classList.remove('show');
+  $('nChoices').innerHTML = '';
+  $('nFeedback').textContent = ''; $('nFeedback').className = '';
+  updateTower();
+  drawStaffN(L.clef);
+}
+function buildQueue(){
+  const L = NLEVELS[nCurLv - 1];
+  nQueue = []; let prev = null;
+  for(let i = 0; i < N_QUESTIONS; i++){
+    let d, guard = 0;
+    do{ d = L.dias[Math.floor(Math.random() * L.dias.length)]; guard++; }
+    while(d === prev && L.dias.length > 1 && guard < 20);
+    nQueue.push(d); prev = d;
+  }
+}
+function updateTower(){
+  $('towerFill').style.width = (nCorrect / N_QUESTIONS * 100) + '%';
+  $('towerCount').textContent = nCorrect + ' / ' + N_QUESTIONS;
+}
+$('nGoBtn').addEventListener('click', () => {
+  ensureAudio();
+  say(NLEVELS[nCurLv - 1].hint);
+  setTimeout(() => {
+    buildQueue();
+    nPlaying = true;
+    $('nIntro').classList.add('hide');
+    nextQ();
+  }, 300);
+});
+function nextQ(){
+  if(nQi >= N_QUESTIONS){ noteResult(); return; }
+  const L = NLEVELS[nCurLv - 1];
+  nCurrent = nQueue[nQi];
+  nLocked = false;
+  $('nFeedback').textContent = 'この おんぷは どれかな?'; $('nFeedback').className = '';
+  drawStaffN(L.clef);
+  nCurDraw = drawNoteCard(nCurrent, L.clef, L.color ? colorOf(nCurrent) : null);
+  buildChoices(L);
+  melodyNote(midiOfDia(nCurrent), audio.currentTime + .15, .5);   /* おとも きかせる（おと⇔かたち） */
+}
+function buildChoices(L){
+  const box = $('nChoices'); box.innerHTML = '';
+  const kinds = [...new Set(L.dias.map(d => ((d % 7) + 7) % 7))].sort((a, b) => a - b);
+  kinds.forEach(i => {
+    const b = document.createElement('button');
+    b.className = 'nChoice';
+    b.style.background = KANA_COLOR[i];
+    b.textContent = KANA[i];
+    b.addEventListener('click', () => answerNote(KANA[i], b));
+    box.appendChild(b);
+  });
+}
+function answerNote(kana, btn){
+  if(nLocked || !nPlaying) return;
+  nLocked = true;
+  const correctKana = kanaOf(nCurrent);
+  const ok = kana === correctKana;
+  nQi++;
+  if(ok){
+    btn.classList.add('ok');
+    nCorrect++; nCombo++; nBestCombo = Math.max(nBestCombo, nCombo);
+    $('nCombo').textContent = nCombo;
+    if(nCurDraw) nCurDraw.head.setAttribute('fill', '#3FB98A');
+    chime(true); nBurst(btn);
+    $('nFeedback').textContent = PRAISE[Math.floor(Math.random() * PRAISE.length)];
+    $('nFeedback').className = 'good';
+    updateTower();
+    setTimeout(nextQ, 800);
+  } else {
+    btn.classList.add('ng');
+    [...$('nChoices').children].forEach(b => {
+      if(b.textContent === correctKana) b.classList.add('ok');   /* 正解をやさしく見せる */
+    });
+    nCombo = 0; $('nCombo').textContent = 0;
+    chime(false);
+    $('nFeedback').textContent = 'こたえは「' + correctKana + '」だよ';
+    $('nFeedback').className = 'bad';
+    say(correctKana);
+    updateTower();
+    setTimeout(nextQ, 1600);
+  }
+}
+function noteResult(){
+  nPlaying = false;
+  let stars = 1, title = 'よく がんばったね!';
+  if(nCorrect >= 9){ stars = 3; title = 'おんぷカード めいじん!'; }
+  else if(nCorrect >= 7){ stars = 2; title = 'すごい! あと すこし!'; }
+  const coins = stars * 10 + Math.min(nBestCombo, 10);
+  S.coins += coins;
+  const lvMsg = grantXp(coins);
+  if(stars > (S.noteStars[nCurLv] || 0)) S.noteStars[nCurLv] = stars;
+  if(stars >= 2 && nCurLv === S.noteLv && S.noteLv < NLEVELS.length) S.noteLv = nCurLv + 1;
+  const prog = completePart('note');
+  const chMsg = checkChallenge({type:'note', correct: nCorrect, full: prog === 'full'});
+  saveState(S);
+  syncPracticeLog(todayStr(), 'note', stars, coins + (chMsg ? 20 : 0),
+    {lv: nCurLv, correct: nCorrect});
+  renderNLvRow();
+  $('nResultStars').textContent = '⭐'.repeat(stars);
+  $('nResultTitle').textContent = title;
+  $('nResultCoin').textContent = '🪙 +' + coins + ' コイン ゲット!';
+  $('nResultDetail').innerHTML = 'せいかい ' + nCorrect + ' / ' + N_QUESTIONS +
+    '　さいだいれんぞく ' + nBestCombo +
+    progMsg(prog) + lvMsg + chMsg;
+  $('nNextBtn').textContent = (nCurLv < S.noteLv && nCurLv < NLEVELS.length)
+    ? 'つぎのレベルへ ▶' : 'メニューに もどる';
+  $('nResult').classList.add('show');
+  say(title);
+  if(prog === 'full') confetti();
+}
+$('nRetryBtn').addEventListener('click', () => { setupNote(); });
+$('nNextBtn').addEventListener('click', () => {
+  if(nCurLv < S.noteLv && nCurLv < NLEVELS.length){
+    nCurLv++; setupNote();
+  } else {
+    renderHome(); showScreen('home');
+  }
+});
+$('nBackBtn').addEventListener('click', () => {
+  try{ speechSynthesis.cancel(); }catch(e){}
+  renderHome(); showScreen('home');
+});
+$('card-note').addEventListener('click', openNote);
+
+/* =========================================================
+   けんばんタイム本体（バナナさん・さくらんぼさん移植）
+   カリキュラム：奏力（黒鍵グループ→ドの位置→指番号「1」）
+   ①あそぶ：🍒🍌をタッチして黒鍵ごと鳴らす
+   ②きづく：さくらんぼの ひだりどなり＝ド／フルーツが隠れて黒鍵で探す
+   ③なまえ：ドを3回みつけたら「ド」の名前が付く。Lv4で指番号「1」
+   ========================================================= */
+const P_WHITES = [{n:'ド',s:0},{n:'レ',s:2},{n:'ミ',s:4},{n:'ファ',s:5},{n:'ソ',s:7},{n:'ラ',s:9},{n:'シ',s:11}];
+const P_BLACKS = [
+  {s:1,  after:0, grp:'cherry'},
+  {s:3,  after:1, grp:'cherry'},
+  {s:6,  after:3, grp:'banana'},
+  {s:8,  after:4, grp:'banana'},
+  {s:10, after:5, grp:'banana'}
+];
+const P_OCTAVES = 2, P_START_OCT = 4, P_ROUNDS = 10;
+const PLEVELS = [
+  { lv:1, label:'レベル1', name:'さくらんぼと バナナ', fruits:true,  hint:false, fing:false,
+    pattern:['cherry','banana','cherry','banana','cherry','banana','cherry','banana','cherry','banana'],
+    hintText:'さくらんぼさんは くろ2つ、バナナさんは くろ3つ!' },
+  { lv:2, label:'レベル2', name:'ドを さがそう', fruits:true,  hint:true,  fing:false,
+    pattern:['cherry','do','do','banana','do','do','cherry','do','do','do'],
+    hintText:'ドは さくらんぼさんの ひだりどなり!' },
+  { lv:3, label:'レベル3', name:'フルーツが かくれた', fruits:false, hint:false, fing:false,
+    pattern:['do','cherry','do','do','banana','do','do','do','do','do'],
+    hintText:'くろい けんばんを ヒントに さがそう!' },
+  { lv:4, label:'レベル4', name:'1のゆびで ド', fruits:false, hint:false, fing:true,
+    pattern:['do','do','do','do','do','do','do','do','do','do'],
+    hintText:'いち、と いいながら 1のゆびで ドを おそう!' },
+];
+let pCurLv = 1, pPlaying = false, pRound = 0, pDoneN = 0, pMiss = 0;
+let pComboV = 0, pBestCombo = 0, pTarget = null, pLocked = false;
+let pDoFound = 0, pNamesShown = false, pCharZone = 90;
+
+/* --- ピアノらしい音（さくらんぼさんの音色を移植） --- */
+function pKeyNote(midi, gs){
+  ensureAudio();
+  const t = audio.currentTime, f = mf(midi);
+  const g = audio.createGain(); g.connect(audio.destination);
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(.45 * (gs || 1), t + .012);
+  g.gain.exponentialRampToValueAtTime(.001, t + .9);
+  const o1 = audio.createOscillator(); o1.type = 'triangle'; o1.frequency.value = f;
+  const o2 = audio.createOscillator(); o2.type = 'sine'; o2.frequency.value = f * 2;
+  const g2 = audio.createGain(); g2.gain.value = .25; g2.connect(g);
+  o1.connect(g); o2.connect(g2);
+  o1.start(t); o2.start(t); o1.stop(t + .95); o2.stop(t + .95);
+}
+
+/* --- かわいいSVGキャラ（さくらんぼさんから移植・自作素材） --- */
+function cherrySVG(s){return `
+ <svg width="${s}" height="${s}" viewBox="0 0 100 100">
+  <path d="M50 18 Q62 6 78 14" fill="none" stroke="#6a8f3a" stroke-width="5" stroke-linecap="round"/>
+  <path d="M50 18 Q40 8 26 16" fill="none" stroke="#6a8f3a" stroke-width="5" stroke-linecap="round"/>
+  <path d="M74 12 q9 -4 12 4 q-8 5 -12 -4" fill="#8fd14f"/>
+  <circle cx="30" cy="62" r="24" fill="#ff5b5b"/>
+  <circle cx="70" cy="62" r="24" fill="#e23b3b"/>
+  <circle cx="23" cy="55" r="7" fill="#ff9d9d" opacity=".7"/>
+  <circle cx="63" cy="55" r="7" fill="#ff8181" opacity=".7"/>
+  <circle cx="25" cy="60" r="4" fill="#fff"/><circle cx="26" cy="61" r="2" fill="#3a2a22"/>
+  <circle cx="37" cy="60" r="4" fill="#fff"/><circle cx="38" cy="61" r="2" fill="#3a2a22"/>
+  <path d="M27 70 q4 4 8 0" fill="none" stroke="#7a1f1f" stroke-width="2.5" stroke-linecap="round"/>
+ </svg>`;}
+function bananaSVG(s){return `
+ <svg width="${s}" height="${s}" viewBox="0 0 100 100">
+  <path d="M50 12 q-4 -6 3 -8 q6 2 3 9 z" fill="#7a5a1a"/>
+  <g transform="translate(50 20) rotate(-32)">
+    <path d="M0 0 C -8 6 -10 20 -6 34 C -3 46 3 52 7 51 C 4 48 2 34 3 18 C 4 9 4 4 2 0 Z"
+          fill="#f2c200" stroke="#e08e00" stroke-width="1.6" stroke-linejoin="round"/>
+  </g>
+  <g transform="translate(50 20) rotate(32)">
+    <path d="M0 0 C 8 6 10 20 6 34 C 3 46 -3 52 -7 51 C -4 48 -2 34 -3 18 C -4 9 -4 4 -2 0 Z"
+          fill="#f2c200" stroke="#e08e00" stroke-width="1.6" stroke-linejoin="round"/>
+  </g>
+  <g transform="translate(50 20)">
+    <path d="M0 0 C -8 6 -10 20 -6 34 C -3 46 3 52 7 51 C 4 48 2 34 3 18 C 4 9 4 4 2 0 Z"
+          fill="#ffdb54" stroke="#e08e00" stroke-width="1.6" stroke-linejoin="round"/>
+    <circle cx="-3" cy="26" r="3.1" fill="#fff"/><circle cx="-2.4" cy="26.6" r="1.6" fill="#3a2a22"/>
+    <circle cx="3.4" cy="26" r="3.1" fill="#fff"/><circle cx="4" cy="26.6" r="1.6" fill="#3a2a22"/>
+    <circle cx="-4.8" cy="31" r="3" fill="#ff9d5b" opacity=".55"/>
+    <path d="M-2 33 q3 3 7 -0.5" fill="none" stroke="#a06a12" stroke-width="2" stroke-linecap="round"/>
+  </g>
+ </svg>`;}
+
+/* --- 鍵盤とキャラを組み立てる（サイズ確定後に呼ぶ） --- */
+function buildKb(){
+  const board = $('pBoard'), chars = $('pChars');
+  [...board.querySelectorAll('.wkey,.bkey')].forEach(e => e.remove());
+  chars.innerHTML = '';
+  const bw = board.clientWidth, bh = board.clientHeight;
+  if(!bw || !bh) return;
+  const numWhite = P_OCTAVES * 7, wW = bw / numWhite;
+  pCharZone = Math.max(64, Math.min(130, bh * .34));
+  const kbH = bh - pCharZone;
+  const bWk = wW * .62, bHk = kbH * .6;
+  const doKeys = [];
+  for(let o = 0; o < P_OCTAVES; o++){
+    P_WHITES.forEach((w, wi) => {
+      const el = document.createElement('div');
+      el.className = 'wkey' + (w.s === 0 ? '' : '');
+      el.style.left = (o * 7 + wi) * wW + 'px';
+      el.style.width = wW + 'px';
+      el.style.height = kbH + 'px';
+      const midi = (P_START_OCT + o + 1) * 12 + w.s;
+      el.dataset.isdo = (w.s === 0);
+      el.innerHTML = '<span class="fing">1</span><span class="lbl">' + w.n + '</span>';
+      el.addEventListener('pointerdown', e => {
+        e.preventDefault();
+        pKeyNote(midi); pPress(el);
+        pJudge({isDo: w.s === 0, grp: null, oct: o}, el);
+      });
+      board.appendChild(el);
+      if(w.s === 0) doKeys.push(el);
+    });
+  }
+  for(let o = 0; o < P_OCTAVES; o++){
+    P_BLACKS.forEach(b => {
+      const el = document.createElement('div');
+      el.className = 'bkey';
+      el.style.left = ((o * 7 + b.after) * wW + wW - bWk / 2) + 'px';
+      el.style.width = bWk + 'px';
+      el.style.top = pCharZone + 'px';
+      el.style.height = bHk + 'px';
+      el.dataset.grp = b.grp; el.dataset.oct = o;
+      const midi = (P_START_OCT + o + 1) * 12 + b.s;
+      el.dataset.midi = midi;
+      el.addEventListener('pointerdown', e => {
+        e.preventDefault();
+        const L = PLEVELS[pCurLv - 1];
+        if(!L.fruits) pPlayGroup(o, b.grp);      /* かくれレベル：グループごと鳴る */
+        else { pKeyNote(midi); pPress(el); }
+        pJudge({isDo: false, grp: b.grp, oct: o}, el);
+      });
+      board.appendChild(el);
+    });
+  }
+  /* キャラ配置（各オクターブに🍒と🍌） */
+  for(let o = 0; o < P_OCTAVES; o++){
+    ['cherry','banana'].forEach(grp => {
+      const blacks = pGroupBlacks(o, grp);
+      if(!blacks.length) return;
+      let minL = Infinity, maxR = -Infinity;
+      blacks.forEach(b => {
+        const l = parseFloat(b.style.left), w = parseFloat(b.style.width);
+        minL = Math.min(minL, l); maxR = Math.max(maxR, l + w);
+      });
+      const size = Math.min(pCharZone * .85, wW * 1.55);
+      const c = document.createElement('div');
+      c.className = 'char';
+      c.style.left = (minL + maxR) / 2 + 'px';
+      c.style.top = (pCharZone - size - 4) + 'px';
+      c.style.width = size + 'px';
+      c.innerHTML = (grp === 'cherry' ? cherrySVG(size) : bananaSVG(size)) +
+        '<div class="say">やっほー!</div>';
+      c.dataset.grp = grp; c.dataset.oct = o;
+      c.addEventListener('pointerdown', e => {
+        e.preventDefault();
+        pPlayGroup(o, grp);
+        const mid = blacks[Math.floor(blacks.length / 2)];
+        pJudge({isDo: false, grp, oct: o}, mid);
+      });
+      chars.appendChild(c);
+    });
+  }
+  applyPianoVisuals();
+}
+function pGroupBlacks(oct, grp){
+  return [...$('pBoard').querySelectorAll('.bkey')]
+    .filter(b => b.dataset.oct == oct && b.dataset.grp === grp);
+}
+function pPlayGroup(oct, grp){
+  const blacks = pGroupBlacks(oct, grp);
+  const gs = blacks.length >= 3 ? .6 : .7;
+  blacks.forEach(b => { pKeyNote(+b.dataset.midi, gs); pPress(b); });
+}
+function pPress(el){ el.classList.add('press'); setTimeout(() => el.classList.remove('press'), 160); }
+
+/* レベルに応じた見た目（フルーツの表示・ドの名前・指番号バッジ） */
+function applyPianoVisuals(){
+  const L = PLEVELS[pCurLv - 1];
+  $('pChars').classList.toggle('hideFruit', !L.fruits);
+  $('pBoard').querySelectorAll('.wkey').forEach(el => {
+    const isDo = el.dataset.isdo === 'true';
+    el.classList.toggle('showlbl', isDo && (pNamesShown || L.fing));
+    el.classList.toggle('showFing', isDo && L.fing);
+  });
+}
+function pReactChar(grp, oct, msg, peek){
+  const c = [...$('pChars').children].find(x => x.dataset.grp === grp && x.dataset.oct == oct);
+  if(!c) return;
+  c.querySelector('.say').textContent = msg;
+  if(peek) c.classList.add('peek');
+  c.classList.remove('hop','showSay'); void c.offsetWidth;
+  c.classList.add('hop','showSay');
+  clearTimeout(c._t);
+  c._t = setTimeout(() => c.classList.remove('showSay','peek'), 1300);
+}
+function showArrowToDo(oct){
+  const dos = [...$('pBoard').querySelectorAll('.wkey')].filter(w => w.dataset.isdo === 'true');
+  const t = dos[oct] || dos[0];
+  if(!t) return;
+  const a = $('pArrow');
+  a.style.left = (parseFloat(t.style.left) + parseFloat(t.style.width) / 2) + 'px';
+  a.style.top = pCharZone + 'px';
+  a.classList.add('show');
+  clearTimeout(a._t);
+  a._t = setTimeout(() => a.classList.remove('show'), 1600);
+}
+function pFloat(el, txt){
+  const board = $('pBoard');
+  const r = el.getBoundingClientRect(), br = board.getBoundingClientRect();
+  const f = document.createElement('div');
+  f.className = 'pFloat';
+  f.textContent = txt;
+  f.style.left = (r.left - br.left + r.width / 2 - 20) + 'px';
+  f.style.top = (r.top - br.top + 6) + 'px';
+  board.appendChild(f);
+  requestAnimationFrame(() => { f.style.transform = 'translateY(-46px)'; f.style.opacity = '0'; });
+  setTimeout(() => f.remove(), 1050);
+}
+
+/* --- セッション進行 --- */
+function renderPLvRow(){
+  const row = $('pLvRow'); row.innerHTML = '';
+  PLEVELS.forEach(L => {
+    const chip = document.createElement('button');
+    const locked = L.lv > S.pianoLv;
+    chip.className = 'lvChip' + (L.lv === pCurLv ? ' on' : '') + (locked ? ' lock' : '');
+    const stars = S.pianoStars[L.lv] || 0;
+    chip.innerHTML = L.label + (locked ? ' 🔒'
+      : '<div class="st">' + '⭐'.repeat(stars) + '☆'.repeat(3 - stars) + '</div>');
+    if(!locked) chip.addEventListener('click', () => { pCurLv = L.lv; setupPiano(); });
+    row.appendChild(chip);
+  });
+}
+function openPiano(){
+  pCurLv = Math.min(S.pianoLv, PLEVELS.length);
+  showScreen('piano');
+  setupPiano();
+}
+function setupPiano(){
+  pPlaying = false; pLocked = false;
+  pRound = 0; pDoneN = 0; pMiss = 0; pComboV = 0; pBestCombo = 0;
+  pDoFound = 0; pNamesShown = false;
+  $('pCombo').textContent = 0;
+  renderPLvRow();
+  const L = PLEVELS[pCurLv - 1];
+  $('pTitle').textContent = 'けんばんタイム｜' + L.name;
+  $('pIntroMsg').textContent = L.hintText;
+  $('pIntro').classList.remove('hide');
+  $('pResult').classList.remove('show');
+  $('pPrompt').innerHTML = '';
+  $('pArrow').classList.remove('show');
+  updatePProg();
+  setTimeout(buildKb, 80);   /* レイアウト確定後に鍵盤を組む */
+}
+function updatePProg(){
+  $('pProgFill').style.width = (pDoneN / P_ROUNDS * 100) + '%';
+  $('pProgCount').textContent = pDoneN + ' / ' + P_ROUNDS;
+}
+$('pGoBtn').addEventListener('click', () => {
+  ensureAudio();
+  say(PLEVELS[pCurLv - 1].hintText);
+  setTimeout(() => {
+    pPlaying = true;
+    $('pIntro').classList.add('hide');
+    pNextRound();
+  }, 400);
+});
+function pNextRound(){
+  if(pRound >= P_ROUNDS){ pianoResult(); return; }
+  const L = PLEVELS[pCurLv - 1];
+  pTarget = L.pattern[pRound];
+  pLocked = false;
+  const pt = $('pPrompt');
+  if(pTarget === 'cherry')
+    pt.innerHTML = '🍒 <span class="hl">さくらんぼさん</span>（くろ2つ）を タッチ!';
+  else if(pTarget === 'banana')
+    pt.innerHTML = '🍌 <span class="hlb">バナナさん</span>（くろ3つ）を タッチ!';
+  else
+    pt.innerHTML = L.fing
+      ? '「いち」と いいながら <span class="hl">1のゆびで ド</span>を おそう!'
+      : 'さがそう! <span class="hl">「ド」</span>は どこかな?';
+  if(pTarget === 'do' && L.hint && pRound < 4)
+    setTimeout(() => showArrowToDo(Math.floor(Math.random() * P_OCTAVES)), 300);
+}
+function pJudge(info, el){
+  if(!pPlaying || pLocked || !pTarget) return;
+  const ok = pTarget === 'do' ? info.isDo : info.grp === pTarget;
+  if(ok){
+    pLocked = true;
+    pDoneN++; pRound++;
+    pComboV++; pBestCombo = Math.max(pBestCombo, pComboV);
+    $('pCombo').textContent = pComboV;
+    el.classList.add('correctKey');
+    setTimeout(() => el.classList.remove('correctKey'), 650);
+    pFloat(el, pComboV >= 2 ? 'せいかい! れんぞく' + pComboV : 'せいかい!');
+    updatePProg();
+    if(pTarget === 'do'){
+      pDoFound++;
+      pReactChar('cherry', info.oct || 0, 'ドは わたしの ひだり!', !PLEVELS[pCurLv-1].fruits);
+      /* ③なまえ：3回みつけたら「ド」の名前がつく */
+      if(pDoFound === 3 && !pNamesShown){
+        pNamesShown = true;
+        applyPianoVisuals();
+        say('この おとの なまえは、ド!');
+      }
+    }
+    setTimeout(pNextRound, pTarget === 'do' ? 950 : 750);
+  } else {
+    pMiss++;
+    pComboV = 0; $('pCombo').textContent = 0;
+    el.classList.add('wrongKey');
+    setTimeout(() => el.classList.remove('wrongKey'), 350);
+    const o = Math.floor(Math.random() * P_OCTAVES);
+    if(pTarget === 'do'){
+      pReactChar('cherry', o, 'わたしの ひだりどなりだよ!', true);
+      showArrowToDo(o);
+    } else if(pTarget === 'cherry'){
+      pReactChar('cherry', o, 'くろ2つが わたし🍒', true);
+    } else {
+      pReactChar('banana', o, 'くろ3つが ぼく🍌', true);
+    }
+  }
+}
+function pianoResult(){
+  pPlaying = false;
+  let stars = 1, title = 'よく がんばったね!';
+  if(pMiss <= 1){ stars = 3; title = 'けんばん めいじん!'; }
+  else if(pMiss <= 4){ stars = 2; title = 'すごい! あと すこし!'; }
+  const coins = stars * 10 + Math.min(pBestCombo, 10);
+  S.coins += coins;
+  const lvMsg = grantXp(coins);
+  if(stars > (S.pianoStars[pCurLv] || 0)) S.pianoStars[pCurLv] = stars;
+  if(stars >= 2 && pCurLv === S.pianoLv && S.pianoLv < PLEVELS.length) S.pianoLv = pCurLv + 1;
+  const prog = completePart('piano');
+  const chMsg = checkChallenge({type:'piano', miss: pMiss, full: prog === 'full'});
+  saveState(S);
+  syncPracticeLog(todayStr(), 'piano', stars, coins + (chMsg ? 20 : 0),
+    {lv: pCurLv, miss: pMiss});
+  renderPLvRow();
+  $('pResultStars').textContent = '⭐'.repeat(stars);
+  $('pResultTitle').textContent = title;
+  $('pResultCoin').textContent = '🪙 +' + coins + ' コイン ゲット!';
+  $('pResultDetail').innerHTML = 'みつけた ' + pDoneN + ' / ' + P_ROUNDS +
+    '　おっとっと ' + pMiss + '　さいだいれんぞく ' + pBestCombo +
+    progMsg(prog) + lvMsg + chMsg;
+  $('pNextBtn').textContent = (pCurLv < S.pianoLv && pCurLv < PLEVELS.length)
+    ? 'つぎのレベルへ ▶' : 'メニューに もどる';
+  $('pResult').classList.add('show');
+  say(title);
+  if(prog === 'full') confetti();
+}
+$('pRetryBtn').addEventListener('click', () => { setupPiano(); });
+$('pNextBtn').addEventListener('click', () => {
+  if(pCurLv < S.pianoLv && pCurLv < PLEVELS.length){
+    pCurLv++; setupPiano();
+  } else {
+    renderHome(); showScreen('home');
+  }
+});
+$('pBackBtn').addEventListener('click', () => {
+  try{ speechSynthesis.cancel(); }catch(e){}
+  renderHome(); showScreen('home');
+});
+$('card-piano').addEventListener('click', openPiano);
+window.addEventListener('resize', () => {
+  if($('piano').classList.contains('show')) setTimeout(buildKb, 120);
+});
+
+/* =========================================================
+   マイページ：レベル・称号・たからばこ・ガチャ・ずかん・おとも
+   ========================================================= */
+const ITEMS = [
+  {id:'usagi', e:'🐰', n:'うさぎ', r:1}, {id:'neko', e:'🐱', n:'ねこ', r:1},
+  {id:'inu', e:'🐶', n:'いぬ', r:1}, {id:'hamu', e:'🐹', n:'はむちゃん', r:1},
+  {id:'hiyoko', e:'🐥', n:'ひよこ', r:1}, {id:'kame', e:'🐢', n:'かめ', r:1},
+  {id:'ringo', e:'🍎', n:'りんご', r:1}, {id:'hana', e:'🌼', n:'おはな', r:1},
+  {id:'kitsune', e:'🦊', n:'きつね', r:2}, {id:'panda', e:'🐼', n:'ぱんだ', r:2},
+  {id:'unicorn', e:'🦄', n:'ゆにこーん', r:2}, {id:'cake', e:'🍰', n:'けーき', r:2},
+  {id:'boushi', e:'🎩', n:'まほうのぼうし', r:2}, {id:'niji', e:'🌈', n:'にじ', r:2},
+  {id:'crown', e:'👑', n:'おうかん', r:3}, {id:'dragon', e:'🐉', n:'どらごん', r:3},
+  {id:'star', e:'🌟', n:'スーパースター', r:3}, {id:'piano_i', e:'🎹', n:'きらきらピアノ', r:3},
+];
+function gachaPick(){
+  const roll = Math.random() * 100;
+  const tier = roll < 70 ? 1 : roll < 95 ? 2 : 3;
+  const pool = ITEMS.filter(i => i.r === tier);
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+function doGacha(free){
+  if(free){
+    if(S.chest <= 0) return;
+    S.chest--;
+  } else {
+    if(S.coins < 30) return;
+    S.coins -= 30;
+  }
+  const item = gachaPick();
+  const dup = (S.items[item.id] || 0) > 0;
+  S.items[item.id] = (S.items[item.id] || 0) + 1;
+  if(dup) S.coins += 10;
+  saveState(S);
+  $('gachaEmoji').textContent = item.e;
+  $('gachaName').textContent = item.n;
+  $('gachaRare').textContent = '⭐'.repeat(item.r);
+  $('gachaSub').innerHTML = dup
+    ? 'おなじこが きたので コイン+10に へんしん!'
+    : 'あたらしい おともだち! ずかんに とうろく🎉';
+  $('gachaOv').classList.add('show');
+  say(dup ? 'コインに へんしん!' : item.n + '、ゲット!');
+  renderMypage();
+}
+$('gachaClose').addEventListener('click', () => $('gachaOv').classList.remove('show'));
+$('chestBtn').addEventListener('click', () => doGacha(true));
+$('gachaBtn').addEventListener('click', () => doGacha(false));
+
+function renderMypage(){
+  const lv = levelFromXp(S.xp);
+  const bd = ITEMS.find(i => i.id === S.buddy);
+  $('mpBuddy').textContent = bd ? bd.e : '🎹';
+  $('mpTitle').textContent = 'Lv' + lv.level;
+  $('mpRank').textContent = rankOf(lv.level);
+  $('xpFill').style.width = Math.min(100, lv.cur / lv.need * 100) + '%';
+  $('xpText').textContent = 'つぎのレベルまで あと ' + (lv.need - lv.cur) + ' XP';
+  const st = k => { const o = S[k]; let n = 0; for(const key in o) n = Math.max(n, o[key]); return n; };
+  const fullDays = Object.keys(S.days).filter(d => partsOf(S.days[d]).full).length;
+  $('mpStats').innerHTML =
+    '🔥 れんぞく れんしゅう：' + S.streak + 'にち<br>' +
+    '⭐ ぜんぶクリアした日：' + fullDays + 'にち<br>' +
+    '🥁 リズムたたき：Lv' + S.rhythmLv + '（ベスト ' + '⭐'.repeat(st('rhythmStars')) + '）<br>' +
+    '🎵 おんぷカード：Lv' + S.noteLv + '（ベスト ' + '⭐'.repeat(st('noteStars')) + '）<br>' +
+    '🎹 けんばんタイム：Lv' + S.pianoLv + '（ベスト ' + '⭐'.repeat(st('pianoStars')) + '）';
+  $('chestBtn').textContent = '🎁 たからばこを あける（のこり ' + S.chest + '）';
+  $('chestBtn').disabled = S.chest <= 0;
+  $('gachaBtn').textContent = '✨ ガチャガチャ（🪙30）｜いま ' + S.coins;
+  $('gachaBtn').disabled = S.coins < 30;
+  /* ずかん */
+  const z = $('zukan'); z.innerHTML = '';
+  ITEMS.forEach(it => {
+    const own = (S.items[it.id] || 0) > 0;
+    const d = document.createElement('div');
+    d.className = 'zkItem' + (own ? '' : ' none') + (S.buddy === it.id ? ' buddy' : '');
+    d.innerHTML = '<div class="e">' + (own ? it.e : '❓') + '</div>' +
+      '<div class="n">' + (own ? it.n + (S.items[it.id] > 1 ? ' ×' + S.items[it.id] : '') : '???') + '</div>';
+    if(own) d.addEventListener('click', () => {
+      S.buddy = (S.buddy === it.id) ? null : it.id;
+      saveState(S); renderMypage();
+    });
+    z.appendChild(d);
+  });
+}
+$('lvBadge').addEventListener('click', () => { renderMypage(); showScreen('mypage'); });
+$('mpBackBtn').addEventListener('click', () => { renderHome(); showScreen('home'); });
+
+/* =========================================================
+   おうちのかたモード：こえかけ・きろく・動画送信・メッセージ
+   （動画・メッセージは端末からLINE等へ直接共有。サーバー保存なし。
+     アプリ内れんらくちょうは アカウント対応後に有効化）
+   ========================================================= */
+function paToast(msg){
+  const t = $('paToast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 2600);
+}
+/* おとなチェック（かけ算） */
+let gateA = 0;
+function genGate(){
+  const a = 6 + Math.floor(Math.random() * 4), b = 6 + Math.floor(Math.random() * 4);
+  gateA = a * b;
+  $('gateQ').textContent = a + ' × ' + b + ' = ?';
+  $('gateAns').value = '';
+}
+$('parentBtn').addEventListener('click', () => {
+  genGate();
+  $('gateOv').classList.add('show');
+  setTimeout(() => $('gateAns').focus(), 120);
+});
+$('gateCancel').addEventListener('click', () => $('gateOv').classList.remove('show'));
+$('gateOk').addEventListener('click', () => {
+  if(+$('gateAns').value === gateA){
+    $('gateOv').classList.remove('show');
+    openParent();
+  } else {
+    const b = $('gateBox');
+    b.classList.remove('ng'); void b.offsetWidth; b.classList.add('ng');
+    genGate();
+  }
+});
+function openParent(){
+  /* こえかけポイント（進み具合に合わせて変わる） */
+  const tips = [
+    '「きのうより 1つでも できたら はなまる」——くらべる相手は昨日のお子さんです。',
+    'リズムたたき：「たんは ポン、たーんは ぎゅーして ぱっ」と一緒に声に出すと効果大。',
+    'おんぷカード：まちがえても「おしい! いまのは◯だったね」と名前を言い直すだけでOK。',
+    'けんばんタイム：「さくらんぼさんの ひだりどなりは どこ?」と聞いてみてください。',
+  ];
+  if(S.pianoLv >= 4) tips.push('指番号：「いち」と声に出してドを押す習慣が、両手奏の準備になります。');
+  if(S.noteLv >= 4) tips.push('ヘ音記号が始まりました。「ひだりての きごう」と呼んであげてください。');
+  $('paTips').innerHTML = tips.map(t => '<li>' + t + '</li>').join('');
+  /* 2週間のきろく */
+  let practiced = 0, full = 0;
+  for(let i = 0; i < 14; i++){
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const p = partsOf(S.days[todayStr(d)]);
+    if(p.rhythm || p.note || p.piano) practiced++;
+    if(p.full) full++;
+  }
+  const lv = levelFromXp(S.xp);
+  $('paRecord').innerHTML =
+    '練習した日：<b>' + practiced + '日</b> ／ 3メニュー完了：<b>' + full + '日</b>（直近14日）<br>' +
+    '現在 Lv' + lv.level + '（' + rankOf(lv.level) + '）・連続 ' + S.streak + '日<br>' +
+    'リズム Lv' + S.rhythmLv + '　おんぷ Lv' + S.noteLv + '　けんばん Lv' + S.pianoLv;
+  renderVidLog();
+  showScreen('parent');
+}
+$('paBackBtn').addEventListener('click', () => { renderHome(); showScreen('home'); });
+
+/* --- 動画をせんせいに送る --- */
+let vidFile = null;
+$('vidPick').addEventListener('click', () => $('vidInput').click());
+$('vidInput').addEventListener('change', e => {
+  const f = e.target.files[0];
+  if(!f) return;
+  vidFile = f;
+  const v = $('vidPrev');
+  v.src = URL.createObjectURL(f);
+  v.style.display = 'block';
+  v.onloadedmetadata = () => { if(v.duration > 65) paToast('60秒以内の動画がおすすめです'); };
+  $('vidSend').disabled = false;
+});
+function downloadVid(){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(vidFile);
+  a.download = 'ensou-' + todayStr() + '.mp4';
+  document.body.appendChild(a); a.click(); a.remove();
+}
+function logVideo(memo){
+  S.videoLog.unshift({ d: todayStr(), m: memo });
+  S.videoLog = S.videoLog.slice(0, 20);
+  saveState(S);
+  renderVidLog();
+}
+function renderVidLog(){
+  const l = S.videoLog;
+  $('vidLog').innerHTML = l.length
+    ? '📚 そうしん履歴：<br>' + l.map(x => x.d + '　' + (x.m || '（メモなし）')).join('<br>')
+    : '';
+}
+$('vidSend').addEventListener('click', async () => {
+  if(!vidFile) return;
+  const memo = ($('vidMemo').value || '').trim();
+  const text = '【まいにちピアノ】えんそう動画です。' + (memo ? '\nメモ：' + memo : '');
+  try{
+    if(navigator.canShare && navigator.canShare({ files: [vidFile] })){
+      await navigator.share({ files: [vidFile], text });
+      logVideo(memo); paToast('おくりました!');
+    } else {
+      downloadVid();
+      try{ await navigator.clipboard.writeText(text); }catch(e){}
+      logVideo(memo);
+      paToast('動画を保存し、メモをコピーしました。LINEに添付してください');
+    }
+  }catch(err){ /* 共有キャンセル時は何もしない */ }
+});
+/* --- せんせいへのメッセージ --- */
+$('msgSend').addEventListener('click', async () => {
+  const msg = ($('teachMsg').value || '').trim();
+  if(!msg){ paToast('メッセージを入力してください'); return; }
+  const text = '【まいにちピアノ】' + msg;
+  try{
+    if(navigator.share){ await navigator.share({ text }); paToast('おくりました!'); }
+    else {
+      await navigator.clipboard.writeText(text);
+      paToast('コピーしました。LINEに はりつけて送ってください');
+    }
+  }catch(err){}
+});
+
+/* =========================================================
+   STEP 3：Supabase接続
+   - 練習記録をDBに同期（オフライン時はlocalStorageに貯めて再接続時に送る）
+   - 週間ランキング取得・表示
+   - 先生メールログイン（ダッシュボード用）
+   ========================================================= */
+const SB_URL  = 'https://ikmxtrkymoukkxujfcys.supabase.co';
+const SB_ANON = 'sb_publishable_OcVU5vc5YM0UIQvDFylZsw_nKngVK3E';
+const SCHOOL_ID = '04fd28b5-df6d-4519-b59b-1acfbf0680d9';
+
+/* Supabase REST APIの薄いラッパー（外部ライブラリなし） */
+async function sbFetch(path, opts = {}){
+  const headers = {
+    'apikey': SB_ANON,
+    'Authorization': 'Bearer ' + SB_ANON,
+    'Content-Type': 'application/json',
+    'Prefer': 'return=minimal',
+    ...(opts.headers || {})
+  };
+  const res = await fetch(SB_URL + path, { ...opts, headers });
+  if(!res.ok && res.status !== 409) console.warn('sbFetch error', res.status, path);
+  if(res.status === 204 || res.status === 409) return null;
+  try{ return await res.json(); }catch(e){ return null; }
+}
+
+/* 練習記録をDBに同期（student_idは保護者登録後に設定。それまでローカルのみ） */
+let sbStudentId = null;
+try{ sbStudentId = localStorage.getItem('mp_student_id'); }catch(e){}
+
+/* 生徒ID連携（おうちのかたモードで1回だけ設定） */
+(function wireStudentId(){
+  const input = document.getElementById('studentIdInput');
+  const saveBtn = document.getElementById('studentIdSave');
+  const state = document.getElementById('studentIdState');
+  if(!input || !saveBtn) return;
+  if(sbStudentId){
+    input.value = sbStudentId;
+    state.textContent = '✅ 教室と つながっています';
+  }
+  saveBtn.addEventListener('click', () => {
+    const v = (input.value || '').trim();
+    if(!/^[0-9a-f-]{36}$/i.test(v)){
+      state.style.color = '#FF6B5E';
+      state.textContent = '生徒IDの形式が違うようです（先生に確認してください）';
+      return;
+    }
+    sbStudentId = v;
+    try{ localStorage.setItem('mp_student_id', v); }catch(e){}
+    state.style.color = '#3FB98A';
+    state.textContent = '✅ 保存しました！きょうのクリア分も送信しています…';
+    backfillToday().then(() => {
+      state.textContent = '✅ 保存しました！これから練習の記録が教室に届きます';
+    });
+  });
+})();
+/* 起動時：ID設定済みなら、きょうのクリア済み分を補完送信 */
+if(sbStudentId) setTimeout(backfillToday, 1500);
+
+async function syncPracticeLog(day, part, stars, xp, detail){
+  if(!sbStudentId) return;   /* 未登録時はスキップ */
+  try{
+    await sbFetch('/rest/v1/practice_logs?on_conflict=student_id,day,part', {
+      method: 'POST',
+      headers: { 'Prefer': 'resolution=ignore-duplicates,return=minimal' },
+      body: JSON.stringify({
+        student_id: sbStudentId,
+        day, part, stars, xp,
+        detail: detail || null
+      })
+    });
+  }catch(e){ /* オフライン時は無視・次回同期 */ }
+}
+
+/* きょうクリア済みの分を補完送信（ID保存前にクリアしていた場合の救済）
+   すでに送信済みの分はon_conflictで静かにスキップされる */
+async function backfillToday(){
+  if(!sbStudentId) return;
+  const p = partsOf(S.days[todayStr()]);
+  for(const part of ['rhythm','note','piano']){
+    if(p[part]) await syncPracticeLog(todayStr(), part, 0, 30, {backfill: true});
+  }
+}
+
+/* ランキング画面 */
+async function loadRanking(){
+  const screen = document.getElementById('rankScreen');
+  if(!screen) return;
+  const list = document.getElementById('rankList');
+  list.innerHTML = '<div style="text-align:center;padding:20px;color:#a99">よみこみちゅう…</div>';
+  try{
+    const rows = await sbFetch(
+      '/rest/v1/weekly_ranking?school_id=eq.' + SCHOOL_ID +
+      '&order=weekly_xp.desc&limit=5',
+      { headers: { 'Prefer': 'return=representation' } }
+    );
+    if(!rows || !rows.length){
+      list.innerHTML = '<div style="text-align:center;padding:20px;color:#a99">まだ だれも れんしゅうしていないよ</div>';
+      return;
+    }
+    const medals = ['🥇','🥈','🥉','4','5'];
+    list.innerHTML = rows.map((r, i) => {
+      const isMe = r.student_id === sbStudentId;
+      return `<div style="display:flex;align-items:center;gap:10px;padding:12px 14px;
+        background:${isMe ? '#FFF0F4' : '#fff'};border-radius:14px;margin-bottom:8px;
+        box-shadow:0 2px 6px rgba(0,0,0,.05);font-weight:900">
+        <span style="font-size:24px;min-width:32px">${medals[i] || (i+1)}</span>
+        <span style="flex:1">${r.display_name}${isMe ? ' 👈' : ''}</span>
+        <span style="color:#7B6FE0">${r.weekly_xp} XP</span>
+      </div>`;
+    }).join('');
+    /* 自分の順位（トップ5外のとき） */
+    if(sbStudentId){
+      const allRows = await sbFetch(
+        '/rest/v1/weekly_ranking?school_id=eq.' + SCHOOL_ID + '&order=weekly_xp.desc',
+        { headers: { 'Prefer': 'return=representation' } }
+      );
+      const myRank = allRows ? allRows.findIndex(r => r.student_id === sbStudentId) : -1;
+      if(myRank >= 5){
+        const myRow = allRows[myRank];
+        list.innerHTML += `<div style="text-align:center;padding:8px;font-weight:900;color:#8a7a74;font-size:13px">
+          …… あなたは ${myRank+1}い（${allRows.length}にん中）・${myRow.weekly_xp} XP</div>`;
+      }
+    }
+  }catch(e){
+    list.innerHTML = '<div style="text-align:center;padding:20px;color:#a99">よみこめませんでした（オフライン？）</div>';
+  }
+}
+
+/* ランキング画面のHTMLを動的に挿入 */
+(function insertRankScreen(){
+  const div = document.createElement('div');
+  div.className = 'screen';
+  div.id = 'rankScreen';
+  div.style.cssText = 'overflow-y:auto;padding:14px 16px calc(20px + env(safe-area-inset-bottom));background:var(--paper)';
+  div.innerHTML = `
+    <div class="topBar" style="padding-left:0;padding-right:0">
+      <button id="rankBackBtn" style="border:none;background:#fff;border-radius:999px;width:44px;height:44px;font-size:20px;font-weight:900;box-shadow:0 2px 6px rgba(0,0,0,.1);cursor:pointer">←</button>
+      <div style="font-size:clamp(17px,4.6vw,22px);font-weight:900;color:#7B6FE0">こんしゅうの がんばりランキング</div>
+    </div>
+    <div style="background:#EFEBFF;border-radius:16px;padding:12px 14px;margin-bottom:14px;font-weight:900;font-size:13px;color:#6a5fc0;line-height:1.8">
+      🔄 まいしゅう げつようびに リセット<br>
+      🎖 上位5人＋あなたの じゅんいを ひょうじ<br>
+      🙈 ランキング非表示は「おうちのかたへ」から設定できます
+    </div>
+    <div id="rankList"></div>
+    <div style="margin-top:14px;text-align:center;font-weight:900;font-size:13px;color:#a99;line-height:2">
+      れんしゅうするほど XPがたまるよ！<br>リズムたたき・おんぷカード・けんばんタイムを<br>まいにちクリアしよう🎵
+    </div>`;
+  document.body.appendChild(div);
+  document.getElementById('rankBackBtn').addEventListener('click', () => {
+    renderHome(); showScreen('home');
+  });
+})();
+
+/* ホームにランキングボタンを追加 */
+(function addRankBtn(){
+  const btn = document.createElement('button');
+  btn.id = 'rankBtn';
+  btn.innerHTML = '🏆 こんしゅうの ランキングを みる';
+  btn.style.cssText = 'display:block;width:100%;border:2.5px solid #d4caf4;background:#F8F5FF;color:#7B6FE0;border-radius:16px;padding:13px;font-weight:900;font-size:14px;cursor:pointer;margin-bottom:12px';
+  btn.addEventListener('click', () => { showScreen('rankScreen'); loadRanking(); });
+  const allDone = document.getElementById('allDone');
+  allDone.parentNode.insertBefore(btn, allDone);
+})();
+
+/* init */
+renderHome();
+})();
+</script>
+</body>
+</html>
