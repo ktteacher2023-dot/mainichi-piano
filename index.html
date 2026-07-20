@@ -432,6 +432,16 @@ button{font-family:inherit}
     <div class="state" id="pianoState">▶</div>
   </button>
 
+  <!-- ④かだい×動画：先生の課題を見て演奏動画を送る -->
+  <button class="menuCard" id="card-video">
+    <div class="icon" style="background:#EFE3FF">🎬</div>
+    <div class="txt">
+      <div class="name">えんそうどうが</div>
+      <div class="sub" id="videoCardSub">せんせいの かだいを ひいて おくろう</div>
+    </div>
+    <div class="state" id="videoState">▶</div>
+  </button>
+
   <div id="allDone">🎉 きょうの れんしゅう かんぺき!<br>
     <span style="font-size:.75em">また あした あそぼうね</span></div>
 
@@ -679,6 +689,37 @@ button{font-family:inherit}
   </div>
 </div>
 
+<!-- =========================================================
+     えんそうどうが（せんせいの かだい × 動画提出）
+     ========================================================= -->
+<div class="screen" id="videoS" style="overflow-y:auto;padding:14px 16px calc(20px + env(safe-area-inset-bottom))">
+  <div class="topBar" style="padding-left:0;padding-right:0">
+    <button id="vBackBtn" style="border:none;background:#fff;border-radius:999px;width:44px;height:44px;font-size:20px;font-weight:900;box-shadow:0 2px 6px rgba(0,0,0,.1);cursor:pointer">←</button>
+    <div style="font-size:clamp(17px,4.6vw,22px);font-weight:900;color:#8a5fd0">🎬 えんそうどうが</div>
+  </div>
+
+  <div class="mpCard" style="background:linear-gradient(135deg,#F6EFFF,#FFF0FA)">
+    <div style="font-weight:900;font-size:12px;color:#9c8fd8">🎼 せんせいからの かだい</div>
+    <div id="assignTitleView" style="font-weight:900;font-size:clamp(19px,5.4vw,24px);margin-top:4px">すきな きょくを おくってね</div>
+    <div id="assignPointsView" style="font-weight:900;font-size:clamp(13px,3.8vw,15px);color:#6e625a;line-height:2;margin-top:8px;white-space:pre-line"></div>
+  </div>
+
+  <div class="mpCard">
+    <div style="font-weight:900;font-size:15px">📹 どうがを とって おくる</div>
+    <div style="font-weight:900;font-size:12px;color:#a99;margin-top:4px;line-height:1.9">
+      おうちのひとと いっしょに とってね（60びょう いない）</div>
+    <input type="file" id="cvInput" accept="video/*" style="display:none">
+    <button class="mpBtn" id="cvPick" style="background:linear-gradient(180deg,#b3a5ff,#7B6FE0)">🎬 ビデオを とる・えらぶ</button>
+    <video id="cvPrev" controls playsinline style="display:none;width:100%;border-radius:14px;margin-top:10px;max-height:240px;background:#000"></video>
+    <input id="cvMemo" placeholder="メモ（じどうで かだいめいが 入るよ）" style="width:100%;border:2.5px solid #e5dcd4;border-radius:12px;padding:10px;font-family:inherit;font-weight:700;font-size:14px;margin-top:10px">
+    <button class="mpBtn" id="cvSend" disabled style="background:linear-gradient(180deg,#5fd3a5,#3FB98A)">📤 きょうしつの LINEに おくる</button>
+    <div id="cvDone" style="font-weight:900;font-size:13px;color:#3FB98A;min-height:1.6em;margin-top:8px;text-align:center"></div>
+    <div style="font-weight:900;font-size:11px;color:#c0b4ac;margin-top:6px;line-height:1.8">
+      🔒 どうがは アプリには のこらず、きょうしつの こうしきLINEに おくられます。<br>
+      🪙 おくると 20コイン ゲット!（1にち 1かい）</div>
+  </div>
+</div>
+
 <script>
 (() => {
 'use strict';
@@ -715,6 +756,10 @@ S.items = S.items || {};
 S.chest = S.chest || 0;
 S.challenge = S.challenge || {};
 S.videoLog = S.videoLog || [];
+
+/* 先生の個別設定（教室接続後にDBから上書きされる） */
+let pianoRequired = true;                     /* けんばんタイムを日課に含めるか */
+let assignTitle = null, assignPoints = null;  /* せんせいからの かだい */
 
 function todayStr(d = new Date()){
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
@@ -790,6 +835,12 @@ function renderHome(){
     ? 'きょうは クリアずみ! もっと あそんでも いいよ'
     : 'レベル' + S.noteLv + '｜おんぷの なまえを あてよう';
   $('card-piano').classList.toggle('doneToday', !!p.piano);
+  $('card-piano').style.display = pianoRequired ? '' : 'none';
+  $('card-video').classList.toggle('doneToday', !!p.video);
+  $('videoState').textContent = p.video ? '✅' : '▶';
+  $('videoCardSub').textContent = p.video
+    ? 'きょうは おくったよ! ありがとう🎬'
+    : (assignTitle ? 'かだい：' + assignTitle : 'せんせいの かだいを ひいて おくろう');
   $('pianoState').textContent = p.piano ? '✅' : '▶';
   $('pianoCardSub').textContent = p.piano
     ? 'きょうは クリアずみ! もっと あそんでも いいよ'
@@ -819,7 +870,7 @@ function completePart(part){
   const wasNew = !v[part];
   v[part] = true;
   let res = wasNew ? 'part' : false;
-  if(v.rhythm && v.note && v.piano && !v.full){ /* 全メニュー完了! */
+  if(v.rhythm && v.note && (!pianoRequired || v.piano) && !v.full){ /* 全メニュー完了! */
     v.full = true;
     S.streak = (S.lastDate === yesterdayStr()) ? S.streak + 1
              : (S.lastDate === t ? S.streak : 1);
@@ -835,7 +886,7 @@ function nextPartMsg(){
   const p = partsOf(S.days[todayStr()]);
   if(!p.rhythm) return 'つぎは リズムたたき!';
   if(!p.note) return 'つぎは おんぷカード!';
-  if(!p.piano) return 'つぎは けんばんタイム!';
+  if(!p.piano && pianoRequired) return 'つぎは けんばんタイム!';
   return '';
 }
 /* けっか画面の完了メッセージ（全部クリアで たからばこ+1） */
@@ -886,8 +937,10 @@ const CHALLENGES = [
 ];
 function todayChallenge(){
   const t = todayStr().split('-').map(Number);
-  const idx = Math.floor(new Date(t[0], t[1] - 1, t[2]).getTime() / 864e5) % CHALLENGES.length;
-  return CHALLENGES[((idx % CHALLENGES.length) + CHALLENGES.length) % CHALLENGES.length];
+  let idx = Math.floor(new Date(t[0], t[1] - 1, t[2]).getTime() / 864e5) % CHALLENGES.length;
+  idx = ((idx % CHALLENGES.length) + CHALLENGES.length) % CHALLENGES.length;
+  if(idx === 3 && !pianoRequired) idx = 4;   /* けんばん非表示の子は全クリアお題に */
+  return CHALLENGES[idx];
 }
 function checkChallenge(d){
   const t = todayStr();
@@ -2414,7 +2467,7 @@ try{ sbStudentId = localStorage.getItem('mp_student_id'); }catch(e){}
   });
 })();
 /* 起動時：ID設定済みなら、きょうのクリア済み分を補完送信 */
-if(sbStudentId) setTimeout(backfillToday, 1500);
+if(sbStudentId) setTimeout(() => { backfillToday(); loadStudentHome(); }, 1500);
 
 /* =========================================================
    LIFFログイン：LINEから開くと自動で教室とつながる
@@ -2441,6 +2494,7 @@ function setStudent(id, name){
   const inp = document.getElementById('studentIdInput');
   if(inp) inp.value = id;
   backfillToday();
+  loadStudentHome();
   renderHome();
 }
 async function initLiff(){
@@ -2488,6 +2542,79 @@ initLiff();
   });
   $('inviteLater').addEventListener('click', () => $('linkOv').classList.remove('show'));
 })();
+
+/* =========================================================
+   せんせいのかだい × えんそうどうが
+   ========================================================= */
+async function loadStudentHome(){
+  if(!sbStudentId) return;
+  try{
+    const rows = await sbRpc('get_student_home', { p_student_id: sbStudentId });
+    if(rows && rows.length){
+      const r = rows[0];
+      assignTitle = r.assignment_title || null;
+      assignPoints = r.assignment_points || null;
+      pianoRequired = !!r.show_keyboard;
+      try{ if(r.display_name) localStorage.setItem('mp_student_name', r.display_name); }catch(e){}
+      renderHome();
+      renderAssign();
+    }
+  }catch(e){}
+}
+function renderAssign(){
+  $('assignTitleView').textContent = assignTitle || 'すきな きょくを おくってね';
+  $('assignPointsView').textContent = assignPoints ||
+    'せんせいからの ちゅういポイントは ここに でるよ';
+  if(!$('cvMemo').value) $('cvMemo').value = assignTitle || '';
+}
+let cvFile = null;
+$('card-video').addEventListener('click', () => { renderAssign(); showScreen('videoS'); });
+$('vBackBtn').addEventListener('click', () => { renderHome(); showScreen('home'); });
+$('cvPick').addEventListener('click', () => $('cvInput').click());
+$('cvInput').addEventListener('change', e => {
+  const f = e.target.files[0];
+  if(!f) return;
+  cvFile = f;
+  const v = $('cvPrev');
+  v.src = URL.createObjectURL(f);
+  v.style.display = 'block';
+  v.onloadedmetadata = () => {
+    if(v.duration > 65) $('cvDone').textContent = '⏱ 60びょう いないが おすすめだよ';
+  };
+  $('cvSend').disabled = false;
+});
+$('cvSend').addEventListener('click', async () => {
+  if(!cvFile) return;
+  const memo = ($('cvMemo').value || '').trim();
+  const text = '【まいにちピアノ】えんそう動画です。' + (memo ? '\nかだい：' + memo : '');
+  try{
+    if(navigator.canShare && navigator.canShare({ files: [cvFile] })){
+      await navigator.share({ files: [cvFile], text });
+    } else {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(cvFile);
+      a.download = 'ensou-' + todayStr() + '.mp4';
+      document.body.appendChild(a); a.click(); a.remove();
+      try{ await navigator.clipboard.writeText(text); }catch(e){}
+    }
+    /* 送れたら：1日1回だけ ごほうび */
+    const first = completePart('video');
+    if(first){
+      S.coins += 20;
+      const lvMsg = grantXp(20);
+      syncPracticeLog(todayStr(), 'video', 0, 20, { memo });
+      $('cvDone').textContent = '🎉 おくったよ! +20コイン' + (lvMsg ? '　レベルアップ!' : '');
+      say('どうがを おくったよ! よく がんばったね!');
+      confetti();
+    } else {
+      $('cvDone').textContent = '📤 おくったよ!（きょうの コインは もう もらったね）';
+    }
+    S.videoLog.unshift({ d: todayStr(), m: memo });
+    S.videoLog = S.videoLog.slice(0, 20);
+    saveState(S);
+    renderHome();
+  }catch(err){ /* 共有キャンセル時は何もしない */ }
+});
 
 async function syncPracticeLog(day, part, stars, xp, detail){
   if(!sbStudentId) return;   /* 未登録時はスキップ */

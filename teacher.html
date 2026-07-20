@@ -113,7 +113,7 @@ label{font-size:12px;font-weight:900;color:#8a7a74;display:block;margin-bottom:3
     <div class="card">
       <h2>👧 生徒一覧</h2>
       <div style="overflow-x:auto"><table id="studentTable">
-        <thead><tr><th>なまえ</th><th>生年月日</th><th>ランキング</th><th>招待コード</th><th></th></tr></thead>
+        <thead><tr><th>なまえ</th><th>課題</th><th>ランキング</th><th>招待コード</th><th></th></tr></thead>
         <tbody></tbody>
       </table></div>
     </div>
@@ -168,6 +168,25 @@ label{font-size:12px;font-weight:900;color:#8a7a74;display:block;margin-bottom:3
 </div>
 
 <div id="toast"></div>
+
+<!-- 課題編集モーダル -->
+<div id="editOv" style="position:fixed;inset:0;background:rgba(43,43,51,.55);z-index:120;display:none;align-items:center;justify-content:center;padding:20px">
+  <div class="card" style="max-width:440px;width:100%;margin:0">
+    <h2 id="editName" style="color:var(--main-d)">🎼 課題を設定</h2>
+    <label>課題曲・課題内容（子どものアプリに大きく表示されます）</label>
+    <input id="editTitle" style="width:100%" placeholder="例：きらきらぼし（後半）">
+    <label style="margin-top:12px">注意するポイント（改行で複数OK・ひらがな推奨）</label>
+    <textarea id="editPoints" style="width:100%;min-height:110px;font-family:inherit;font-weight:700;font-size:14px;border:2px solid #e5dcd4;border-radius:10px;padding:9px 10px;resize:vertical" placeholder="例：&#10;・たーんは さいごまで ぎゅー&#10;・ゆびばんごうを こえに だしてね"></textarea>
+    <label style="margin-top:12px;display:flex;align-items:center;gap:8px;cursor:pointer">
+      <input type="checkbox" id="editKb" style="width:18px;height:18px">
+      けんばんタイム（さくらんぼ・バナナ）を日課に表示する（導入期の子向け）
+    </label>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="btn gray" id="editCancel" style="flex:1;padding:12px">キャンセル</button>
+      <button class="btn p" id="editSave" style="flex:2;padding:12px">保存する</button>
+    </div>
+  </div>
+</div>
 
 <script>
 (() => {
@@ -291,10 +310,13 @@ async function loadStudents(){
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${esc(s.display_name)}</td>
-      <td class="muted">${s.birthdate || '—'}</td>
+      <td class="muted" style="max-width:180px">${s.assignment_title
+        ? '🎼 ' + esc(s.assignment_title) + (s.show_keyboard ? '<br><span class="pill ok">けんばん表示</span>' : '')
+        : (s.show_keyboard ? '<span class="pill ok">けんばん表示</span>' : '—')}</td>
       <td><span class="pill ${s.ranking_opt_out ? 'off' : 'ok'}">${s.ranking_opt_out ? '非表示' : '表示'}</span></td>
       <td><code style="font-size:13px;font-weight:900">${s.invite_code || '—'}</code></td>
       <td style="white-space:nowrap">
+        <button class="btn sm g" data-edit="${s.id}">🎼 課題を設定</button>
         <button class="btn sm p" data-code="${s.invite_code || ''}">コードコピー</button>
         <button class="btn sm" data-copy="${s.id}">IDコピー</button>
         <button class="btn sm gray" data-rank="${s.id}" data-cur="${s.ranking_opt_out}">
@@ -302,6 +324,9 @@ async function loadStudents(){
       </td>`;
     tb.appendChild(tr);
   });
+  tb.querySelectorAll('[data-edit]').forEach(b => b.addEventListener('click', () => {
+    openAssignEditor(b.dataset.edit);
+  }));
   tb.querySelectorAll('[data-code]').forEach(b => b.addEventListener('click', async () => {
     if(!b.dataset.code) return;
     const msg = '【まいにちピアノ】教室公式LINEのメニューからアプリを開き、しょうたいコード「' +
@@ -443,6 +468,36 @@ $('addSlotBtn').addEventListener('click', async () => {
     });
     toast('枠を作成しました'); loadSlots();
   }catch(e){ toast('作成エラー：' + e.message); }
+});
+
+/* --- 課題編集モーダル --- */
+let editingId = null;
+function openAssignEditor(id){
+  const s = students.find(x => x.id === id);
+  if(!s) return;
+  editingId = id;
+  $('editName').textContent = '🎼 ' + s.display_name + ' の課題を設定';
+  $('editTitle').value = s.assignment_title || '';
+  $('editPoints').value = s.assignment_points || '';
+  $('editKb').checked = !!s.show_keyboard;
+  $('editOv').style.display = 'flex';
+}
+$('editCancel').addEventListener('click', () => { $('editOv').style.display = 'none'; });
+$('editSave').addEventListener('click', async () => {
+  if(!editingId) return;
+  try{
+    await sb('/rest/v1/students?id=eq.' + editingId, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        assignment_title: $('editTitle').value.trim() || null,
+        assignment_points: $('editPoints').value.trim() || null,
+        show_keyboard: $('editKb').checked
+      })
+    });
+    $('editOv').style.display = 'none';
+    toast('保存しました。子どものアプリに反映されます');
+    loadStudents();
+  }catch(e){ toast('保存エラー：' + e.message); }
 });
 
 function esc(s){ return String(s ?? '').replace(/[&<>"']/g,
