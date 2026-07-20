@@ -706,13 +706,30 @@ button{font-family:inherit}
 
   <div class="mpCard">
     <div style="font-weight:900;font-size:15px">📹 どうがを とって おくる</div>
-    <div style="font-weight:900;font-size:12px;color:#a99;margin-top:4px;line-height:1.9">
-      おうちのひとと いっしょに とってね（60びょう いない）</div>
-    <input type="file" id="cvInput" accept="video/*" style="display:none">
-    <button class="mpBtn" id="cvPick" style="background:linear-gradient(180deg,#b3a5ff,#7B6FE0)">🎬 ビデオを とる・えらぶ</button>
-    <video id="cvPrev" controls playsinline style="display:none;width:100%;border-radius:14px;margin-top:10px;max-height:240px;background:#000"></video>
-    <input id="cvMemo" placeholder="メモ（じどうで かだいめいが 入るよ）" style="width:100%;border:2.5px solid #e5dcd4;border-radius:12px;padding:10px;font-family:inherit;font-weight:700;font-size:14px;margin-top:10px">
-    <button class="mpBtn" id="cvSend" disabled style="background:linear-gradient(180deg,#5fd3a5,#3FB98A)">📤 きょうしつの LINEに おくる</button>
+
+    <!-- LINEの中でひらいたとき：トークから直接おくる -->
+    <div id="cvLiffBox" style="display:none">
+      <div style="font-weight:900;font-size:13px;color:#6e625a;line-height:2.2;margin-top:8px">
+        ① 下のボタンで きょうしつの トークを ひらく<br>
+        ② 入っている メッセージを そのまま そうしん<br>
+        ③ ＋ボタン → カメラで どうがを とって おくる<br>
+        　（60びょう いない・アルバムからも OK）<br>
+        ④ ここに もどって「おくったよ!」</div>
+      <button class="mpBtn" id="cvOpenTalk" style="background:linear-gradient(180deg,#5fd3a5,#3FB98A)">💬 きょうしつの トークを ひらく</button>
+      <button class="mpBtn" id="cvSentBtn" style="background:linear-gradient(180deg,#FFC963,#e0961e)">🎉 おくったよ!（コインを もらう）</button>
+    </div>
+
+    <!-- ふつうのブラウザでひらいたとき：共有でおくる -->
+    <div id="cvWebBox">
+      <div style="font-weight:900;font-size:12px;color:#a99;margin-top:4px;line-height:1.9">
+        おうちのひとと いっしょに とってね（60びょう いない）</div>
+      <input type="file" id="cvInput" accept="video/*" style="display:none">
+      <button class="mpBtn" id="cvPick" style="background:linear-gradient(180deg,#b3a5ff,#7B6FE0)">🎬 ビデオを とる・えらぶ</button>
+      <video id="cvPrev" controls playsinline style="display:none;width:100%;border-radius:14px;margin-top:10px;max-height:240px;background:#000"></video>
+      <input id="cvMemo" placeholder="メモ（じどうで かだいめいが 入るよ）" style="width:100%;border:2.5px solid #e5dcd4;border-radius:12px;padding:10px;font-family:inherit;font-weight:700;font-size:14px;margin-top:10px">
+      <button class="mpBtn" id="cvSend" disabled style="background:linear-gradient(180deg,#5fd3a5,#3FB98A)">📤 きょうしつの LINEに おくる</button>
+    </div>
+
     <div id="cvDone" style="font-weight:900;font-size:13px;color:#3FB98A;min-height:1.6em;margin-top:8px;text-align:center"></div>
     <div style="font-weight:900;font-size:11px;color:#c0b4ac;margin-top:6px;line-height:1.8">
       🔒 どうがは アプリには のこらず、きょうしつの こうしきLINEに おくられます。<br>
@@ -757,9 +774,18 @@ S.chest = S.chest || 0;
 S.challenge = S.challenge || {};
 S.videoLog = S.videoLog || [];
 
-/* 先生の個別設定（教室接続後にDBから上書きされる） */
+/* 先生の個別設定（教室接続後にDBから上書きされる）
+   前回の値を端末に記憶しておき、起動した瞬間からその状態で表示（ちらつき防止） */
 let pianoRequired = true;                     /* けんばんタイムを日課に含めるか */
 let assignTitle = null, assignPoints = null;  /* せんせいからの かだい */
+try{
+  const cfg = JSON.parse(localStorage.getItem('mp_home_cfg') || 'null');
+  if(cfg){
+    pianoRequired = !!cfg.p;
+    assignTitle = cfg.t || null;
+    assignPoints = cfg.n || null;
+  }
+}catch(e){}
 
 function todayStr(d = new Date()){
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
@@ -2467,7 +2493,7 @@ try{ sbStudentId = localStorage.getItem('mp_student_id'); }catch(e){}
   });
 })();
 /* 起動時：ID設定済みなら、きょうのクリア済み分を補完送信 */
-if(sbStudentId) setTimeout(() => { backfillToday(); loadStudentHome(); }, 1500);
+if(sbStudentId){ loadStudentHome(); setTimeout(backfillToday, 1500); }
 
 /* =========================================================
    LIFFログイン：LINEから開くと自動で教室とつながる
@@ -2476,7 +2502,9 @@ if(sbStudentId) setTimeout(() => { backfillToday(); loadStudentHome(); }, 1500);
    ・通常ブラウザで開いた場合は従来どおり（後方互換）
    ========================================================= */
 const LIFF_ID = '2010762594-sO3Q74yB';
+const OA_ID = '@242ntjkg';                 /* 教室公式LINEのID（B2B時は教室ごと設定に） */
 let lineUserId = null;
+let inLine = false;                        /* LINEの中で開いているか */
 
 async function sbRpc(name, args){
   return sbFetch('/rest/v1/rpc/' + name, {
@@ -2501,6 +2529,7 @@ async function initLiff(){
   if(!window.liff) return;
   try{
     await liff.init({ liffId: LIFF_ID });
+    inLine = liff.isInClient();
     if(!liff.isLoggedIn()) return;           /* 通常ブラウザは従来どおり */
     const prof = await liff.getProfile();
     lineUserId = prof.userId;
@@ -2555,7 +2584,11 @@ async function loadStudentHome(){
       assignTitle = r.assignment_title || null;
       assignPoints = r.assignment_points || null;
       pianoRequired = !!r.show_keyboard;
-      try{ if(r.display_name) localStorage.setItem('mp_student_name', r.display_name); }catch(e){}
+      try{
+        localStorage.setItem('mp_home_cfg',
+          JSON.stringify({ p: pianoRequired, t: assignTitle, n: assignPoints }));
+        if(r.display_name) localStorage.setItem('mp_student_name', r.display_name);
+      }catch(e){}
       renderHome();
       renderAssign();
     }
@@ -2566,7 +2599,42 @@ function renderAssign(){
   $('assignPointsView').textContent = assignPoints ||
     'せんせいからの ちゅういポイントは ここに でるよ';
   if(!$('cvMemo').value) $('cvMemo').value = assignTitle || '';
+  /* LINEの中なら「トークから直接おくる」方式に切り替え */
+  $('cvLiffBox').style.display = inLine ? '' : 'none';
+  $('cvWebBox').style.display = inLine ? 'none' : '';
 }
+/* どうがを送れたときのごほうび（1日1回） */
+function grantVideoReward(memo){
+  const first = completePart('video');
+  if(first){
+    S.coins += 20;
+    const lvMsg = grantXp(20);
+    syncPracticeLog(todayStr(), 'video', 0, 20, { memo });
+    $('cvDone').textContent = '🎉 おくったよ! +20コイン' + (lvMsg ? '　レベルアップ!' : '');
+    say('どうがを おくったよ! よく がんばったね!');
+    confetti();
+  } else {
+    $('cvDone').textContent = '📤 おくったよ!（きょうの コインは もう もらったね）';
+  }
+  S.videoLog.unshift({ d: todayStr(), m: memo });
+  S.videoLog = S.videoLog.slice(0, 20);
+  saveState(S);
+  renderHome();
+}
+/* --- LINEの中：教室トークを開いて直接おくる --- */
+$('cvOpenTalk').addEventListener('click', () => {
+  const text = '🎬 えんそうどうがを おくります!' +
+    (assignTitle ? '\nかだい：' + assignTitle : '');
+  const url = 'https://line.me/R/oaMessage/' + encodeURIComponent(OA_ID) + '/?' +
+    encodeURIComponent(text);
+  try{
+    if(window.liff && liff.openWindow) liff.openWindow({ url, external: false });
+    else location.href = url;
+  }catch(e){ location.href = url; }
+});
+$('cvSentBtn').addEventListener('click', () => {
+  grantVideoReward(assignTitle || '');
+});
 let cvFile = null;
 $('card-video').addEventListener('click', () => { renderAssign(); showScreen('videoS'); });
 $('vBackBtn').addEventListener('click', () => { renderHome(); showScreen('home'); });
@@ -2598,21 +2666,7 @@ $('cvSend').addEventListener('click', async () => {
       try{ await navigator.clipboard.writeText(text); }catch(e){}
     }
     /* 送れたら：1日1回だけ ごほうび */
-    const first = completePart('video');
-    if(first){
-      S.coins += 20;
-      const lvMsg = grantXp(20);
-      syncPracticeLog(todayStr(), 'video', 0, 20, { memo });
-      $('cvDone').textContent = '🎉 おくったよ! +20コイン' + (lvMsg ? '　レベルアップ!' : '');
-      say('どうがを おくったよ! よく がんばったね!');
-      confetti();
-    } else {
-      $('cvDone').textContent = '📤 おくったよ!（きょうの コインは もう もらったね）';
-    }
-    S.videoLog.unshift({ d: todayStr(), m: memo });
-    S.videoLog = S.videoLog.slice(0, 20);
-    saveState(S);
-    renderHome();
+    grantVideoReward(memo);
   }catch(err){ /* 共有キャンセル時は何もしない */ }
 });
 
