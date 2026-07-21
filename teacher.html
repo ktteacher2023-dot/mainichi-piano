@@ -94,6 +94,7 @@ label{font-size:12px;font-weight:900;color:#8a7a74;display:block;margin-bottom:3
   <div class="tabs">
     <button class="tab on" data-tab="students">👧 生徒</button>
     <button class="tab" data-tab="practice">📈 練習状況</button>
+    <button class="tab" data-tab="videos">🎬 提出動画</button>
     <button class="tab" data-tab="lessons">📅 レッスン枠・予約</button>
   </div>
 
@@ -134,6 +135,14 @@ label{font-size:12px;font-weight:900;color:#8a7a74;display:block;margin-bottom:3
         <thead><tr><th>日付</th><th>なまえ</th><th>メニュー</th><th>⭐</th><th>XP</th></tr></thead>
         <tbody></tbody>
       </table></div>
+    </div>
+  </section>
+
+  <!-- ===== 提出動画タブ ===== -->
+  <section id="tab-videos" class="hidden">
+    <div class="card">
+      <h2>🎬 提出された演奏動画 <span class="muted">（新しい順）</span></h2>
+      <div id="videoList"></div>
     </div>
   </section>
 
@@ -220,7 +229,7 @@ async function login(email, password){
   });
   const data = await res.json();
   if(!res.ok) throw new Error(data.error_description || data.msg || 'ログインできませんでした');
-  saveSession({ access_token: data.access_token, refresh_token: data.refresh_token, email });
+  saveSession({ access_token: data.access_token, refresh_token: data.refresh_token, email, userId: data.user?.id });
 }
 async function refreshSession(){
   if(!session?.refresh_token) return false;
@@ -231,7 +240,7 @@ async function refreshSession(){
   });
   if(!res.ok) return false;
   const data = await res.json();
-  saveSession({ access_token: data.access_token, refresh_token: data.refresh_token, email: session.email });
+  saveSession({ access_token: data.access_token, refresh_token: data.refresh_token, email: session.email, userId: session.userId || data.user?.id });
   return true;
 }
 /* 認証つきREST呼び出し（401なら1回だけリフレッシュして再試行） */
@@ -281,10 +290,11 @@ $('logoutBtn').addEventListener('click', () => { saveSession(null); showLogin();
 document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
   document.querySelectorAll('.tab').forEach(x => x.classList.remove('on'));
   t.classList.add('on');
-  ['students','practice','lessons'].forEach(id =>
+  ['students','practice','videos','lessons'].forEach(id =>
     $('tab-' + id).classList.toggle('hidden', id !== t.dataset.tab));
   if(t.dataset.tab === 'students') loadStudents();
   if(t.dataset.tab === 'practice') loadStudents().then(loadPractice);
+  if(t.dataset.tab === 'videos') loadStudents().then(loadVideos);
   if(t.dataset.tab === 'lessons') loadSlots();
 }));
 
@@ -469,6 +479,72 @@ $('addSlotBtn').addEventListener('click', async () => {
     toast('枠を作成しました'); loadSlots();
   }catch(e){ toast('作成エラー：' + e.message); }
 });
+
+/* --- 提出動画 --- */
+async function loadVideos(){
+  const box = $('videoList');
+  box.innerHTML = '<div class="muted">読み込み中…</div>';
+  const nameOf = {};
+  students.forEach(s => nameOf[s.id] = s.display_name);
+  let vids;
+  try{
+    vids = await sb('/rest/v1/videos?select=*,comments(id,body,stamp,created_at)&order=created_at.desc&limit=100');
+  }catch(e){ box.innerHTML = '<div class="muted">読み込みエラー：' + e.message + '</div>'; return; }
+  if(!vids || !vids.length){
+    box.innerHTML = '<div class="muted">まだ提出された動画はありません</div>';
+    return;
+  }
+  box.innerHTML = '';
+  for(const v of vids){
+    const d = (v.created_at || '').slice(0, 16).replace('T', ' ');
+    const signed = await signedUrl(v.storage_path);
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'border:2px solid #f0e8e2;border-radius:14px;padding:14px;margin-bottom:14px';
+    const replies = (v.comments || []).map(c =>
+      '<div style="background:#F1EDFF;border-radius:10px;padding:8px 10px;margin-top:6px;font-size:13px;font-weight:700">' +
+      (c.stamp ? c.stamp + ' ' : '') + esc(c.body || '') + '</div>').join('');
+    wrap.innerHTML =
+      '<div style="font-weight:900;font-size:14px">👧 ' + esc(nameOf[v.student_id] || '?') +
+      ' <span class="muted" style="font-weight:700">' + d + '</span></div>' +
+      (v.memo ? '<div class="muted" style="margin:4px 0">🎼 ' + esc(v.memo) + '</div>' : '') +
+      (signed ? '<video controls playsinline style="width:100%;max-width:360px;border-radius:10px;margin-top:8px;background:#000" src="' + signed + '"></video>'
+              : '<div class="muted">動画を読み込めませんでした</div>') +
+      '<div style="margin-top:8px">' + replies + '</div>' +
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;align-items:center">' +
+      '<button class="btn sm" data-stamp="' + v.id + '" data-s="💮">💮 はなまる</button>' +
+      '<button class="btn sm" data-stamp="' + v.id + '" data-s="👏">👏 じょうず</button>' +
+      '<button class="btn sm" data-stamp="' + v.id + '" data-s="🎉">🎉 ごうかく</button>' +
+      '<input data-cin="' + v.id + '" placeholder="コメントを書く" style="flex:1;min-width:140px;font-size:13px;padding:7px 9px">' +
+      '<button class="btn sm p" data-csend="' + v.id + '">送信</button></div>';
+    box.appendChild(wrap);
+  }
+  box.querySelectorAll('[data-stamp]').forEach(b => b.addEventListener('click',
+    () => sendComment(b.dataset.stamp, '', b.dataset.s)));
+  box.querySelectorAll('[data-csend]').forEach(b => b.addEventListener('click', () => {
+    const inp = box.querySelector('[data-cin="' + b.dataset.csend + '"]');
+    sendComment(b.dataset.csend, (inp.value || '').trim(), null);
+  }));
+}
+async function signedUrl(path){
+  try{
+    const r = await sb('/storage/v1/object/sign/videos/' + path,
+      { method: 'POST', body: JSON.stringify({ expiresIn: 3600 }) });
+    return r?.signedURL ? SB_URL + '/storage/v1' + r.signedURL : null;
+  }catch(e){ return null; }
+}
+async function sendComment(videoId, body, stamp){
+  if(!body && !stamp) return;
+  const teacher = await sb('/rest/v1/teachers?select=id&auth_user=eq.' + session.userId);
+  try{
+    await sb('/rest/v1/comments', {
+      method: 'POST', headers: { 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ video_id: videoId,
+        teacher_id: teacher?.[0]?.id || null, body: body || null, stamp: stamp || null })
+    });
+    toast('おへんじを送りました');
+    loadVideos();
+  }catch(e){ toast('送信エラー：' + e.message); }
+}
 
 /* --- 課題編集モーダル --- */
 let editingId = null;

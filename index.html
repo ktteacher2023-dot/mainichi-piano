@@ -706,34 +706,28 @@ button{font-family:inherit}
 
   <div class="mpCard">
     <div style="font-weight:900;font-size:15px">📹 どうがを とって おくる</div>
-
-    <!-- LINEの中でひらいたとき：トークから直接おくる -->
-    <div id="cvLiffBox" style="display:none">
-      <div style="font-weight:900;font-size:13px;color:#6e625a;line-height:2.2;margin-top:8px">
-        ① 下のボタンで きょうしつの トークを ひらく<br>
-        ② 入っている メッセージを そのまま そうしん<br>
-        ③ ＋ボタン → カメラで どうがを とって おくる<br>
-        　（60びょう いない・アルバムからも OK）<br>
-        ④ ここに もどって「おくったよ!」</div>
-      <button class="mpBtn" id="cvOpenTalk" style="background:linear-gradient(180deg,#5fd3a5,#3FB98A)">💬 きょうしつの トークを ひらく</button>
-      <button class="mpBtn" id="cvSentBtn" style="background:linear-gradient(180deg,#FFC963,#e0961e)">🎉 おくったよ!（コインを もらう）</button>
-    </div>
-
-    <!-- ふつうのブラウザでひらいたとき：共有でおくる -->
-    <div id="cvWebBox">
-      <div style="font-weight:900;font-size:12px;color:#a99;margin-top:4px;line-height:1.9">
-        おうちのひとと いっしょに とってね（60びょう いない）</div>
-      <input type="file" id="cvInput" accept="video/*" style="display:none">
-      <button class="mpBtn" id="cvPick" style="background:linear-gradient(180deg,#b3a5ff,#7B6FE0)">🎬 ビデオを とる・えらぶ</button>
-      <video id="cvPrev" controls playsinline style="display:none;width:100%;border-radius:14px;margin-top:10px;max-height:240px;background:#000"></video>
-      <input id="cvMemo" placeholder="メモ（じどうで かだいめいが 入るよ）" style="width:100%;border:2.5px solid #e5dcd4;border-radius:12px;padding:10px;font-family:inherit;font-weight:700;font-size:14px;margin-top:10px">
-      <button class="mpBtn" id="cvSend" disabled style="background:linear-gradient(180deg,#5fd3a5,#3FB98A)">📤 きょうしつの LINEに おくる</button>
-    </div>
-
+    <div style="font-weight:900;font-size:12px;color:#a99;margin-top:4px;line-height:1.9">
+      おうちのひとと いっしょに とってね（30びょうくらいが おすすめ）</div>
+    <input type="file" id="cvInput" accept="video/*" style="display:none">
+    <button class="mpBtn" id="cvPick" style="background:linear-gradient(180deg,#b3a5ff,#7B6FE0)">🎬 ビデオを とる・えらぶ</button>
+    <video id="cvPrev" controls playsinline style="display:none;width:100%;border-radius:14px;margin-top:10px;max-height:240px;background:#000"></video>
+    <input id="cvMemo" placeholder="メモ（じどうで かだいめいが 入るよ）" style="width:100%;border:2.5px solid #e5dcd4;border-radius:12px;padding:10px;font-family:inherit;font-weight:700;font-size:14px;margin-top:10px">
+    <button class="mpBtn" id="cvSend" disabled style="background:linear-gradient(180deg,#5fd3a5,#3FB98A)">📤 せんせいに おくる</button>
     <div id="cvDone" style="font-weight:900;font-size:13px;color:#3FB98A;min-height:1.6em;margin-top:8px;text-align:center"></div>
-    <div style="font-weight:900;font-size:11px;color:#c0b4ac;margin-top:6px;line-height:1.8">
-      🔒 どうがは アプリには のこらず、きょうしつの こうしきLINEに おくられます。<br>
+    <button id="cvAltToggle" style="border:none;background:none;color:#b8aca4;font-weight:900;font-size:12px;font-family:inherit;cursor:pointer;text-decoration:underline;display:block;margin:4px auto 0">うまく おくれない ときは…</button>
+    <div id="cvAltBox" style="display:none;margin-top:8px">
+      <button class="mpBtn" id="cvOpenTalk" style="background:linear-gradient(180deg,#5fd3a5,#3FB98A)">💬 LINEトークで おくる</button>
+      <button class="mpBtn" id="cvSentBtn" style="background:linear-gradient(180deg,#FFC963,#e0961e)">🎉 LINEで おくったよ!（コインを もらう）</button>
+    </div>
+    <div style="font-weight:900;font-size:11px;color:#c0b4ac;margin-top:8px;line-height:1.8">
+      🔒 どうがは アプリの あんぜんな ばしょに ほぞんされ、せんせいだけが みられます。<br>
       🪙 おくると 20コイン ゲット!（1にち 1かい）</div>
+  </div>
+
+  <div class="mpCard">
+    <div style="font-weight:900;font-size:15px">💬 せんせいからの おへんじ</div>
+    <div id="cvReplies" style="font-weight:900;font-size:13px;color:#6e625a;line-height:2;margin-top:8px">
+      きょうしつと つなぐと ここに でるよ</div>
   </div>
 </div>
 
@@ -2599,10 +2593,28 @@ function renderAssign(){
   $('assignPointsView').textContent = assignPoints ||
     'せんせいからの ちゅういポイントは ここに でるよ';
   if(!$('cvMemo').value) $('cvMemo').value = assignTitle || '';
-  /* LINEの中なら「トークから直接おくる」方式に切り替え */
-  $('cvLiffBox').style.display = inLine ? '' : 'none';
-  $('cvWebBox').style.display = inLine ? 'none' : '';
+  loadReplies();
 }
+/* せんせいからのおへんじを表示 */
+async function loadReplies(){
+  const box = $('cvReplies');
+  if(!sbStudentId){ box.textContent = 'きょうしつと つなぐと ここに でるよ'; return; }
+  try{
+    const rows = await sbRpc('get_my_comments', { p_student_id: sbStudentId });
+    if(!rows || !rows.length){
+      box.textContent = 'まだ おへんじは ないよ。どうがを おくって まってみよう🎵';
+      return;
+    }
+    box.innerHTML = rows.map(r => {
+      const d = (r.created_at || '').slice(5, 10).replace('-', '/');
+      const stamp = r.stamp ? r.stamp + ' ' : '';
+      return '<div style="background:#F1EDFF;border-radius:12px;padding:10px 12px;margin-bottom:8px">' +
+        '<span style="color:#9c8fd8;font-size:11px">' + d + ' せんせい</span><br>' +
+        stamp + (r.body ? esc4(r.body) : '') + '</div>';
+    }).join('');
+  }catch(e){ box.textContent = 'おへんじを よみこめませんでした'; }
+}
+function esc4(s){ return String(s).replace(/[<>&"]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c])); }
 /* どうがを送れたときのごほうび（1日1回） */
 function grantVideoReward(memo){
   const first = completePart('video');
@@ -2621,7 +2633,11 @@ function grantVideoReward(memo){
   saveState(S);
   renderHome();
 }
-/* --- LINEの中：教室トークを開いて直接おくる --- */
+/* --- 代替：LINEトークで送る（予備） --- */
+$('cvAltToggle').addEventListener('click', () => {
+  const b = $('cvAltBox');
+  b.style.display = b.style.display === 'none' ? '' : 'none';
+});
 $('cvOpenTalk').addEventListener('click', () => {
   const text = '🎬 えんそうどうがを おくります!' +
     (assignTitle ? '\nかだい：' + assignTitle : '');
@@ -2632,9 +2648,8 @@ $('cvOpenTalk').addEventListener('click', () => {
     else location.href = url;
   }catch(e){ location.href = url; }
 });
-$('cvSentBtn').addEventListener('click', () => {
-  grantVideoReward(assignTitle || '');
-});
+$('cvSentBtn').addEventListener('click', () => { grantVideoReward(assignTitle || ''); });
+
 let cvFile = null;
 $('card-video').addEventListener('click', () => { renderAssign(); showScreen('videoS'); });
 $('vBackBtn').addEventListener('click', () => { renderHome(); showScreen('home'); });
@@ -2646,28 +2661,55 @@ $('cvInput').addEventListener('change', e => {
   const v = $('cvPrev');
   v.src = URL.createObjectURL(f);
   v.style.display = 'block';
+  $('cvDone').textContent = '';
   v.onloadedmetadata = () => {
-    if(v.duration > 65) $('cvDone').textContent = '⏱ 60びょう いないが おすすめだよ';
+    if(v.duration > 90) $('cvDone').textContent = '⏱ みじかめ（30びょうくらい）が おすすめだよ';
   };
   $('cvSend').disabled = false;
 });
+
+/* --- アプリ内アップロード（Supabase Storage） --- */
 $('cvSend').addEventListener('click', async () => {
-  if(!cvFile) return;
+  if(!cvFile || !sbStudentId){
+    if(!sbStudentId) $('cvDone').textContent = 'さきに きょうしつと つないでね';
+    return;
+  }
+  if(cvFile.size > 45 * 1024 * 1024){
+    $('cvDone').textContent = '📁 どうがが 大きすぎるよ。みじかく とりなおしてね';
+    return;
+  }
+  const btn = $('cvSend');
+  btn.disabled = true;
+  $('cvDone').textContent = '⬆️ せんせいに おくっているよ…';
   const memo = ($('cvMemo').value || '').trim();
-  const text = '【まいにちピアノ】えんそう動画です。' + (memo ? '\nかだい：' + memo : '');
   try{
-    if(navigator.canShare && navigator.canShare({ files: [cvFile] })){
-      await navigator.share({ files: [cvFile], text });
-    } else {
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(cvFile);
-      a.download = 'ensou-' + todayStr() + '.mp4';
-      document.body.appendChild(a); a.click(); a.remove();
-      try{ await navigator.clipboard.writeText(text); }catch(e){}
-    }
-    /* 送れたら：1日1回だけ ごほうび */
+    const ext = (cvFile.name.split('.').pop() || 'mp4').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const path = sbStudentId + '/' + Date.now() + '.' + (ext || 'mp4');
+    /* 1) Storageへ直接アップロード */
+    const up = await fetch(SB_URL + '/storage/v1/object/videos/' + path, {
+      method: 'POST',
+      headers: {
+        'apikey': SB_ANON,
+        'Authorization': 'Bearer ' + SB_ANON,
+        'Content-Type': cvFile.type || 'video/mp4',
+        'x-upsert': 'true'
+      },
+      body: cvFile
+    });
+    if(!up.ok) throw new Error('upload ' + up.status);
+    /* 2) videosテーブルに登録（RPC経由・生徒本人のみ） */
+    await sbRpc('submit_video', {
+      p_student_id: sbStudentId, p_path: path, p_memo: memo || null
+    });
     grantVideoReward(memo);
-  }catch(err){ /* 共有キャンセル時は何もしない */ }
+    $('cvPrev').style.display = 'none';
+    cvFile = null;
+    $('cvInput').value = '';
+  }catch(err){
+    console.warn(err);
+    $('cvDone').textContent = 'うまく おくれなかったよ。「うまくおくれないときは…」も ためしてね';
+    btn.disabled = false;
+  }
 });
 
 async function syncPracticeLog(day, part, stars, xp, detail){
