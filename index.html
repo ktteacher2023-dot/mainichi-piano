@@ -2696,18 +2696,33 @@ $('cvSend').addEventListener('click', async () => {
       },
       body: cvFile
     });
-    if(!up.ok) throw new Error('upload ' + up.status);
-    /* 2) videosテーブルに登録（RPC経由・生徒本人のみ） */
-    await sbRpc('submit_video', {
-      p_student_id: sbStudentId, p_path: path, p_memo: memo || null
+    if(!up.ok){
+      const t = await up.text().catch(() => '');
+      throw new Error('UP' + up.status + ' ' + t.slice(0, 140));
+    }
+    /* 2) videosテーブルに登録（RPC経由・失敗も検知） */
+    const rp = await fetch(SB_URL + '/rest/v1/rpc/submit_video', {
+      method: 'POST',
+      headers: {
+        'apikey': SB_ANON,
+        'Authorization': 'Bearer ' + SB_ANON,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        p_student_id: sbStudentId, p_path: path, p_memo: memo || null
+      })
     });
+    if(!rp.ok){
+      const t = await rp.text().catch(() => '');
+      throw new Error('DB' + rp.status + ' ' + t.slice(0, 140));
+    }
     grantVideoReward(memo);
     $('cvPrev').style.display = 'none';
     cvFile = null;
     $('cvInput').value = '';
   }catch(err){
     console.warn(err);
-    $('cvDone').textContent = 'うまく おくれなかったよ。「うまくおくれないときは…」も ためしてね';
+    $('cvDone').textContent = '⚠️ エラー：' + (err && err.message ? err.message : err);
     btn.disabled = false;
   }
 });
