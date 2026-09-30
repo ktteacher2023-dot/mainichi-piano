@@ -1189,6 +1189,58 @@ details.adv summary{font-size:12.5px;font-weight:900;color:var(--ink2);cursor:po
 .closeSw .csLab b{font-size:14px}
 .closeSw.on .csLab b{color:var(--bad)}
 .closeSw .csLab small{font-size:11.5px;color:var(--ink2)}
+.schedTools #wsCal{margin-left:auto}
+.wsRow{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.wsRow span{display:flex;flex-direction:column;gap:2px;flex:1 1 240px}
+.wsRow b{font-size:14.5px}
+.wsRow small{font-size:12px;color:var(--ink2);line-height:1.6}
+/* いつもの 曜日・時間と ちがう レッスン：こい 黄色（公開まえでも 色が のこる） */
+.cc.irr{background:#FBDFA0;color:#6E4700;box-shadow:inset 3px 0 0 #D98E04}
+.cc.irr.unpub{background:#FDEFCB;color:#6E4700;outline:1.5px dashed #D98E04;outline-offset:-1.5px;box-shadow:inset 3px 0 0 #D98E04}
+.pill.irr{background:#FBDFA0;color:#6E4700}
+.kindPick{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.kindPick .kp{display:flex;flex-direction:column;gap:3px;text-align:left;border:2px solid var(--line);border-radius:12px;background:var(--card);padding:9px 10px;font:inherit;color:var(--ink);cursor:pointer}
+.kindPick .kp b{font-size:14.5px}
+.kindPick .kp small{font-size:11.5px;line-height:1.5;color:var(--ink2)}
+.kindPick .kp.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.kindPick .kp.reg.on{background:var(--paper3)}
+.kindPick .kp.mk.on{background:var(--skyBg)}
+.kindPick .kp.ex.on{background:var(--plumBg)}
+@media (max-width:520px){ .kindPick{grid-template-columns:1fr} .kindPick .kp{flex-direction:row;align-items:baseline;gap:8px} }
+.lHint{margin-top:8px;padding:9px 12px;border-radius:10px;background:#FFF4DA;color:#6E4700;font-size:12.5px;line-height:1.6}
+/* 空き時間 */
+.cd .freeTag{margin-top:auto;font-size:9.5px;font-weight:900;color:var(--leaf-d);background:#E6F3DF;border-radius:6px;padding:1px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:520px){ .cd .freeTag{font-size:8px;padding:0 2px} }
+.frTop{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:4px 0 10px}
+.frLab{font-weight:700;font-size:13.5px}
+.frHours{display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap;background:var(--paper);border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+.frHours span{display:flex;flex-direction:column;gap:2px;flex:1 1 240px}
+.frHours b{font-size:13.5px}
+.frHours small{font-size:12.5px;color:var(--ink2);line-height:1.6}
+.frDay{display:grid;grid-template-columns:8.5em 1fr;gap:10px;padding:10px 2px;border-bottom:1px solid var(--line2)}
+.frDay:last-child{border-bottom:none}
+.frD{display:flex;flex-direction:column}
+.frD b{font-size:14.5px}
+.frD small{font-size:11.5px;color:var(--bad);font-weight:700}
+.frD.sun b{color:var(--bad)} .frD.sat b{color:var(--sky-d)}
+.frList{display:flex;flex-direction:column;gap:8px}
+.frR{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:space-between;background:#F1F8EC;border:1px solid #CFE5C3;border-radius:12px;padding:8px 10px}
+.frT{display:flex;flex-direction:column;gap:2px}
+.frT b{font-size:15px;font-variant-numeric:tabular-nums;color:var(--leaf-d)}
+.frT small{font-size:12px;color:var(--ink2)}
+.frB{display:flex;gap:6px;flex-wrap:wrap}
+@media (max-width:560px){ .frDay{grid-template-columns:1fr;gap:6px} }
+.hrsList{display:flex;flex-direction:column;border:1.5px solid var(--line);border-radius:14px;overflow:hidden;margin-top:10px}
+.hrsRow{display:flex;align-items:center;gap:12px;padding:8px 12px;border-bottom:1px solid var(--line2);flex-wrap:wrap}
+.hrsRow:last-child{border-bottom:none}
+.hrsOn{display:flex;align-items:center;gap:8px;min-width:5.5em;cursor:pointer}
+.hrsOn input{width:20px;height:20px;accent-color:var(--leaf)}
+.hrsOn b.sun{color:var(--bad)} .hrsOn b.sat{color:var(--sky-d)}
+.hrsT{display:flex;align-items:center;gap:6px}
+.hrsT .tsel{min-width:0}
+.hrsRow .hrsOff{display:none;color:var(--ink2);font-size:13px}
+.hrsRow.off .hrsT{display:none}
+.hrsRow.off .hrsOff{display:inline}
 
 </style>
 </head>
@@ -1256,7 +1308,7 @@ details.adv summary{font-size:12.5px;font-weight:900;color:var(--ink2);cursor:po
     <div id="rsMsg" class="authMsg" role="status"></div>
   </div>
   <div class="legal"><a href="terms.html" target="_blank">利用規約</a>・<a href="privacy.html" target="_blank">プライバシーポリシー</a>・<a href="tokushoho.html" target="_blank">特定商取引法に基づく表記</a></div>
-  <div class="legal verTag">v2026.09.30-6</div>
+  <div class="legal verTag">v2026.09.30-11</div>
 </div>
 
 <!-- 本体 -->
@@ -5777,10 +5829,71 @@ function openStudent(s, opt = {}){
 let schedMonth = (() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth() + (d.getDate() >= 15 ? 1 : 0), 1); })();
 let schedSel = null;   /* カレンダーで えらんだ 日 */
 /* 1日ぶんの 予定の ならび（カレンダーの下と「いちらん」で おなじ かたち） */
+/* いつもの 曜日・時刻と ちがう レッスン（ドラッグで うごかした・べつの 日に 入れた など）。いつもの レッスンだけを 見る */
+function lesIrr(l){
+  if(!l || l.kind !== 'regular' || l.status === 'cancelled') return null;
+  const s = stuById(l.student_id); if(!s || s.lesson_weekday == null) return null;
+  const d = new Date(l.starts_at), wd = d.getDay() !== +s.lesson_weekday, tm = !!s.lesson_time && hm(l.starts_at) !== String(s.lesson_time).slice(0, 5);
+  if(!wd && !tm) return null;
+  return { wd, tm, lab: wd && tm ? '曜日と時間がちがう' : wd ? '曜日がちがう' : '時間がちがう', usual: `${WD[+s.lesson_weekday]}${s.lesson_time ? ' ' + String(s.lesson_time).slice(0, 5) : ''}` };
+}
+let SCHED_LES = null, SCHED_MON = '', SCHED_TAP = {};
+/* ---------- 空き時間：レッスンできる時間 − 入っている レッスン ---------- */
+const toMin = t => { const [h, m] = String(t || '').split(':').map(Number); return h * 60 + (m || 0); };
+const fromMin = n => pad(Math.floor(n / 60)) + ':' + pad(n % 60);
+let FREE_LEN = (() => { try{ return +localStorage.getItem('mp_free_len') || 0; }catch(e){ return 0; } })();
+function freeLenDefault(){ const c = {}; STUV().filter(s => s.active !== false).forEach(s => { const m = +s.lesson_minutes || 30; c[m] = (c[m] || 0) + 1; }); return +(Object.entries(c).sort((a, b) => b[1] - a[1])[0] || [30])[0] || 30; }
+/* レッスンできる 時間：{ "1": { f: "15:00", t: "19:00" }, ... }（0=日〜6=土。ない 曜日は お休み） */
+function lessonHours(les){
+  let H = SET && SET.lesson_hours; if(!H){ try{ H = JSON.parse(localStorage.getItem('mp_lesson_hours') || 'null'); }catch(e){} }
+  if(H && typeof H === 'object') return { H, guess: false };
+  /* まだ きめていない：いつもの 曜日・時刻と この月の レッスンから 見つもる（30分きざみで 前後を ひろげる） */
+  const G = {};
+  const addR = (w, a, b) => { const g = G[w] || (G[w] = { f: a, t: b }); g.f = Math.min(g.f, a); g.t = Math.max(g.t, b); };
+  STUV().filter(s => s.active !== false && s.lesson_weekday != null && s.lesson_time).forEach(s => { const a = toMin(String(s.lesson_time).slice(0, 5)); addR(+s.lesson_weekday, a, a + (+s.lesson_minutes || 30)); });
+  (les || []).filter(l => l.kind !== 'open').forEach(l => { const d = new Date(l.starts_at), a = d.getHours() * 60 + d.getMinutes(); addR(d.getDay(), a, a + (+l.minutes || 30)); });
+  const out = {}; Object.entries(G).forEach(([w, g]) => { out[w] = { f: fromMin(Math.floor(g.f / 30) * 30), t: fromMin(Math.min(22 * 60, Math.ceil(g.t / 30) * 30)) }; });
+  return { H: out, guess: true };
+}
+/* その日の あいている 時間（len 分 以上 あいている ところ）。お休み・中止・振替済みの レッスンは あいている あつかい */
+function freeRanges(ds, dayLes, H, len){
+  const [y, m, d] = ds.split('-').map(Number), w = new Date(y, m - 1, d).getDay(), h = H[w];
+  if(!h || !h.f || !h.t) return [];
+  let a0 = toMin(h.f); const a1 = toMin(h.t);
+  if(ds === dayStr()){ const n = new Date(); a0 = Math.max(a0, Math.ceil((n.getHours() * 60 + n.getMinutes() + 1) / 5) * 5); }
+  const busy = (dayLes || []).filter(l => l.kind !== 'open' && !['absent', 'cancelled', 'moved'].includes(l.status)).map(l => { const t = new Date(l.starts_at), s0 = t.getHours() * 60 + t.getMinutes(); return [s0, s0 + (+l.minutes || 30)]; }).sort((p, q) => p[0] - q[0]);
+  const out = []; let cur = a0;
+  busy.forEach(([b0, b1]) => { if(b0 > cur) out.push([cur, Math.min(b0, a1)]); cur = Math.max(cur, b1); });
+  if(cur < a1) out.push([cur, a1]);
+  const opens = (dayLes || []).filter(l => l.kind === 'open' && l.status === 'scheduled').map(l => { const t = new Date(l.starts_at); return t.getHours() * 60 + t.getMinutes(); });
+  return out.filter(([f, t]) => t - f >= len).map(([f, t]) => { const n = Math.floor((t - f) / len), starts = Array.from({ length: n }, (_, i) => f + i * len);
+    return { f, t, n, open: opens.filter(o => o >= f && o < t).length, todo: starts.filter(x => !opens.some(o => Math.abs(o - x) < len)) }; });
+}
+function openHours(les){
+  const LH = lessonHours(les), H = JSON.parse(JSON.stringify(LH.H)), sh = $('lesSheet');
+  const order = WEEK_START ? [1, 2, 3, 4, 5, 6, 0] : [0, 1, 2, 3, 4, 5, 6];
+  sh.innerHTML = `<h3>${ti('clock', 24)}レッスンできる時間</h3>
+    <div class="muted">曜日ごとに、レッスンをしてよい時間を決めます。「空き時間」は、この時間から入っているレッスンをのぞいて出します。${LH.guess ? 'いまは、いつもの予定から見つもった時間が入っています。' : ''}</div>
+    <div class="hrsList">${order.map(w => `<div class="hrsRow${H[w] ? '' : ' off'}" data-w="${w}"><label class="hrsOn"><input type="checkbox" ${H[w] ? 'checked' : ''}><b class="${w === 0 ? 'sun' : w === 6 ? 'sat' : ''}">${WD[w]}曜</b></label>
+      <div class="hrsT">${timeSel('hf' + w, H[w] ? H[w].f : '15:00', false, [7, 22])}<span>〜</span>${timeSel('ht' + w, H[w] ? H[w].t : '19:00', false, [7, 22])}</div><span class="hrsOff">お休み</span></div>`).join('')}</div>
+    <div class="foot"><button class="btn w" id="hrCancel">やめる</button><button class="btn g" id="hrSave">${ti('check', 18)}保存</button></div>`;
+  sh.querySelectorAll('.hrsRow').forEach(r => r.querySelector('input').addEventListener('change', e => r.classList.toggle('off', !e.target.checked)));
+  $('hrCancel').addEventListener('click', () => $('lesOv').classList.remove('show'));
+  $('hrSave').addEventListener('click', async () => {
+    const out = {}; let bad = '';
+    sh.querySelectorAll('.hrsRow').forEach(r => { const w = r.dataset.w; if(!r.querySelector('input').checked) return; const f = timeVal('hf' + w), t = timeVal('ht' + w); if(toMin(t) <= toMin(f)) bad = WD[w]; out[w] = { f, t }; });
+    if(bad){ toast(`${bad}曜の時間が逆になっています`); return; }
+    try{ localStorage.setItem('mp_lesson_hours', JSON.stringify(out)); }catch(e){}
+    try{ await DB.updSettings({ lesson_hours: out }); SET.lesson_hours = out; toast('保存しました'); }
+    catch(e){ toast(/lesson_hours/.test(e.message) ? 'この端末に保存しました（SQL をもう一度流すと、ほかの端末でも同じになります）' : '保存できませんでした：' + e.message, 5000); }
+    $('lesOv').classList.remove('show'); render();
+  });
+  showOv('lesOv');
+}
 function schedRows(list){
   return list.map(l => { const s = stuById(l.student_id); const st = STATUS[l.status];
     return `<div class="it" data-l="${l.id}" role="button" tabindex="0"><div class="tm">${hm(l.starts_at)}</div>${l.kind === 'open' ? `<span class="av sm" style="--hc:var(--leafBg);border-style:dashed">${ti('plus', 16)}</span>` : avatarDot(s, 1)}<div class="grow"><div class="nm" style="font-size:14px;${l.status === 'moved' || l.status === 'cancelled' ? 'text-decoration:line-through;color:var(--mute)' : ''}">${l.kind === 'open' ? '— 空き枠 —' : esc(nameOf(s))}
-      ${l.kind !== 'regular' ? `<span class="pill ${KIND[l.kind][1]}">${KIND[l.kind][0]}</span>` : ''} ${st ? `<span class="pill ${st[1]}">${st[0]}</span>` : ''}</div>
+      ${l.kind !== 'regular' ? `<span class="pill ${KIND[l.kind][1]}">${KIND[l.kind][0]}</span>` : ''}${lesIrr(l) ? `<span class="pill irr" title="${lesIrr(l).lab}">変更（いつもは ${esc(lesIrr(l).usual)}）</span>` : ''} ${st ? `<span class="pill ${st[1]}">${st[0]}</span>` : ''}</div>
       <div class="sub">${l.minutes || 30}分${l.kind !== 'open' ? (l.published ? '・公開ずみ' : '・<span style="color:var(--coral-d)">未公開</span>') : ''}${l.confirmed_at ? '・家庭が確認' : ''}${l.note ? '・' + esc(l.note) : ''}</div></div>${l.confirmed_at ? ti('check', 20) : ''}${ti('chevR', 18, 'chev')}</div>`; }).join('');
 }
 /* じこくは 5ふん きざみで えらぶ（スマホの じこく ホイールは 1ぷん きざみに なるため） */
@@ -5800,6 +5913,7 @@ async function viewSched(m){
   const y = schedMonth.getFullYear(), mo = schedMonth.getMonth();
   const [from, to] = monthRange(y, mo);
   const les = visL(await DB.lessons(from, to) || []);
+  SCHED_LES = les; SCHED_MON = y + '-' + pad(mo + 1);
   const mine = les.filter(l => l.kind !== 'open');
   const open = les.filter(l => l.kind === 'open' && !l.student_id);
   const unpub = mine.filter(l => !l.published).length;
@@ -5819,7 +5933,7 @@ async function viewSched(m){
   h += `<div class="card"><div class="monthBar"><button class="btn w ico" id="mPrev" aria-label="まえの月">${ti('chevL', 20)}</button><b>${y}年${mo + 1}月</b><button class="btn w ico" id="mNext" aria-label="つぎの月">${ti('chevR', 20)}</button></div>
     <div class="plan">
       <div class="pl ${st1}"><span class="no">${st1 === 'done' ? ti('check', 18) : '1'}</span><div class="tx"><b>つくる</b><small>${mine.length ? `<span class="nw">レッスン ${mine.filter(l => l.status === 'scheduled').length}件</span>・<span class="nw">空き枠 ${open.length}件</span>` : 'いつもの曜日から下書きをつくる'}</small></div><button class="btn sm ${st1 === 'done' ? 'w' : 's'}" id="genBtn">${ti('wand', 18)}${st1 === 'done' ? 'つくりなおす' : 'つくる'}</button></div>
-      <div class="pl ${mine.length && st3 !== 'done' ? 'now' : mine.length ? 'done' : ''}"><span class="no">${mine.length && st3 === 'done' ? ti('check', 18) : '2'}</span><div class="tx"><b>直す</b><small>${matchMedia('(pointer:coarse)').matches ? '日をタップすると、移動・追加・削除・教室のお休み' : '予定をドラッグしてほかの日へ。日をタップすると、追加・削除・教室のお休み'}</small></div></div>
+      <div class="pl ${mine.length && st3 !== 'done' ? 'now' : mine.length ? 'done' : ''}"><span class="no">${mine.length && st3 === 'done' ? ti('check', 18) : '2'}</span><div class="tx"><b>直す</b><small>${matchMedia('(pointer:coarse)').matches ? '日をタップすると、移動・追加・削除・教室のお休み' : '予定をドラッグしてほかの日へ。日をダブルクリックすると、その日にレッスンを入れられます'}</small></div></div>
       <div class="pl ${st3}"><span class="no">${st3 === 'done' ? ti('check', 18) : '3'}</span><div class="tx"><b>届ける</b><small>${fam.length && !line ? `<span class="nw">公開 ${fam.filter(id => !mine.some(l => l.student_id === id && !l.published)).length}/${fam.length}家庭</span>・<span class="nw">確認 ${[...confirmedStu].filter(id => fam.includes(id)).length}</span>` : fam.length ? `<span class="nw">送った ${fam.length - notSent.length - noLine.length}/${fam.length - noLine.length}家庭</span>${changed.length ? `・<em class="nw">変更あり ${changed.length}</em>` : ''}${noLine.length ? `・<span class="nw">LINE未登録 ${noLine.length}</span>` : ''}・<span class="nw">確認 ${[...confirmedStu].filter(id => fam.includes(id)).length}</span>` : line ? '家庭ごとに 1通ずつ LINEで' : '保護者のアプリに公開'}</small></div><button class="btn sm g" id="sendBtn" ${fam.length ? '' : 'disabled'}>${ti('send', 18)}届ける</button></div>
     </div>${unpub && mine.length ? `<div class="unpubNote">${ti('eye', 18)}<span>${mo + 1}月の予定は、まだ保護者に見えていません（点線の予定）。直し終わったら「届ける」で公開します。</span></div>` : ''}</div>`;
   const byDay = {};
@@ -5828,28 +5942,48 @@ async function viewSched(m){
   const days = Object.keys(byDay).sort();
   const td = dayStr(), ym = y + '-' + pad(mo + 1);
   let view = 'cal'; try{ view = localStorage.getItem('mp_sched_view') || 'cal'; }catch(e){}
-  h += `<div class="schedTools"><div class="seg" role="tablist"><button data-v="cal" class="${view === 'cal' ? 'on' : ''}">${ti('sched', 18)}カレンダー</button><button data-v="list" class="${view === 'list' ? 'on' : ''}">${ti('list', 18)}一覧</button></div></div>`;
+  h += `<div class="schedTools"><div class="seg" role="tablist"><button data-v="cal" class="${view === 'cal' ? 'on' : ''}">${ti('sched', 18)}カレンダー</button><button data-v="list" class="${view === 'list' ? 'on' : ''}">${ti('list', 18)}一覧</button><button data-v="free" class="${view === 'free' ? 'on' : ''}">${ti('clock', 18)}空き時間</button></div>${view === 'cal' ? weekStartSeg('wsCal') : ''}</div>`;
+  const LH = lessonHours(les), FLEN = FREE_LEN || freeLenDefault();
   if(view === 'cal'){
     if(!schedSel || !schedSel.startsWith(ym)) schedSel = td.startsWith(ym) ? td : (days[0] || ym + '-01');
-    const startW = new Date(y, mo, 1).getDay(), nDays = new Date(y, mo + 1, 0).getDate();
-    let cal = `<div class="card calCard"><div class="calGrid">${WD.map((w, i) => `<div class="cw${i === 0 ? ' sun' : i === 6 ? ' sat' : ''}">${w}</div>`).join('')}`;
+    const startW = (new Date(y, mo, 1).getDay() - WEEK_START + 7) % 7, nDays = new Date(y, mo + 1, 0).getDate();
+    const order = WEEK_START ? [1, 2, 3, 4, 5, 6, 0] : [0, 1, 2, 3, 4, 5, 6];
+    let cal = `<div class="card calCard"><div class="calGrid">${order.map(i => `<div class="cw${i === 0 ? ' sun' : i === 6 ? ' sat' : ''}">${WD[i]}</div>`).join('')}`;
     for(let i = 0; i < startW; i++) cal += '<div class="cd blank"></div>';
     for(let dd = 1; dd <= nDays; dd++){
-      const ds = ym + '-' + pad(dd), w = (startW + dd - 1) % 7, list = byDay[ds] || [];
+      const ds = ym + '-' + pad(dd), w = new Date(y, mo, dd).getDay(), list = byDay[ds] || [];
       const chips = list.map(l => {   /* ぜんぶ出す（「ほか◯」に かくすと ドラッグで うごかせないため） */
         const s = stuById(l.student_id);
-        const cls = l.kind === 'open' ? 'open' : (l.status === 'absent' || l.status === 'cancelled') ? 'ab' : l.status === 'moved' ? 'mv' : l.kind === 'makeup' ? 'mk' : l.kind === 'extra' ? 'ex' : 'reg';
+        const cls = l.kind === 'open' ? 'open' : (l.status === 'absent' || l.status === 'cancelled') ? 'ab' : l.status === 'moved' ? 'mv' : l.kind === 'makeup' ? 'mk' : l.kind === 'extra' ? 'ex' : lesIrr(l) ? 'reg irr' : 'reg';
         const col = s ? COLORS[((s.avatar && s.avatar.c) | 0) % COLORS.length] : '#9BC7AE';
-        return `<span class="cc ${cls}${l.kind !== 'open' && !l.published ? ' unpub' : ''}" data-l="${l.id}" title="${esc(hm(l.starts_at) + ' ' + (l.kind === 'open' ? '空き枠' : nameOf(s)))}">${l.kind === 'open' ? '<em class="o">空</em>' : `<em style="background:${col};color:${inkOn(col)}">${esc(initName(s))}</em>`}${hm(l.starts_at)}<i>${l.kind === 'open' ? '空き枠' : esc(shortName(s))}</i></span>`;
+        return `<span class="cc ${cls}${l.kind !== 'open' && !l.published ? ' unpub' : ''}" data-l="${l.id}" title="${esc(hm(l.starts_at) + ' ' + (l.kind === 'open' ? '空き枠' : nameOf(s)) + (lesIrr(l) ? `（変更：${lesIrr(l).lab}。いつもは ${lesIrr(l).usual}）` : ''))}">${l.kind === 'open' ? '<em class="o">空</em>' : `<em style="background:${col};color:${inkOn(col)}">${esc(initName(s))}</em>`}${hm(l.starts_at)}<i>${l.kind === 'open' ? '空き枠' : esc(shortName(s))}</i></span>`;
       }).join('');
-      cal += `<button class="cd${ds === td ? ' today' : ''}${ds === schedSel ? ' sel' : ''}${closed.has(ds) ? ' closed' : ''}${w === 0 || jpHoliday(ds) ? ' sun' : w === 6 ? ' sat' : ''}${jpHoliday(ds) ? ' holi' : ''}" data-day="${ds}"><span class="dn">${dd}${closed.has(ds) ? '<span class="cl">教室お休み</span>' : ''}${jpHoliday(ds) ? `<span class="hol" title="${esc(jpHoliday(ds))}">${esc(jpHoliday(ds))}</span>` : ''}</span>${chips}</button>`;
+      cal += `<button class="cd${ds === td ? ' today' : ''}${ds === schedSel ? ' sel' : ''}${closed.has(ds) ? ' closed' : ''}${w === 0 || jpHoliday(ds) ? ' sun' : w === 6 ? ' sat' : ''}${jpHoliday(ds) ? ' holi' : ''}" data-day="${ds}"><span class="dn">${dd}${closed.has(ds) ? '<span class="cl">教室お休み</span>' : ''}${jpHoliday(ds) ? `<span class="hol" title="${esc(jpHoliday(ds))}">${esc(jpHoliday(ds))}</span>` : ''}</span>${chips}${(() => { if(ds < td || closed.has(ds)) return ''; const n = freeRanges(ds, list, LH.H, FLEN).reduce((a, r) => a + r.n, 0); return n ? `<span class="freeTag" title="${FLEN}分のレッスンが入る あき">あき ${FLEN}分×${n}</span>` : ''; })()}</button>`;
     }
     const tail = (7 - (startW + nDays) % 7) % 7; for(let i = 0; i < tail; i++) cal += '<div class="cd blank"></div>';
-    cal += `</div><div class="calLeg"><span class="cc reg">いつもの</span><span class="cc mk">振替</span><span class="cc ex">追加</span><span class="cc open">空き枠</span><span class="cc ab">お休み</span><span class="cc reg unpub">未公開</span></div></div>`;
+    cal += `</div><div class="calLeg"><span class="cc reg">いつもの</span><span class="cc reg irr">変更（いつもと別の日・時間）</span><span class="cc mk">振替</span><span class="cc ex">追加</span><span class="cc open">空き枠</span><span class="cc ab">お休み</span><span class="cc reg unpub">未公開</span></div></div>`;
     h += cal;
     const [sy, sm, sd] = schedSel.split('-').map(Number), sw = new Date(sy, sm - 1, sd).getDay();
-    h += `<div class="card"><h2><span class="tile ${schedSel === td ? 'co' : 'mu'}">${ti('sched', 22)}</span><span>${sm}/${sd}（${WD[sw]}）${jpHoliday(schedSel) ? '・' + esc(jpHoliday(schedSel)) : ''}${schedSel === td ? '・きょう' : ''}</span>${closed.has(schedSel) ? '<span class="pill ab">教室お休み</span>' : ''}</h2><div class="dayActs"><button class="btn sm w" id="addDay">${ti('plus', 16)}この日に追加</button><button type="button" class="closeSw${closed.has(schedSel) ? ' on' : ''}" id="closeDay" role="switch" aria-checked="${closed.has(schedSel)}"><span class="csTrack"><span class="csKnob"></span></span><span class="csLab"><b>${closed.has(schedSel) ? 'この日は教室のお休みです' : 'この日を教室のお休みにする'}</b><small>${closed.has(schedSel) ? 'もう一度押すと、お休みをやめます' : '押すと、この日の予定は中止になります'}</small></span></button></div>
+    h += `<div class="card"><h2><span class="tile ${schedSel === td ? 'co' : 'mu'}">${ti('sched', 22)}</span><span>${sm}/${sd}（${WD[sw]}）${jpHoliday(schedSel) ? '・' + esc(jpHoliday(schedSel)) : ''}${schedSel === td ? '・きょう' : ''}</span>${closed.has(schedSel) ? '<span class="pill ab">教室お休み</span>' : ''}</h2><div class="dayActs"><button class="btn sm w" id="addDay">${ti('plus', 16)}この日にレッスンを入れる</button><button type="button" class="closeSw${closed.has(schedSel) ? ' on' : ''}" id="closeDay" role="switch" aria-checked="${closed.has(schedSel)}"><span class="csTrack"><span class="csKnob"></span></span><span class="csLab"><b>${closed.has(schedSel) ? 'この日は教室のお休みです' : 'この日を教室のお休みにする'}</b><small>${closed.has(schedSel) ? 'もう一度押すと、お休みをやめます' : '押すと、この日の予定は中止になります'}</small></span></button></div>
       <div class="list">${(byDay[schedSel] || []).length ? schedRows(byDay[schedSel]) : emptyRow('moon', 'この日の予定はありません')}</div></div>`;
+  } else if(view === 'free'){
+    const lens = [...new Set([30, 45, 60, FLEN])].sort((a, b) => a - b);
+    const order = WEEK_START ? [1, 2, 3, 4, 5, 6, 0] : [0, 1, 2, 3, 4, 5, 6];
+    const hrsTxt = order.filter(w => LH.H[w]).map(w => `${WD[w]} ${LH.H[w].f}〜${LH.H[w].t}`).join('・') || 'まだ決まっていません';
+    const nDays = new Date(y, mo + 1, 0).getDate();
+    let rows = '', tot = 0;
+    for(let dd = 1; dd <= nDays; dd++){
+      const ds = ym + '-' + pad(dd); if(ds < td || closed.has(ds)) continue;
+      const R = freeRanges(ds, byDay[ds] || [], LH.H, FLEN); if(!R.length) continue;
+      const w = new Date(y, mo, dd).getDay(); tot += R.reduce((a, r) => a + r.n, 0);
+      rows += `<div class="frDay"><div class="frD${w === 0 || jpHoliday(ds) ? ' sun' : w === 6 ? ' sat' : ''}"><b>${mo + 1}/${dd}（${WD[w]}）</b>${jpHoliday(ds) ? `<small>${esc(jpHoliday(ds))}</small>` : ''}</div><div class="frList">${R.map(r => `<div class="frR"><div class="frT"><b>${fromMin(r.f)}〜${fromMin(r.t)}</b><small>${r.t - r.f}分あき・${FLEN}分のレッスンが${r.n}コマ入ります${r.open ? `（空き枠 ${r.open}つ 公開ずみ）` : ''}</small></div>
+        <div class="frB"><button type="button" class="btn sm w" data-fradd="${ds}|${fromMin(r.f)}">${ti('plus', 16)}レッスンを入れる</button>${r.todo.length ? `<button type="button" class="btn sm w" data-fropen="${ds}|${r.todo.join(',')}">${ti('plus', 16)}空き枠にする${r.todo.length > 1 ? `（${r.todo.length}コマ）` : ''}</button>` : `<span class="pill ok">${ti('check', 14)}空き枠 公開ずみ</span>`}</div></div>`).join('')}</div></div>`;
+    }
+    h += `<div class="card freeCard">${H2('clock', 'le', '空き時間をさがす', tot ? `${FLEN}分 × ${tot}コマ` : '')}
+      <div class="frTop"><span class="frLab">レッスンの長さ</span><div class="seg sm" id="frLen">${lens.map(n => `<button type="button" data-fl="${n}" class="${n === FLEN ? 'on' : ''}">${n}分</button>`).join('')}</div></div>
+      <div class="frHours"><span>${LH.guess ? '<b>レッスンできる時間（いまの予定から見つもり）</b>' : '<b>レッスンできる時間</b>'}<small>${esc(hrsTxt)}</small></span>${isOwner() ? `<button type="button" class="btn sm w" id="frHrs">${ti('pencil', 16)}${LH.guess ? '決める' : '変える'}</button>` : ''}</div>
+      <div class="list frWrap">${rows || emptyRow('sparkle', `${mo + 1}月は、${FLEN}分のあきがありません（教室のお休みの日と、過ぎた日はのぞいています）`)}</div>
+      <div class="note">レッスンできる時間から、入っているレッスンをのぞいたところです。お休み・中止・振替済みのレッスンは、あいている時間として数えます。「空き枠にする」と、保護者が振替で選べる枠になります。</div></div>`;
   } else {
     h += '<div class="card">';
     if(!days.length) h += emptyRow('sched', 'この月の予定はまだありません。「いつもの曜日から下書きをつくる」で下書きができます');
@@ -5861,15 +5995,37 @@ async function viewSched(m){
   }
   m.innerHTML = h;
   m.querySelectorAll('.seg [data-v]').forEach(b => b.addEventListener('click', () => { try{ localStorage.setItem('mp_sched_view', b.dataset.v); }catch(e){} render(); }));
-  m.querySelectorAll('.cd[data-day]').forEach(b => b.addEventListener('click', () => {
-    schedSel = b.dataset.day; render();
+  m.querySelectorAll('#wsCal [data-ws]').forEach(b => b.addEventListener('click', () => { if(+b.dataset.ws === WEEK_START) return; setWeekStart(+b.dataset.ws); render(); }));
+  m.querySelectorAll('#frLen [data-fl]').forEach(b => b.addEventListener('click', () => { FREE_LEN = +b.dataset.fl; try{ localStorage.setItem('mp_free_len', FREE_LEN); }catch(e){} render(); }));
+  const frh = $('frHrs'); if(frh) frh.addEventListener('click', () => openHours(les));
+  m.querySelectorAll('[data-fradd]').forEach(b => b.addEventListener('click', () => { const [d, t] = b.dataset.fradd.split('|'); openLesson(null, 'regular', d, t, FLEN); }));
+  m.querySelectorAll('[data-fropen]').forEach(b => b.addEventListener('click', async () => {
+    if(PAUSED()){ toast(PAUSED_MSG, 3600); return; }
+    const [d, list] = b.dataset.fropen.split('|'), [yy, mm, dd] = d.split('-').map(Number), starts = list.split(',').map(Number);
+    if(starts.length > 1 && !confirm(`${mm}/${dd} の ${starts.map(fromMin).join('・')} に、${FLEN}分の空き枠を ${starts.length}つ つくります。保護者が振替で選べるようになります。`)) return;
+    const rows = starts.map(t => ({ school_id: SCHOOL.id, student_id: null, starts_at: new Date(yy, mm - 1, dd, Math.floor(t / 60), t % 60).toISOString(), minutes: FLEN, kind: 'open', status: 'scheduled', published: true, room_id: ROOM_SEL || null }));
+    b.disabled = true;
+    try{ await DB.addLessons(rows); toast(`空き枠を ${rows.length}つ つくりました`); render(); }catch(e){ toast('つくれませんでした：' + e.message); b.disabled = false; }
   }));
-  const ad = $('addDay'); if(ad) ad.addEventListener('click', () => openLesson(null, 'regular', schedSel));
+  /* 日を えらぶ。おなじ 日を すぐに もう1回（ダブルクリック・ダブルタップ）で、その日に レッスンを 入れる */
+  const dayTime = ds => { const R = freeRanges(ds, byDay[ds] || [], LH.H, FLEN); if(R.length) return fromMin(R[0].f);
+    const L = (byDay[ds] || []).filter(l => l.kind !== 'open' && l.status !== 'cancelled'); if(L.length){ const x = L[L.length - 1], t = new Date(x.starts_at); return fromMin(Math.min(22 * 60, t.getHours() * 60 + t.getMinutes() + (+x.minutes || 30))); }
+    const w = new Date(ds + 'T12:00:00').getDay(); return (LH.H[w] && LH.H[w].f) || '16:00'; };
+  m.querySelectorAll('.cd[data-day]').forEach(b => b.addEventListener('click', e => {
+    if(e.target.closest('[data-l]')) return;   /* 予定の 上を おした ときは その予定を ひらく */
+    const d = b.dataset.day, now = Date.now();
+    if(SCHED_TAP.d === d && now - SCHED_TAP.t < 450){ SCHED_TAP = {}; openLesson(null, 'regular', d, dayTime(d), FLEN); return; }
+    SCHED_TAP = { d, t: now };
+    if(schedSel !== d){ schedSel = d; render(); }
+  }));
+  const ad = $('addDay'); if(ad) ad.addEventListener('click', () => openLesson(null, 'regular', schedSel, dayTime(schedSel), FLEN));
   $('mPrev').addEventListener('click', () => { schedMonth = new Date(y, mo - 1, 1); render(); });
   $('mNext').addEventListener('click', () => { schedMonth = new Date(y, mo + 1, 1); render(); });
   m.querySelectorAll('[data-l]').forEach(r => r.addEventListener('click', () => openLesson(les.find(l => l.id === r.dataset.l))));
-  $('addLes').addEventListener('click', () => openLesson(null, 'regular'));
-  $('addOpen').addEventListener('click', () => openLesson(null, 'open'));
+  /* 上の「＋ レッスン」「＋ 空き枠」：えらんで いる 日（なければ この月の はじめの まだの 日）で ひらく */
+  const selDay = () => schedSel && schedSel.startsWith(ym) ? schedSel : (td.startsWith(ym) ? addDays(td, 1) : ym + '-01');
+  $('addLes').addEventListener('click', () => { const d = selDay(); openLesson(null, 'regular', d, dayTime(d), FLEN); });
+  $('addOpen').addEventListener('click', () => { const d = selDay(); openLesson(null, 'open', d, dayTime(d), FLEN); });
   const pz = f => () => { if(PAUSED()){ toast(PAUSED_MSG, 4200); return; } f(); };
   $('genBtn').addEventListener('click', pz(() => generateMonth(y, mo, les)));
   $('sendBtn').addEventListener('click', pz(() => openSendSheet(y, mo, les, linkedStu, sentAt)));
@@ -6038,29 +6194,52 @@ async function generateMonth(y, mo, existing){
   toast(rows.length + '件つくりました。直したら「届ける」へ', 3600);
   render();
 }
-function openLesson(l, kind, day){
+function openLesson(l, kind, day, time, minutes){
   if(!l && PAUSED()){ toast(PAUSED_MSG, 3600); return; }
   const isNew = !l;
   const d0 = new Date(); d0.setDate(d0.getDate() + 1); d0.setHours(16, 0, 0, 0);
   if(day){ const [yy, mm, dd] = day.split('-').map(Number); d0.setFullYear(yy, mm - 1, dd); }
-  l = l || { student_id: null, starts_at: d0.toISOString(), minutes: 30, kind: kind || 'regular', status: 'scheduled', published: kind === 'open' };
+  if(time){ const [hh, mi] = time.split(':').map(Number); d0.setHours(hh, mi, 0, 0); }
+  l = l || { student_id: null, starts_at: d0.toISOString(), minutes: minutes || 30, kind: kind || 'regular', status: 'scheduled', published: kind === 'open' };
   const d = new Date(l.starts_at);
   const sh = $('lesSheet');
   const act = STUV().filter(s => s.active !== false);
-  sh.innerHTML = `<h3>${isNew ? ti('plus', 22) + (l.kind === 'open' ? '空き枠をあける' : 'レッスンを追加') : (l.kind === 'open' ? ti('plus', 22) : avatarDot(stuById(l.student_id))) + md(l.starts_at) + ' ' + hm(l.starts_at)}</h3>
+  sh.innerHTML = `<h3>${isNew ? ti('plus', 22) + (l.kind === 'open' ? '空き枠をあける' : 'レッスンを入れる') : (l.kind === 'open' ? ti('plus', 22) : avatarDot(stuById(l.student_id))) + md(l.starts_at) + ' ' + hm(l.starts_at)}</h3>
     ${l.kind === 'open' && !isNew ? '<div class="muted">保護者が振替で選べる枠です</div>' : ''}
     ${l.kind !== 'open' ? `<label class="f">せいと</label><select class="i" id="lStu">${act.map(s => `<option value="${s.id}" ${s.id === l.student_id ? 'selected' : ''}>${esc(nameOf(s))}</option>`).join('')}</select>` : ''}
     ${ROOMS.length > 1 ? `<label class="f">会場</label><select class="i" id="lRoom">${ROOMS.map(r => `<option value="${r.id}" ${(l.room_id || (l.student_id ? (stuById(l.student_id) || {}).room_id : ROOM_SEL) || ROOMS[0].id) === r.id ? 'selected' : ''}>${esc(r.name)}</option>`).join('')}</select>` : ''}
     <div class="grid3"><div><label class="f">日</label><input class="i" id="lDay" type="date" value="${dayStr(d)}"></div>
     <div><label class="f">時刻</label>${timeSel('lTm', pad(d.getHours()) + ':' + pad(d.getMinutes()))}</div>
     <div><label class="f">長さ</label><select class="i" id="lMin">${[15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 75, 90].map(n => `<option value="${n}" ${+(l.minutes || 30) === n ? 'selected' : ''}>${n}分</option>`).join('')}</select></div></div>
-    ${l.kind !== 'open' ? `<div class="grid2"><div><label class="f">種類</label><select class="i" id="lKind">${['regular', 'makeup', 'extra'].map(k => `<option value="${k}" ${l.kind === k ? 'selected' : ''}>${KIND[k][0]}</option>`).join('')}</select></div>
-    <div><label class="f">状態</label><select class="i" id="lSt">${[['scheduled', '予定'], ['done', '終了'], ['absent', 'お休み'], ['cancelled', '中止'], ['moved', '振替済み']].map(([k, n]) => `<option value="${k}" ${l.status === k ? 'selected' : ''}>${n}</option>`).join('')}</select></div></div>
+    ${l.kind !== 'open' ? `<label class="f">種類</label><input type="hidden" id="lKind" value="${l.kind}">
+    <div class="kindPick" role="radiogroup">${[['regular', 'いつもの', '月の回数に入るレッスン。日や時間をずらしたときも、これのまま（「変更」と出ます）'], ['makeup', '振替', 'お休みした分を、ほかの日にするとき'], ['extra', '追加', 'この月のレッスンを1回ふやすとき']].map(([k, n, d]) => `<button type="button" role="radio" data-kd="${k}" class="kp ${KIND[k][1]}${l.kind === k ? ' on' : ''}" aria-checked="${l.kind === k}"><b>${n}</b><small>${d}</small></button>`).join('')}</div>
+    <div class="lHint" id="lHint" hidden></div>
+    <div class="grid2"><div><label class="f">状態</label><select class="i" id="lSt">${[['scheduled', '予定'], ['done', '終了'], ['absent', 'お休み'], ['cancelled', '中止'], ['moved', '振替済み']].map(([k, n]) => `<option value="${k}" ${l.status === k ? 'selected' : ''}>${n}</option>`).join('')}</select></div><div></div></div>
     <label class="f">メモ（家庭には出ません）</label><input class="i" id="lNote" value="${esc(l.note || '')}">` : ''}
     ${isNew && l.kind !== 'open' ? `<label class="toggle"><span>すぐに家庭に公開する</span><input type="checkbox" id="lPub" checked></label>` : ''}
     ${!isNew && l.published && l.kind !== 'open' ? '<div class="note">日時を変えたときは、連絡帳でひとこと添えると安心です。</div>' : ''}
     <div class="foot">${isNew ? '' : `<button class="btn w dng" id="lDel" style="margin-right:auto">${ti('trash', 18)}削除</button>`}<button class="btn w" id="lCancel">やめる</button><button class="btn g" id="lSave">保存</button></div>`;
   $('lCancel').addEventListener('click', () => $('lesOv').classList.remove('show'));
+  /* 種類の ボタンと、いまの えらびかたの ひとこと（変更になる・月の回数を こえる・1回ふえる） */
+  const hint = () => { const hb = $('lHint'); if(!hb || !$('lStu')) return;
+    const st = stuById($('lStu').value), k = $('lKind').value, [yy, mm, dd] = ($('lDay').value || '').split('-').map(Number), tv = timeVal('lTm');
+    let msg = '';
+    if(st && yy){
+      const mon = yy + '-' + pad(mm), inMon = (SCHED_LES || []).filter(x => x.student_id === st.id && x.id !== l.id && localDay(x.starts_at).startsWith(mon) && x.kind !== 'open' && !['cancelled', 'moved', 'absent'].includes(x.status));
+      const per = st.lessons_per_month || 3, reg = inMon.filter(x => x.kind === 'regular').length, known = SCHED_LES && SCHED_MON === mon;
+      const wd = new Date(yy, mm - 1, dd).getDay(), usual = st.lesson_weekday != null ? `${WD[+st.lesson_weekday]}${st.lesson_time ? ' ' + String(st.lesson_time).slice(0, 5) : ''}` : '';
+      const moved = st.lesson_weekday != null && (wd !== +st.lesson_weekday || (st.lesson_time && tv && tv !== String(st.lesson_time).slice(0, 5)));
+      if(k === 'regular'){
+        if(known && reg >= per) msg = `${esc(nameOf(st))}さんの${mm}月は、もう「いつもの」が${reg}回（月${per}回）入っています。1回ふやすなら「追加」、お休みの分なら「振替」を選んでください。`;
+        else if(moved) msg = `いつもの（${usual}）とちがう日・時間なので、カレンダーでは黄色の「変更」になります。`;
+      } else if(k === 'extra') msg = known ? `${mm}月のレッスンが ${inMon.length}回 → ${inMon.length + 1}回 になります（いつもは月${per}回）。` : 'この月のレッスンが1回ふえます。';
+      else if(k === 'makeup') msg = 'お休みした日の予定は、状態を「お休み」か「振替済み」にしておくと、回数がずれません。';
+    }
+    hb.innerHTML = msg; hb.hidden = !msg; };
+  sh.querySelectorAll('.kindPick [data-kd]').forEach(b => b.addEventListener('click', () => { $('lKind').value = b.dataset.kd; sh.querySelectorAll('.kindPick [data-kd]').forEach(x => { x.classList.toggle('on', x === b); x.setAttribute('aria-checked', x === b); }); hint(); }));
+  ['lStu', 'lDay'].forEach(id => { const e = $(id); if(e) e.addEventListener('change', hint); });
+  sh.querySelectorAll('#lTm select').forEach(e => e.addEventListener('change', hint));
+  hint();
   if(PAUSED() && !isNew){ ['lSave', 'lDel'].forEach(id => { const b = $(id); if(b){ b.disabled = true; b.classList.add('locked'); } }); sh.querySelector('.foot').insertAdjacentHTML('beforebegin', `<div class="muted" style="display:flex;gap:6px;align-items:center;margin-top:10px">${ti('lock', 16)}お休みモード中は見るだけです</div>`); }
   $('lSave').addEventListener('click', async () => {
     const [yy, mm, dd] = $('lDay').value.split('-').map(Number); const [h, mi] = timeVal('lTm').split(':').map(Number);
@@ -6221,16 +6400,22 @@ function viewSettingsStaff(m){
   const ao = $('asOwner'); if(ao) ao.addEventListener('click', () => { Demo.setRole('owner'); showApp(); });
   const lo = $('logoutBtn3'); if(lo) lo.addEventListener('click', () => $('logoutBtn').click());
 }
+/* 予定の カレンダーの 週の はじまり：日曜（0）か 月曜（1）。この端末に おぼえる */
+let WEEK_START = (() => { try{ return localStorage.getItem('mp_week_start') === '1' ? 1 : 0; }catch(e){ return 0; } })();
+function setWeekStart(v){ WEEK_START = v ? 1 : 0; try{ localStorage.setItem('mp_week_start', String(WEEK_START)); }catch(e){} }
+const weekStartSeg = id => `<div class="seg sm" id="${id}" role="group" aria-label="週のはじまり"><button type="button" data-ws="0" class="${WEEK_START ? '' : 'on'}">日曜はじまり</button><button type="button" data-ws="1" class="${WEEK_START ? 'on' : ''}">月曜はじまり</button></div>`;
 /* 先生の カレンダー（Google・iPhone・タイムツリー）：うけもちの レッスンを じぶんの カレンダーに */
 let ICS_TOK = null, ICS_ROOM = '';
 function calCardHTML(){
-  return `<div class="card" id="tCal">${H2('sched', 'sk', '自分のカレンダーに表示')}
+  return `<div class="card" id="wsCard">${H2('sched', 'mu', '予定のカレンダー')}<div class="wsRow"><span><b>週のはじまり</b><small>「予定」のカレンダーを、日曜から並べるか月曜から並べるか選べます（この端末に覚えます）</small></span>${weekStartSeg('wsSet')}</div></div>
+    <div class="card" id="tCal">${H2('sched', 'sk', '自分のカレンダーに表示')}
     <div class="muted">${isOwner() ? '教室のレッスンと空き枠が' : '受け持ちのレッスンと空き枠が'}、GoogleカレンダーやiPhoneのカレンダーに入ります。予定を変えるとカレンダーも自動で変わります。</div>
     ${ROOMS.length > 1 ? `<label class="f">会場</label><div class="seg" id="tCalRoom"><button type="button" data-r="" class="${ICS_ROOM ? '' : 'on'}">ぜんぶ</button>${ROOMS.map(r => `<button type="button" data-r="${r.id}" class="${ICS_ROOM === r.id ? 'on' : ''}">${esc(r.name)}</button>`).join('')}</div>` : ''}
     <div class="row" style="gap:8px;margin-top:12px;flex-wrap:wrap" id="tCalBtns"><span class="muted">よみこみ中…</span></div>
     <div class="note">生徒さんの名前が入るので、このURLはほかの人に教えないでください（教えてしまったら「URLをつくりなおす」）。Googleカレンダーは数時間おきに読みこむため、アプリで変えてから反映まで時間がかかることがあります。タイムツリーは、iPhoneかGoogleに登録したあと「スマホのカレンダーを表示」で一緒に見られます。</div></div>`;
 }
 async function wireCalCard(m){
+  m.querySelectorAll('#wsSet [data-ws]').forEach(b => b.addEventListener('click', () => { setWeekStart(+b.dataset.ws); m.querySelectorAll('#wsSet [data-ws]').forEach(x => x.classList.toggle('on', x === b)); toast(WEEK_START ? '月曜はじまりにしました' : '日曜はじまりにしました'); }));
   const box = m.querySelector('#tCalBtns'); if(!box) return;
   const draw = () => {
     const url = FN_URL + '?action=ics&tt=' + ICS_TOK + (ICS_ROOM ? '&room=' + ICS_ROOM : ''), wc = url.replace(/^https:/, 'webcal:');
@@ -6430,7 +6615,7 @@ async function viewSettings(m){
       <span class="muted" style="flex:1">「保存」でアプリに反映されます</span><button class="btn g" id="cSave">保存</button></div>
     ${ntCardHTML()}${roomsTeachersHTML(invites)}${calCardHTML()}${DEMO_MULTI ? `<div class="card"><button class="btn w" id="asStaff">${ti('eye', 18)}講師の画面を見てみる（見本）</button></div>` : ''}
     <div class="row" style="justify-content:center;margin-top:8px;gap:18px;flex-wrap:wrap"><button class="linkBtn" id="suShow">${ti('flag', 16)}「はじめの準備」をもう一度出す</button>${DEMO ? '' : `<button class="linkBtn" id="logoutBtn2">${ti('door', 16)}ログアウト</button>`}</div>
-    <div class="verTag">先生の画面 v2026.09.30-6</div>`;
+    <div class="verTag">先生の画面 v2026.09.30-11</div>`;
   m.innerHTML = h;
   $('suShow').addEventListener('click', () => { try{ localStorage.removeItem(SETUP_KEY()); }catch(e){} SETUP_FORCE = true; goTab('today'); });
   /* 保存の バーは なにか かえた ときだけ 出す（あいた すきまや 重なりを ださない） */

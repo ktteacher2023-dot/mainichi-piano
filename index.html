@@ -106,9 +106,23 @@ input,textarea,select{font-family:inherit;user-select:text;-webkit-user-select:t
 #meChip .nm{font-weight:900;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.02em}
 #weekChip{background:var(--card);border-radius:999px;padding:5px 8px;box-shadow:0 3px 0 var(--ink);border:2.5px solid var(--ink);
   display:flex;gap:3px;align-items:center;min-height:46px}
-#weekChip .d{width:12px;height:12px;border-radius:50%;background:#EFE3C9;border:1.5px solid #C9B28E}
-#weekChip .d.on{background:var(--sun);border-color:var(--ink)}
-#weekChip .d.today{box-shadow:0 0 0 2px var(--card),0 0 0 3.5px var(--coral)}
+#weekChip{font:inherit;color:var(--ink);cursor:pointer;gap:1px;padding:3px 7px}
+#weekChip .wd{display:flex;flex-direction:column;align-items:center;gap:1px;width:14px}
+#weekChip .wd small{font-size:8.5px;font-weight:900;line-height:1;color:#9C8870}
+#weekChip .wd.sun small{color:#C4513B} #weekChip .wd.sat small{color:#4B7FA8}
+#weekChip .d{display:flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:#EFE3C9;border:1.5px solid #C9B28E;box-sizing:border-box}
+#weekChip .d svg{width:10px;height:10px}
+#weekChip .wd.on .d{background:var(--sun);border-color:var(--ink)}
+#weekChip .wd.today .d{box-shadow:0 0 0 2px var(--card),0 0 0 3.5px var(--coral)}
+#weekChip .wd.today small{color:var(--coral);}
+.wkBigRow{display:flex;gap:6px;justify-content:center;padding:6px 0}
+.wkBig{display:flex;flex-direction:column;align-items:center;gap:4px}
+.wkBig small{font-size:13px;font-weight:900;color:#9C8870}
+.wkBig.sun small{color:#C4513B} .wkBig.sat small{color:#4B7FA8} .wkBig.today small{color:var(--coral)}
+.wkBig i{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:#EFE3C9;border:2px solid #C9B28E;box-sizing:border-box}
+.wkBig i svg{width:20px;height:20px}
+.wkBig.on i{background:var(--sun);border-color:var(--ink)}
+.wkBig.today i{box-shadow:0 0 0 3px var(--card),0 0 0 5.5px var(--coral)}
 #headSpacer{flex:1}
 #goalChip{position:absolute;left:12px;right:12px;top:calc(66px + var(--safe-t));z-index:19;
   display:flex;align-items:center;gap:8px;background:var(--card);border-radius:14px;
@@ -2340,6 +2354,7 @@ body.kbd #nIntroSub::after{content:'けんばんに でる もじの キーで�
 .stTool b,.stTool small{word-break:keep-all;overflow-wrap:anywhere}
 /* 地図を スクロール中は 地図の アニメを とめる（iPhone で 絵が 間に合わず みどりだけ 見えるのを ふせぐ） */
 #mapScroll.scrolling #mapSvg *, #mapScroll.scrolling #mapSvg{animation-play-state:paused !important}
+.odMicNote{text-align:center;font-size:12.5px;line-height:1.6;color:var(--ink2,#6B5A4E);margin:8px auto 0;max-width:22em;word-break:keep-all;overflow-wrap:anywhere}
 
 /* ---------- きょうざい（おだいに つく ずかん）：こどもアプリと 先生の がめんで いっしょ ---------- */
 .kzWrap{width:min(560px,100%);display:flex;flex-direction:column;gap:14px}
@@ -2428,7 +2443,7 @@ ruby rt{font-weight:700;color:#6E5B50}
 
   <div id="homeHead">
     <button id="meChip" aria-label="なかまと ぼうし"><span class="face" id="meFace"></span><span class="nm" id="meName">たびびと</span></button>
-    <div id="weekChip" aria-label="こんしゅうの あしあと"></div>
+    <button type="button" id="weekChip" aria-label="こんしゅう ピアノを した ひ"></button>
     <div id="headSpacer"></div>
     <button class="roundBtn" id="voiceBtn" aria-label="おしゃべりのオン・オフ"></button>
     <button class="roundBtn" id="familyBtn" aria-label="おうちのひと"><i data-ic="family" data-s="36"></i></button>
@@ -2498,7 +2513,8 @@ ruby rt{font-weight:700;color:#6E5B50}
     <div id="repHint">ピアノで ひけたら ○を タッチ!</div>
     <div id="repRow"></div>
     <div id="odNext" class="rowBtns hide"></div>
-    <div class="odTools"><button id="micBtn"><i data-ic="mic" data-s="22"></i><span>きいてもらう</span></button><button class="pillBtn" id="odMetro"><i data-ic="drum" data-s="22"></i><span>メトロノーム</span></button></div>
+    <div class="odTools"><button id="micBtn"><i data-ic="mic" data-s="22"></i><span>ひいた じかんを はかる</span></button><button class="pillBtn" id="odMetro"><i data-ic="drum" data-s="22"></i><span>メトロノーム</span></button></div>
+    <div class="odMicNote" id="odMicNote">マイクで ピアノの おとを きいて、ひいた じかんを はかるよ（ろくおんは しないよ）</div>
     <div id="micMeter"><i></i></div>
     <div id="okBox">
       <div class="q">おうちのひとに きいてもらったかな？<br><span style="font-size:12px;color:var(--ink2)" id="holdSub">おうちのひとが かけざんに こたえてね</span></div>
@@ -2928,7 +2944,7 @@ ruby rt{font-weight:700;color:#6E5B50}
    ・同じ地図に 教室みんなの主人公（ニックネーム・順位なし）
    ・おうちのひと：予定・振替・おしらせ・れんらくちょう
    ========================================================= */
-const APP_VER = 'v2026.09.30-6';   /* なおしたら かならず あげる（アップした ものが あたらしいか、おうちのかた→設定の いちばん したで たしかめられる） */
+const APP_VER = 'v2026.09.30-11';   /* なおしたら かならず あげる（アップした ものが あたらしいか、おうちのかた→設定の いちばん したで たしかめられる） */
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -3103,13 +3119,81 @@ function hush(){ try{ speechSynthesis.cancel(); }catch(e){} }
 
 /* ---------- 音（AudioContextはタッチのあとに起こす：iPad対策） ---------- */
 let audio = null, songGain = null;
+/* ---------- iPhone・iPad の 音 ----------
+   ・マナーモード（消音スイッチ）でも ピアノの 音が きこえるように：音の しゅるいを「再生」に する（Safari 16.4 から）
+   ・それが きかない 端末（LINEの 中の ブラウザ など）でも きこえるように、むおんの 音を ながしつづけて「再生」の みちを ひらく
+   ・マイクを つかう あいだだけ「再生と 録音」に する（「再生」の ままだと マイクが つかえない） */
+const IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+let MIC_USE = 0, SIL_EL = null;
+function sessPlayback(){ try{ if(navigator.audioSession && !MIC_USE && navigator.audioSession.type !== 'playback') navigator.audioSession.type = 'playback'; }catch(e){} }
+function micSession(on){
+  MIC_USE = Math.max(0, MIC_USE + (on ? 1 : -1));
+  try{ if(navigator.audioSession) navigator.audioSession.type = MIC_USE ? 'play-and-record' : 'playback'; }catch(e){}
+  if(MIC_USE && SIL_EL) try{ SIL_EL.pause(); }catch(e){}
+  if(!MIC_USE && audio && audio.state !== 'running') try{ const r = audio.resume(); if(r && r.catch) r.catch(() => {}); }catch(e){}
+}
+function silentWavUrl(){
+  const sr = 8000, n = 1600, b = new ArrayBuffer(44 + n * 2), v = new DataView(b), w = (o, t) => { for(let i = 0; i < t.length; i++) v.setUint8(o + i, t.charCodeAt(i)); };
+  w(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); w(8, 'WAVE'); w(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, 'data'); v.setUint32(40, n * 2, true);
+  return URL.createObjectURL(new Blob([b], { type: 'audio/wav' }));
+}
+function iosMediaChannel(){
+  if(!IOS || MIC_USE || document.visibilityState !== 'visible') return;
+  try{
+    if(!SIL_EL){ SIL_EL = document.createElement('audio'); SIL_EL.setAttribute('x-webkit-airplay', 'deny'); SIL_EL.setAttribute('playsinline', ''); SIL_EL.preload = 'auto'; SIL_EL.loop = true; SIL_EL.src = silentWavUrl(); SIL_EL.disableRemotePlayback = true; }
+    if(SIL_EL.paused){ const r = SIL_EL.play(); if(r && r.catch) r.catch(() => {}); }
+  }catch(e){}
+}
+document.addEventListener('visibilitychange', () => { if(document.visibilityState !== 'visible' && SIL_EL) try{ SIL_EL.pause(); }catch(e){} });
+/* マイクを ひらく ところは ぜんぶ ここを とおる（とじたら「再生」に もどす） */
+if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+  const gum = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+  navigator.mediaDevices.getUserMedia = async c => {
+    micSession(true);
+    try{
+      const st = await gum(c), tr = st.getTracks(); let live = tr.length;
+      tr.forEach(t => { const stop = t.stop.bind(t); let done = false; const fin = () => { if(done) return; done = true; if(--live <= 0) micSession(false); }; t.stop = () => { stop(); fin(); }; t.addEventListener('ended', fin); });
+      if(!live) micSession(false);
+      return st;
+    }catch(e){ micSession(false); throw e; }
+  };
+}
 function ensureAudio(){
-  /* iPhoneの 消音スイッチが オンでも ピアノの 音が きこえるように（Safari 16.4 から。ほかの ブラウザでは なにも しない） */
-  try{ if(navigator.audioSession && navigator.audioSession.type !== 'playback') navigator.audioSession.type = 'playback'; }catch(e){}
+  sessPlayback();
   if(!audio) audio = new (window.AudioContext || window.webkitAudioContext)();
   if(audio.state === 'suspended' || audio.state === 'interrupted'){ const r = audio.resume(); if(r && r.catch) r.catch(() => {}); }
   return audio;
 }
+/* iPhone・iPad：音は「タッチした その しゅんかん」に しか おこせない。
+   どの タッチでも、とまっている 音を おこす（さいしょの 1かいは むおんを ならして 音の みちを ひらく） */
+let AUDIO_UNLOCKED = false;
+function audioWake(){
+  try{
+    sessPlayback(); iosMediaChannel();
+    if(!audio) audio = new (window.AudioContext || window.webkitAudioContext)();
+    if(audio.state !== 'running'){ const r = audio.resume(); if(r && r.catch) r.catch(() => {}); }
+    if(!AUDIO_UNLOCKED){ const b = audio.createBuffer(1, 1, 22050), s = audio.createBufferSource(); s.buffer = b; s.connect(audio.destination); s.start(0); AUDIO_UNLOCKED = true; }
+  }catch(e){}
+}
+['pointerdown', 'touchend', 'click', 'keydown'].forEach(ev => document.addEventListener(ev, audioWake, { capture: true, passive: true }));
+/* 音を ならす まえに：おきるのを まつ（おきなければ ならさない。おきない ときは しらせる） */
+function audioReady(ms = 900){
+  ensureAudio();
+  if(audio.state === 'running') return Promise.resolve(true);
+  return new Promise(res => {
+    const t0 = performance.now();
+    const chk = () => { if(audio.state === 'running') return res(true); if(performance.now() - t0 > ms) return res(false); const r = audio.resume(); if(r && r.catch) r.catch(() => {}); setTimeout(chk, 60); };
+    chk();
+  });
+}
+function audioHelp(){ toast('おとが でないときは、おとの おおきさと、iPhoneの よこの スイッチ（マナーモード）を たしかめて、もういちど タッチしてね', 5200); }
+/* ならしている あいだに 音が とまったら（でんわ・よみあげ・ほかの アプリ）、もどす */
+setInterval(() => {
+  if(!audio || audio.state === 'running' || document.visibilityState !== 'visible') return;
+  const busy = (typeof KM !== 'undefined' && KM.on) || (typeof playing !== 'undefined' && playing);
+  if(busy){ const r = audio.resume(); if(r && r.catch) r.catch(() => {}); }
+}, 500);
 /* ほかの アプリから もどった とき、とまった 音を もどす */
 document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible' && audio && audio.state !== 'running'){ const r = audio.resume(); if(r && r.catch) r.catch(() => {}); } });
 const mf = m => 440 * Math.pow(2, (m - 69) / 12);
@@ -6440,9 +6524,11 @@ function renderHeader(){
     const d = addDays(ws, i);
     const on = practicedOn(d) || serverDays.includes(d);
     const e = document.createElement('span');
-    e.className = 'd' + (on ? ' on' : '') + (d === t ? ' today' : '');
+    e.className = 'wd' + (on ? ' on' : '') + (d === t ? ' today' : '') + (i === 0 ? ' sun' : i === 6 ? ' sat' : '');
+    e.innerHTML = `<small>${WD_K[i]}</small><i class="d">${on ? '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 6.4 5.1 8.4 9 3.8" fill="none" stroke="#3B2A22" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''}</i>`;
     wc.appendChild(e);
   }
+  wc.setAttribute('aria-label', `こんしゅう ピアノを した ひ ${[...Array(7)].filter((_, i) => practicedOn(addDays(ws, i)) || serverDays.includes(addDays(ws, i))).length}にち`);
   /* みんなの もくひょう */
   const cl = HOME && HOME.class;
   if(cl){
@@ -6686,6 +6772,19 @@ function nextCheer(){
 $('cheerPop').addEventListener('click', () => { $('cheerPop').classList.remove('show'); nextCheer(); });
 
 /* ---------- ボタン ---------- */
+/* こんしゅうの 7つの ○：なにか ひとめで わからないので、タッチで せつめい */
+$('weekChip').addEventListener('click', () => {
+  popSfx();
+  const ws = weekStart(), t = todayStr(), sd = (HOME && HOME.me && HOME.me.week_days) || [];
+  const n = [...Array(7)].filter((_, i) => practicedOn(addDays(ws, i)) || sd.includes(addDays(ws, i))).length;
+  const big = [...Array(7)].map((_, i) => { const d = addDays(ws, i), on = practicedOn(d) || sd.includes(d);
+    return `<span class="wkBig${on ? ' on' : ''}${d === t ? ' today' : ''}${i === 0 ? ' sun' : i === 6 ? ' sat' : ''}"><small>${WD_K[i]}</small><i>${on ? '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 6.4 5.1 8.4 9 3.8" fill="none" stroke="#3B2A22" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''}</i></span>`; }).join('');
+  hkOv(`<div class="wkBigRow">${big}</div>`, 'こんしゅうの ピアノ', n ? `${n}にち ひいたよ` : 'これから だよ',
+    'ピアノの おだい・リズム・おんぷの どれかを した ひに、<b>きいろい ○</b>が つくよ。<br>あかい わが <b>きょう</b>。にちようびに あたらしい しゅうに なるよ');
+  $('hkRow').innerHTML = '<button class="btn3d white" id="wkOk">わかった</button>';
+  $('wkOk').onclick = () => { popSfx(); hkClose(); };
+  say(n ? `こんしゅうは ${n}にち ピアノを したよ` : 'ピアノを した ひに、まるが つくよ');
+});
 $('recenter').addEventListener('click', () => { popSfx(); scrollToHero(true); });
 $('voiceBtn').addEventListener('click', () => {
   S.voice = !S.voice; saveState(); renderHeader();
@@ -9835,12 +9934,15 @@ function startGame(demo = false){
   const endS = Math.max(...markers.map(m => m.time)) + 1.6;
   scheduled.push(setTimeout(showResult, (startTime - audio.currentTime + endS) * 1000));
 }
-$('goBtn').addEventListener('click', () => {
+$('goBtn').addEventListener('click', async () => {
+  ensureAudio();   /* iPhone：タッチした しゅんかんに 音を おこす（あとで おこしても おきない） */
   const L = LEVELS[curLv - 1];
   say(L.hint);
-  setTimeout(() => startGame(false), 400);   /* 音声ガイドのあとにカウントが始まる */
+  const [ok] = await Promise.all([audioReady(), new Promise(r => setTimeout(r, 400))]);   /* 音声ガイドのあとにカウントが始まる */
+  if(!ok) audioHelp();
+  startGame(false);
 });
-$('demoBtn').addEventListener('click', () => { ensureAudio(); popSfx(); say('おてほんを きいてね'); setTimeout(() => startGame(true), 400); });
+$('demoBtn').addEventListener('click', async () => { ensureAudio(); popSfx(); say('おてほんを きいてね'); const [ok] = await Promise.all([audioReady(), new Promise(r => setTimeout(r, 400))]); if(!ok) audioHelp(); startGame(true); });
 function endDemo(){
   if(!playing) return;
   playing = false; demoMode = false;
@@ -12086,7 +12188,8 @@ const PitchMic = (() => {
     } else if(s.phase === 'held') s.peak = Math.max(s.peak * .985, rms);
     s.prev = rms;
   }
-  function stop(){ if(!st) return; clearInterval(st.iv); try{ st.stream.getTracks().forEach(t => t.stop()); }catch(e){} st = null; }
+  function stop(){ if(!st) return; clearInterval(st.iv); try{ st.stream.getTracks().forEach(t => t.stop()); }catch(e){} st = null;
+    /* マイクを とじると、音の しゅるいは「再生」に もどる（00-core の getUserMedia の つつみ） */ }
   return { start, stop, on: () => !!st, hold: ms => { if(st) st.hold = performance.now() + ms; }, set: o => { if(st) st.o = o; } };
 })();
 /* MIDI → 白い けんばんの 位置（黒い けんばんは null） */
@@ -12148,14 +12251,16 @@ async function odMicStart(){
   if(!ok){ toast('マイクが つかえない みたい。○の タッチだけで だいじょうぶだよ'); return; }
   odPlay.on = true; odPlay.last = performance.now();
   $('micMeter').style.display = 'block';
-  $('micBtn').classList.add('on'); $('micBtn').lastElementChild.innerHTML = 'きいてるよ <b id="odPlayT">' + odPlayFmt(odPlay.ms) + '</b>';
-  say('きいてるよ! ピアノを ひいている あいだ、おんぷが とびだすよ');
+  $('micBtn').classList.add('on'); $('micBtn').lastElementChild.innerHTML = 'はかってるよ <b id="odPlayT">' + odPlayFmt(odPlay.ms) + '</b>';
+  { const n = $('odMicNote'); if(n) n.textContent = 'ひいている あいだだけ じかんが ふえるよ。おわったら もういちど タッチ'; }
+  say('はかってるよ! ピアノを ひいている あいだだけ、じかんが ふえるよ');
 }
 function odMicStop(){
   if(!odPlay.on) return;
   PitchMic.stop(); odPlay.on = false; odPlay.last = 0;
   $('micMeter').style.display = 'none'; $('odaiPlay').classList.remove('sounding');
-  $('micBtn').classList.remove('on'); $('micBtn').lastElementChild.textContent = odPlay.ms > 5000 ? `${odPlayFmt(odPlay.ms)} ひいたよ` : 'きいてもらう';
+  $('micBtn').classList.remove('on'); $('micBtn').lastElementChild.textContent = odPlay.ms > 5000 ? `きょう ${odPlayFmt(odPlay.ms)} ひいたよ` : 'ひいた じかんを はかる';
+  { const n = $('odMicNote'); if(n) n.textContent = odPlay.ms > 5000 ? 'ひいた じかんは、おうちのひとの がめんで みられるよ' : 'マイクで ピアノの おとを きいて、ひいた じかんを はかるよ（ろくおんは しないよ）'; }
   /* ひいた 時間は その日の きろくに（おうちのひとの 画面で 見られる） */
   const L = dayLog(); L.playSec = Math.max(L.playSec || 0, Math.round(odPlay.ms / 1000)); saveState();
 }
@@ -13612,10 +13717,11 @@ function kmSched(){
   }
 }
 function kmStart(){
+  hush();   /* よみあげを さきに とめる（iPhoneで よみあげと かさなると 音が おきない ことが ある） */
   ensureAudio();
   if(!KM.gain){ KM.gain = audio.createGain(); KM.gain.gain.value = .85; KM.gain.connect(audio.destination); }
-  hush();
   KM.on = true; KM.n = 0; KM.marks = []; KM.last = -1; KM.nextT = audio.currentTime + .12;
+  if(audio.state !== 'running') audioReady().then(ok => { if(!KM.on) return; KM.nextT = audio.currentTime + .12; KM.marks = []; if(!ok) audioHelp(); });
   kmSched(); clearInterval(KM.iv); KM.iv = setInterval(kmSched, 25);
   cancelAnimationFrame(KM.raf); KM.raf = requestAnimationFrame(kmAnim);
   if(typeof wakeOn === 'function') wakeOn();
