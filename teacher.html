@@ -1163,7 +1163,9 @@ details.adv summary{font-size:12.5px;font-weight:900;color:var(--ink2);cursor:po
 .feeTag.def{color:var(--ink2);font-weight:500}
 .invSend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .invSend .btn{justify-content:center}
-@media (min-width:700px){ .invSend{grid-template-columns:repeat(4,minmax(0,1fr))} }
+/* 4つ ならべると せまくて 字が はみ出すので、いつも 2つずつ。せまい 画面では ボタンの 中で 折りかえす */
+.invSend .btn{min-width:0;white-space:normal;line-height:1.35;text-align:center;padding-inline:10px}
+.invSend .btn > span{min-width:0}
 .bkMap{margin:10px 0;border:1.5px solid var(--line);border-radius:14px;background:var(--paper);padding:0 12px}
 .bkMap summary{cursor:pointer;padding:10px 0;font-weight:700;font-size:13.5px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .bkMap summary small{font-weight:500;color:var(--ink2);font-size:12px}
@@ -1241,6 +1243,21 @@ details.adv summary{font-size:12.5px;font-weight:900;color:var(--ink2);cursor:po
 .hrsRow .hrsOff{display:none;color:var(--ink2);font-size:13px}
 .hrsRow.off .hrsT{display:none}
 .hrsRow.off .hrsOff{display:inline}
+.frOpt{display:flex;align-items:center;gap:8px}
+.frOpt .i{margin:0;width:auto;min-width:7.5em;padding:7px 10px;font-size:14px}
+.hrsB{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-left:auto}
+.hrsB label{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--ink2);cursor:pointer}
+.hrsB input{width:18px;height:18px;accent-color:var(--leaf)}
+.hrsB .hrsBT{display:none;align-items:center;gap:6px}
+.hrsB.on .hrsBT{display:flex}
+.hrsRow.off .hrsB{display:none}
+@media (max-width:640px){ .hrsB{margin-left:0;width:100%} }
+.hrsT .tsel select,.hrsBT .tsel select{flex:0 0 auto;width:5.4em;padding-right:22px;margin:0}
+.hrsBT .tsel select{width:5em}
+/* Enter で おされる ボタン（パソコンだけ しるしを 出す） */
+@media (hover:hover) and (pointer:fine){
+  .btn.kbT::after{content:'Enter';margin-left:8px;font-size:11px;font-weight:800;letter-spacing:.03em;line-height:1;padding:3px 6px 4px;border-radius:6px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.5);font-family:ui-monospace,Menlo,Consolas,monospace}
+}
 
 </style>
 </head>
@@ -1308,7 +1325,7 @@ details.adv summary{font-size:12.5px;font-weight:900;color:var(--ink2);cursor:po
     <div id="rsMsg" class="authMsg" role="status"></div>
   </div>
   <div class="legal"><a href="terms.html" target="_blank">利用規約</a>・<a href="privacy.html" target="_blank">プライバシーポリシー</a>・<a href="tokushoho.html" target="_blank">特定商取引法に基づく表記</a></div>
-  <div class="legal verTag">v2026.09.30-11</div>
+  <div class="legal verTag">v2026.09.30-15</div>
 </div>
 
 <!-- 本体 -->
@@ -1433,9 +1450,11 @@ const WD_ORDER = [1, 2, 3, 4, 5, 6, 0];   /* 月曜から */
 const stuKanaCmp = (x, y) => { const kx = kanaOf(x), ky = kanaOf(y);
   if(!kx !== !ky) return kx ? -1 : 1;   /* ふりがなが ない 子は うしろ */
   return (kx ? JA.compare(kx, ky) : 0) || JA.compare(nameOf(x), nameOf(y)); };
+/* 入会日：先生が 入れた 日 → なければ アプリに 登録した日 */
+const joinDay = s => (s && (s.joined_on || (s.created_at ? localDay(s.created_at) : ''))) || '';
 function stuSorted(list, how = 'kana'){
   const a = (list || []).slice();
-  if(how === 'reg') return a;   /* 登録順（STU は 入会順） */
+  if(how === 'reg') return a.map((x, i) => [x, i]).sort((p, q) => (joinDay(p[0]) || '9').localeCompare(joinDay(q[0]) || '9') || p[1] - q[1]).map(p => p[0]);   /* 入会順（入会日 → 登録順） */
   if(how === 'wd') return a.sort((x, y) => { const wx = x.lesson_weekday == null ? 9 : WD_ORDER.indexOf(+x.lesson_weekday), wy = y.lesson_weekday == null ? 9 : WD_ORDER.indexOf(+y.lesson_weekday);
     if(wx !== wy) return wx - wy; const tx = String(x.lesson_time || '99'), ty = String(y.lesson_time || '99'); if(tx !== ty) return tx < ty ? -1 : 1; return stuKanaCmp(x, y); });
   return a.sort(stuKanaCmp);
@@ -1483,7 +1502,83 @@ function photoCrop(file){
 }
 function H2(icon, tone, title, right = ''){ return `<h2><span class="tile ${tone}">${ti(icon, 22)}</span><span>${title}</span>${right ? `<span class="r">${right}</span>` : ''}</h2>`; }
 /* シートを ひらく：まえに スクロールした 位置が のこらないように */
-function showOv(id){ const o = $(id); if(!o) return; o.classList.add('show'); const sh = o.querySelector('.sheet'); if(sh) sh.scrollTop = 0; }
+function showOv(id){ const o = $(id); if(!o) return; delete o.dataset.dirty; o.classList.add('show'); const sh = o.querySelector('.sheet'); if(sh) sh.scrollTop = 0; setTimeout(() => kbMark(null), 0); }
+/* ---------- キーボード：Enter で 保存、Esc で やめる（2026-09-30） ----------
+   ・入力らんで Enter → いま ひらいている 画面の「保存」を おしたのと おなじ（設定の ページは 下の「保存」）
+   ・メモなど 何行も 書く らんは、Ctrl（Mac は ⌘）＋ Enter
+   ・日本語の 変換を 決める Enter では 保存しない
+   ・Esc → やめる／閉じる。書きかけが あるときは、1回目は おしらせだけ（2回 おすと 閉じる）
+   ・送る・公開・印刷・登録の ボタンは Enter では おさない（まちがえて 家庭に 送らないように） */
+const KB_OK = /保存|招待コードをつくる|この写真にする/;
+let KB_TABNAV = false, KB_COMP_END = 0, KB_ESC_AT = 0;
+const kbVisible = el => !!(el && el.isConnected && el.getClientRects().length);
+function kbTopOv(){
+  const a = document.activeElement, own = a && a.closest && a.closest('.ov.show');
+  if(own) return own;
+  const all = [...document.querySelectorAll('.ov.show')].filter(kbVisible);
+  return all[all.length - 1] || null;
+}
+const kbIsSave = b => !!b && !b.disabled && b.matches('.btn.g') && (b.hasAttribute('data-enter') || KB_OK.test(b.textContent || '')) && kbVisible(b);
+function kbTarget(from){
+  const ov = kbTopOv(), stop = ov || $('main');
+  if(!stop) return null;
+  let el = from && from !== document.body && stop.contains(from) ? from : stop;
+  for(; el; el = el.parentElement){
+    const b = [...el.querySelectorAll('.btn.g')].find(kbIsSave);
+    if(b) return b;
+    if(el === stop) break;
+  }
+  return null;
+}
+/* Enter で おされる ボタンに しるし（パソコンだけ「Enter」と 出る） */
+function kbMark(from){
+  document.querySelectorAll('.kbT').forEach(b => b.classList.remove('kbT'));
+  const b = kbTarget(from); if(b) b.classList.add('kbT');
+}
+document.addEventListener('compositionend', () => { KB_COMP_END = Date.now(); }, true);
+document.addEventListener('pointerdown', () => { KB_TABNAV = false; }, true);
+document.addEventListener('focusin', e => { const t = e.target; if(t && t.closest && (t.closest('.ov.show') || t.closest('#main'))) kbMark(t); });
+['input', 'change'].forEach(ev => document.addEventListener(ev, e => {
+  const t = e.target, ov = t && t.closest && t.closest('.ov.show');
+  if(ov) ov.dataset.dirty = '1';
+  else if(t && t.closest && t.closest('#main')) setTimeout(() => { if(document.activeElement === t) kbMark(t); }, 0);   /* 設定の「保存」は 書きかえると 出てくる */
+}, true));
+document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('.ov.show .sheet button'); if(b && !b.closest('.foot')) b.closest('.ov').dataset.dirty = '1'; }, true);
+document.addEventListener('keydown', e => {
+  if(e.key === 'Tab') KB_TABNAV = true;
+  if(e.defaultPrevented || e.isComposing || e.keyCode === 229) return;
+  if(e.key === 'Enter'){
+    if(e.altKey || e.shiftKey || Date.now() - KB_COMP_END < 80) return;
+    const t = e.target, tag = (t && t.tagName) || '', ov = kbTopOv();
+    const field = (tag === 'SELECT') || (tag === 'INPUT' && !/^(button|submit|reset|file|image|color|range)$/i.test(t.type || ''));
+    const area = tag === 'TEXTAREA' || !!(t && t.isContentEditable);
+    if(area && !(e.ctrlKey || e.metaKey)) return;            /* 何行も 書く らんは ふつうに 改行 */
+    if(tag === 'A') return;
+    if(tag === 'BUTTON'){
+      /* Tab で えらんだ ボタンは そのまま おす。マウスで おした あとの Enter は「保存」 */
+      if(KB_TABNAV || !ov || !ov.contains(t) || t.closest('.foot')) return;
+    } else if(!field && !area){
+      if(!ov) return;                                        /* シートが ないときは 入力らんの 中だけ */
+      if(t && t !== document.body && !ov.contains(t)) return;
+    }
+    if(!ov && !(t && $('main') && $('main').contains(t))) return;
+    let b = kbTarget(t);
+    if(!b) return;
+    e.preventDefault();
+    if(field || area){ try{ t.blur(); }catch(x){} }          /* 入れた 値を 先に たしかにする */
+    if(!b.isConnected) b = kbTarget(ov && ov.isConnected ? ov : null);
+    if(b && !b.disabled) b.click();
+    return;
+  }
+  if(e.key === 'Escape'){
+    const ov = kbTopOv(); if(!ov) return;
+    const c = [...ov.querySelectorAll('.foot .btn')].filter(kbVisible).find(b => /(やめる|閉じる|もどる)\s*$/.test((b.textContent || '').trim()));
+    if(!c) return;
+    e.preventDefault();
+    if(ov.dataset.dirty && Date.now() - KB_ESC_AT > 3000){ KB_ESC_AT = Date.now(); toast('まだ保存していません。やめるときは、もう一度 Esc（保存は Enter）'); return; }
+    KB_ESC_AT = 0; c.click();
+  }
+});
 /* 色の 上の 文字：明るい色には こい文字、こい色には 白 */
 function inkOn(c){ const m = /^#?([0-9a-f]{6})$/i.exec(String(c || '').trim()); if(!m) return '#fff'; const n = parseInt(m[1], 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255; return (r * 299 + g * 587 + b * 114) / 1000 > 165 ? '#3B2A22' : '#fff'; }
 function pgHead(title, sub = '', acts = ''){ return `<div class="pgHead"><div class="t"><h1>${title}</h1>${sub ? `<div class="sub">${sub}</div>` : ''}</div>${acts ? `<div class="acts">${acts}</div>` : ''}</div>`; }
@@ -2761,7 +2856,8 @@ function kzStarPath(cx, cy, r){
 function kzFiveCard(m){
   const lh = m.c === 'b', clef = lh ? 'b' : 't', sc = kzScale(m.key), five = sc.slice(0, 5);
   const base = lh ? -10 : 2;
-  const off = kzBestOff(five.map(d => d.dia), base, lh ? [-7, -14] : [0, 7]);
+  /* みぎては いつも まんなかの ド の オクターブから（ド の ときは まんなかの ド。かせんが 1本 でても こちらが ピアノの きほん） */
+  const off = lh ? kzBestOff(five.map(d => d.dia), base, [-7, -14]) : 0;
   const shift = 12 * off / 7;
   const midis = five.map(d => d.midi + shift);
   const fing = i => lh ? 5 - i : i + 1;
@@ -2784,7 +2880,7 @@ function kzFiveCard(m){
   const tag = d => `<span class="kzTag${kzIsBlack(d.midi) ? ' bk' : ''}">${kzH(d.name)}</span>`;
   const el = document.createElement('div');
   el.className = 'kzCard';
-  el.innerHTML = `<div class="kzHead"><span class="kzHand">${lh ? 'ひだりて' : 'みぎて'}</span>${lh ? '5' : '1'}の ゆびを <span style="white-space:nowrap">${tag(five[0])} に おこう</span></div>
+  el.innerHTML = `<div class="kzHead"><span class="kzHand">${lh ? 'ひだりて' : 'みぎて'}</span>${lh ? '5' : '1'}の ゆびを <span style="white-space:nowrap">${midis[0] === 60 ? 'まんなかの ' : ''}${tag(five[0])} に おこう</span></div>
     <div class="kzKbHost">${kzKbd({ from, whites, marks })}</div>
     <div class="kzNote">${blacks.length ? `<b class="kzRed">あかい けんばん</b>は くろい けんばん。${blacks.map(n => `<b>${n}</b>`).join('・')} も ひくよ` : 'しろい けんばん だけで ひけるよ'}${whiteAcc.length ? `<br>${whiteAcc.map(n => `<b>${n}</b>`).join('・')} は しろい けんばん だよ` : ''}</div>
     ${staffSvg}
@@ -2813,7 +2909,7 @@ function kzCadCard(m){
   const lh = m.c === 'b', clef = lh ? 'b' : 't', sc = kzScale(m.key), l = sc[0].dia, base = lh ? -10 : 2, mi = kzMinor(m.key);
   const lt = mi ? kzRaise(sc[6]) : sc[6], third = mi ? 3 : 4;
   const rel = [[0, 2, 4], [-1, 3, 4], [0, 2, 4]];
-  const off = kzBestOff(rel.flat().map(x => l + x), base, lh ? [-7, -14] : [0, 7]);
+  const off = lh ? kzBestOff(rel.flat().map(x => l + x), base, [-7, -14]) : 0;   /* みぎては まんなかの ド の オクターブ（ハ長調の V7 は まんなかの ド の したの シ） */
   const shift = 12 * off / 7, r = sc[0].midi + shift;
   const deg = x => { const i = ((x % 7) + 7) % 7; return i === 6 ? lt : sc[i]; };
   const CH = [
@@ -2826,16 +2922,19 @@ function kzCadCard(m){
   const st = kzStaff({ W: 340, g: 13, T: 38, clef });
   let cols = '', under = '';
   const xs = [0, 1, 2].map(i => st.xStart + 30 + i * ((340 - st.xStart - 60) / 2));
+  /* I・V7 の もじは、いちばん したの おと（まんなかの ド の したの シ など）に かさならない ところへ */
+  const lowY = st.y(Math.min(...CH.flatMap(c => c.notes.map(n => n.d)))) + .46 * st.g;
+  const labY = Math.max(st.bot + 32, Math.ceil(lowY + 22)), bgH = labY + 2;
   CH.forEach((c, i) => {
-    under += `<rect class="kzBg" data-c="${i}" x="${kzF(xs[i] - 30)}" y="6" width="60" height="${st.bot + 34}" rx="14" fill="#FBE6B8"/>`;
+    under += `<rect class="kzBg" data-c="${i}" x="${kzF(xs[i] - 30)}" y="6" width="60" height="${bgH}" rx="14" fill="#FBE6B8"/>`;
     cols += `<g class="kzCol" data-c="${i}">
-      <rect x="${kzF(xs[i] - 30)}" y="6" width="60" height="${st.bot + 34}" fill="transparent"/>${kzColumn(xs[i], c.notes, st, { halo: false })}
-      <text x="${kzF(xs[i])}" y="${st.bot + 32}" text-anchor="middle" font-size="18" font-weight="900" font-family="serif" fill="${INK}">${c.lab}</text></g>`;
+      <rect x="${kzF(xs[i] - 30)}" y="6" width="60" height="${bgH}" fill="transparent"/>${kzColumn(xs[i], c.notes, st, { halo: false })}
+      <text x="${kzF(xs[i])}" y="${labY}" text-anchor="middle" font-size="18" font-weight="900" font-family="serif" fill="${INK}">${c.lab}</text></g>`;
   });
   const el = document.createElement('div');
   el.className = 'kzCard';
   el.innerHTML = `<div class="kzHead"><span class="kzHand">わおん</span>I → V7 → I を ${lh ? 'ひだりて' : 'みぎて'}で</div>
-    <svg class="kzSvg" viewBox="0 0 340 ${st.bot + 44}" xmlns="http://www.w3.org/2000/svg">${under}${st.s}${cols}</svg>
+    <svg class="kzSvg" viewBox="0 0 340 ${labY + 12}" xmlns="http://www.w3.org/2000/svg">${under}${st.s}${cols}</svg>
     <div class="kzChips">${CH.map((c, i) => `<button class="kzChip" data-c="${i}">${c.lab}</button>`).join('')}</div>
     <div class="kzKbHost">${kbFor(CH[0])}</div>
     <div class="kzNote" data-cap>ボタンを おすと、ゆびの いちと おとが かわるよ</div>
@@ -4174,11 +4273,11 @@ const FEE_ITEMS = ['発表会費', '教材費', '楽譜代', '諸経費'];
 let FEE = { mon: null, fil: 'todo', rows: [], span: null, open: null, item: null, view: 'mon', year: null, yRows: [], bulk: null };
 const feeOn = () => !!(SET && SET.fee_on);
 const feeMonNo = mon => +mon.split('-')[1];
-/* その月の 対象の 子：いま 通っている子（その月の おわりまでに 入会）＋ その月に 記録が ある子 */
+/* その月の 対象の 子：いま 通っている子（その月の おわりまでに 入会。入会日が なければ 登録した日）＋ その月に 記録が ある子 */
 function feeStuList(mon, rows = FEE.rows){
   const [y, m] = mon.split('-').map(Number), end = dayStr(new Date(y, m, 0));
   const inMon = new Set(rows.filter(r => r.month === mon).map(r => r.student_id));
-  return stuSorted(STUV().filter(s => inMon.has(s.id) || (s.active !== false && (!s.created_at || localDay(s.created_at) <= end))), 'kana');
+  return stuSorted(STUV().filter(s => inMon.has(s.id) || (s.active !== false && (!joinDay(s) || joinDay(s) <= end))), 'kana');
 }
 function feeOf(sid, mon, item = '月謝', rows = FEE.rows){ return rows.find(r => r.student_id === sid && r.month === mon && (r.item || '月謝') === item) || null; }
 const feeState = r => !r ? 'todo' : r.paid_on ? 'paid' : r.method === 'なし' ? 'none' : 'todo';
@@ -4239,7 +4338,7 @@ function feeIntro(){
     <div><label class="f">いつもの受け取りかた</label><select class="i" id="fiM">${FEE_METHODS.map(x => `<option ${x === ((SET && SET.fee_method) || '現金') ? 'selected' : ''}>${x}</option>`).join('')}</select></div></div>
     <label class="toggle"><span>受け取ったら、連絡帳に「受け取りました」を送る<small>月謝袋のはんこのかわりになります（その家庭だけが見られます）</small></span><input type="checkbox" id="fiT" ${SET && SET.fee_thanks ? 'checked' : ''}></label>
     <div class="note">金額がちがう生徒（きょうだい割引・コースちがい）は、あとで生徒ごとに直せます。直した金額が、次の月からその子のいつもの金額になります。</div>
-    <div class="foot"><button class="btn w" data-feeclose>閉じる</button><button class="btn g" id="fiGo">${ti('check', 18)}はじめる</button></div>`;
+    <div class="foot"><button class="btn w" data-feeclose>閉じる</button><button class="btn g" id="fiGo" data-enter>${ti('check', 18)}はじめる</button></div>`;
   feeWireClose();
   $('fiGo').addEventListener('click', async () => {
     const row = { fee_on: true, fee_default: $('fiA').value ? Math.round(+$('fiA').value) : null, fee_method: $('fiM').value, fee_thanks: $('fiT').checked };
@@ -4673,7 +4772,7 @@ async function exportRoster(){
   const rows = [['名前', 'ふりがな', 'ニックネーム', '画面', ...(ROOMS.length > 1 ? ['会場'] : []), 'いつもの曜日', '時刻', '月の回数', 'レッスン（分）', '入会日', 'LINE', '最後の練習', '練習した日（2週間）', '練習した日（4週間）', '招待コード']];
   stuSorted(STUV().filter(s => s.active !== false), 'kana').forEach(s => { const o = P[s.id], d = o ? [...o.days] : [];
     rows.push([s.display_name || '', s.kana || '', s.nickname || '', MODE[s.mode || 'kids'] || '', ...(ROOMS.length > 1 ? [(roomById(s.room_id) || {}).name || ''] : []), s.lesson_weekday != null ? WD[s.lesson_weekday] : '', s.lesson_time ? String(s.lesson_time).slice(0, 5) : '',
-      s.lessons_per_month || '', s.lesson_minutes || '', s.created_at ? localDay(s.created_at) : '', linked.has(s.id) ? 'つながっている' : '', o && o.last ? o.last : '', d.filter(x => x >= addDays(t, -13)).length, d.length, s.invite_code || '']); });
+      s.lessons_per_month || '', s.lesson_minutes || '', joinDay(s), linked.has(s.id) ? 'つながっている' : '', o && o.last ? o.last : '', d.filter(x => x >= addDays(t, -13)).length, d.length, s.invite_code || '']); });
   downloadCSV('生徒の名簿', `seito_meibo_${t}.csv`, rows);
 }
 
@@ -4932,8 +5031,8 @@ async function viewStudents(m){
     + (STU_VIEW.sort === 'kana' && act.length > 6 ? `<div class="stuJump" id="stuJump">${GOJU.map(([g]) => g).concat(noKana ? ['未'] : []).filter(g => act.some(s => (gojuOf(s) || '未') === g)).map(g => `<button type="button" data-j="${g}">${g === '未' ? 'ふりがな未入力' : g}</button>`).join('')}</div>` : '') + '</div>'
     + '<div class="list" id="stuList">';
   /* 見出し：50音順は あ行・か行…、曜日順は 月曜・火曜… */
-  const grpOf = s => STU_VIEW.sort === 'kana' ? (gojuOf(s) || '未') : STU_VIEW.sort === 'wd' ? (s.lesson_weekday == null ? '−' : String(s.lesson_weekday)) : '';
-  const grpLab = g => STU_VIEW.sort === 'kana' ? (g === '未' ? 'ふりがな 未入力' : g === 'ほか' ? 'そのほか' : g + '行') : (g === '−' ? 'いつもの曜日 未設定' : WD[+g] + '曜日');
+  const grpOf = s => STU_VIEW.sort === 'kana' ? (gojuOf(s) || '未') : STU_VIEW.sort === 'wd' ? (s.lesson_weekday == null ? '−' : String(s.lesson_weekday)) : (joinDay(s).slice(0, 7) || '−');
+  const grpLab = g => STU_VIEW.sort === 'kana' ? (g === '未' ? 'ふりがな 未入力' : g === 'ほか' ? 'そのほか' : g + '行') : STU_VIEW.sort === 'reg' ? (g === '−' ? '入会日 未入力' : `${+g.slice(0, 4)}年${+g.slice(5, 7)}月 入会`) : (g === '−' ? 'いつもの曜日 未設定' : WD[+g] + '曜日');
   const row = s => { const o = P[s.id];
     const reg = s.lesson_weekday != null && s.lesson_time ? `${WD[s.lesson_weekday]}曜 ${String(s.lesson_time).slice(0, 5)}` : '<span style="color:var(--bad)">いつもの曜日 未設定</span>';
     const k2 = o ? [...o.days].filter(d => d >= addDays(dayStr(), -13)).length : 0;
@@ -4949,7 +5048,7 @@ async function viewStudents(m){
       <div class="acts"><button class="btn sm ${LINKED.has(s.id) ? 'w' : 's'}" data-inv="${s.id}" title="${LINKED.has(s.id) ? '保護者とつながっています（もう1人招待する）' : '保護者に案内を送る'}">${ti('invite', 18)}招待</button><button class="btn sm w" data-ed="${s.id}">${ti('pencil', 18)}編集</button></div></div>`; };
   let gPrev = null;
   act.forEach(s => { const g = grpOf(s);
-    if(STU_VIEW.sort !== 'reg' && g !== gPrev){ const n = act.filter(x => grpOf(x) === g).length;
+    if(g !== gPrev){ const n = act.filter(x => grpOf(x) === g).length;
       h += `<div class="stuGrp" data-gh="${esc(g)}" id="sg-${esc(g)}"><b>${esc(grpLab(g))}</b><small>${n}人</small>${g === '未' ? `<button type="button" class="linkBtn" data-kanaall>ふりがなをまとめて入れる</button>` : ''}</div>`; gPrev = g; }
     h += row(s); });
   if(!act.length) h += emptyRow('students', 'まだ生徒がいません。「生徒を追加」か「まとめて登録」から始めましょう');
@@ -5026,6 +5125,7 @@ const BULK_COLS = [
   { k: 'lessons_per_month', lab: '月の回数', al: ['月の回数', '回数', '月回数', '月間回数', 'レッスン回数', '回数月', 'かいすう', 'times'] },
   { k: 'lesson_minutes', lab: '長さ（分）', al: ['長さ', '分', 'レッスン時間', 'レッスンの長さ', '長さ（分）', 'コース', '時間分', 'ながさ', 'minutes', 'length'] },
   { k: 'fee_amount', lab: '月謝', al: ['月謝', '月額', '月謝額', '金額', '授業料', 'レッスン料', 'げっしゃ', 'fee', 'price'] },
+  { k: 'joined_on', lab: '入会日', al: ['入会日', '入会', '入会年月日', '入会年月', '入会月', '入塾日', '入室日', '開始日', 'レッスン開始日', '登録日', 'joined', 'joindate', 'startdate'] },
   { k: 'room', lab: '会場', al: ['会場', '教室', '場所', 'かいじょう', 'room'] },
   { k: 'teacher', lab: '担当', al: ['担当', '担当の先生', '担当講師', '講師', '先生', 'たんとう', 'せんせい', 'teacher'] },
   { k: 'mode', lab: 'モード（こども／ジュニア／おとな）', al: ['モード', '画面', '年代', 'もーど', 'mode'] },
@@ -5070,13 +5170,26 @@ function bulkTime(v){
   return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
 }
 function bulkMode(v){ v = normH(v); if(!v) return 'kids'; if(/おとな|大人|adult|一般/.test(v)) return 'adult'; if(/ジュニア|じゅにあ|高学年|junior|中学|高校/.test(v)) return 'junior'; if(/こども|子ども|子供|kids|child|幼児|低学年/.test(v)) return 'kids'; return undefined; }
+/* 入会日：2026/9/1・2026-09・2026年9月1日・令和8年9月・R8.9.1・9月（年なし → いちばん 近い すぎた 月）・Excel の 日付の 数 */
+function bulkDate(v, serial = false){
+  v = String(v || '').trim().replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0)); if(!v) return null;
+  const pad = n => String(n).padStart(2, '0'), ok = (y, m, d) => { const t = new Date(y, m - 1, d); return y >= 1990 && y <= 2100 && t.getMonth() === m - 1 && t.getDate() === d ? `${y}-${pad(m)}-${pad(d)}` : undefined; };
+  let x;
+  if(serial && (x = v.match(/^(\d{5})(\.\d+)?$/)) && +x[1] > 30000 && +x[1] < 80000){ const t = new Date(Date.UTC(1899, 11, 30) + +x[1] * 864e5); return ok(t.getUTCFullYear(), t.getUTCMonth() + 1, t.getUTCDate()); }
+  if((x = v.match(/^(?:令和|R)\s*(\d{1,2}|元)\s*[年.\/\-]\s*(\d{1,2})(?:\s*[月.\/\-]\s*(\d{1,2}))?/i))) return ok(2018 + (x[1] === '元' ? 1 : +x[1]), +x[2], +(x[3] || 1));
+  if((x = v.match(/^(\d{4})\s*[年.\/\-]\s*(\d{1,2})(?:\s*[月.\/\-]\s*(\d{1,2}))?/))) return ok(+x[1], +x[2], +(x[3] || 1));
+  if((x = v.match(/^(\d{4})(\d{2})(\d{2})$/))) return ok(+x[1], +x[2], +x[3]);
+  if((x = v.match(/^(\d{1,2})\s*[月\/]\s*(?:(\d{1,2})日?)?$/))){ const n = new Date(), m = +x[1]; const y = m <= n.getMonth() + 1 ? n.getFullYear() : n.getFullYear() - 1; return ok(y, m, +(x[2] || 1)); }
+  return undefined;
+}
 const bulkYes = v => /^(○|〇|◯|はい|あり|有|yes|y|true|1|on)$/i.test(String(v || '').trim());
 /* 見出しの 1つを 列の 種類に（ぴったり → ふくむ の じゅん。「名」だけ・「分」だけ など 短い ものは ぴったりの ときだけ） */
 function bulkHeadKey(h){
   const x = normH(h); if(!x) return null;
   let c = BULK_COLS.find(c => c.al.some(a => normH(a) === x)); if(c) return c.k;
   if(/ふりがな|フリガナ|よみ|ヨミ|カナ/.test(h)){ if(/姓|せい|セイ/.test(h)) return 'kana_last'; if(/名|めい|メイ/.test(h) && !/氏名|名前/.test(h)) return 'kana_first'; return 'kana'; }
-  if(/保護者|父|母|親|電話|tel|メール|mail|住所|〒|学校|学年|生年|誕生|年齢|備考|メモ|入会|退会日|口座|引落/i.test(h)) return null;   /* 生徒の 登録に つかわない 列 */
+  if(/入会|入塾|入室|入校|開始日|開始年月|登録日/.test(h) && !/退会/.test(h)) return 'joined_on';
+  if(/保護者|父|母|親|電話|tel|メール|mail|住所|〒|学校|学年|生年|誕生|年齢|備考|メモ|退会|口座|引落/i.test(h)) return null;   /* 生徒の 登録に つかわない 列 */
   if(/曜日/.test(h) && /時/.test(h)) return 'wdtime';
   c = BULK_COLS.find(c => c.al.some(a => normH(a).length >= 2 && x.includes(normH(a)))); return c ? c.k : null;
 }
@@ -5093,6 +5206,7 @@ const BULK_TESTS = {
   teacher: x => TEACHERS.length > 1 && TEACHERS.some(t => normT(t.display_name).includes(normT(x).replace(/先生$/, ''))),
   mode: x => /こども|子ども|ジュニア|高学年|おとな|大人|kids|junior|adult/.test(x),
   status: x => /^(在籍|休会|退会|休み中|お休み)$/.test(x),
+  joined_on: x => /\d{4}|令和|^R\d/i.test(x) && typeof bulkDate(x) === 'string',
   show_keys: x => bulkYes(x)
 };
 function bulkGuess(table){
@@ -5136,6 +5250,7 @@ function bulkRows(table, G){
     const row = { display_name: nm.slice(0, 40), nickname: g('nickname').slice(0, 10) || null }, err = [], warn = [];
     const kn = g('kana') || [g('kana_last'), g('kana_first')].filter(Boolean).join(' '); if(kn) row.kana = toHira(kn).replace(/\s+/g, ' ').slice(0, 40);
     if(g('fee_amount')){ const v = bulkYen(g('fee_amount')); if(v > 0) row.fee_amount = v; else warn.push(`月謝「${g('fee_amount')}」が読めません`); }
+    if(g('joined_on')){ const v = bulkDate(g('joined_on'), true); if(v) row.joined_on = v; else warn.push(`入会日「${g('joined_on')}」が読めません（空のまま登録します）`); }
     if(!row.display_name) err.push('名前がありません');
     /* 曜日と 時刻：べつの 列でも、「月 16:00」「月曜16時半〜17時」の ように 1つの 列でも */
     let wdv = g('lesson_weekday'), tmv = g('lesson_time');
@@ -5221,7 +5336,7 @@ function openBulk(){
         <div class="bkList">${R.map((r, i) => { const o = r.row;
           return `<label class="bkRow${r.err.length ? ' bad' : r.dup ? ' dup' : r.warn.length ? ' warn' : ''}"><input type="checkbox" data-i="${i}" ${r.on ? 'checked' : ''} ${r.err.length ? 'disabled' : ''}>
             <div class="grow"><div class="nm">${esc(o.display_name || '（名前なし）')}${o.kana ? `<small>${esc(o.kana)}</small>` : ''}${o.nickname ? `<small>${esc(o.nickname)}</small>` : ''}${o.active === false ? '<span class="pill off">休会</span>' : ''}${o.mode !== 'kids' ? `<span class="pill reg">${o.mode === 'adult' ? 'おとな' : 'ジュニア'}</span>` : ''}${o.show_keys ? `<span class="pill reg">けんばん</span>` : ''}</div>
-            <div class="meta"><span>${[o.lesson_weekday != null ? WD[o.lesson_weekday] + '曜' + (o.lesson_time ? ' ' + o.lesson_time : '') : '<span class="muted">曜日なし</span>', `月${o.lessons_per_month}回`, `${o.lesson_minutes}分`].concat(o.fee_amount ? [feeYen(o.fee_amount)] : []).join('・')}${o.room_id ? '・' + esc((roomById(o.room_id) || {}).name || '') : ''}${o.teacher_id ? '・' + esc(((TEACHERS.find(t => t.id === o.teacher_id) || {}).display_name || '').split(/\s+/)[0]) + ' 先生' : ''}</span></div>
+            <div class="meta"><span>${[o.lesson_weekday != null ? WD[o.lesson_weekday] + '曜' + (o.lesson_time ? ' ' + o.lesson_time : '') : '<span class="muted">曜日なし</span>', `月${o.lessons_per_month}回`, `${o.lesson_minutes}分`].concat(o.fee_amount ? [feeYen(o.fee_amount)] : []).concat(o.joined_on ? [`${+o.joined_on.slice(0, 4)}年${+o.joined_on.slice(5, 7)}月${+o.joined_on.slice(8, 10)}日 入会`] : []).join('・')}${o.room_id ? '・' + esc((roomById(o.room_id) || {}).name || '') : ''}${o.teacher_id ? '・' + esc(((TEACHERS.find(t => t.id === o.teacher_id) || {}).display_name || '').split(/\s+/)[0]) + ' 先生' : ''}</span></div>
             ${r.err.concat(r.dup ? [r.dup] : [], r.warn).map(x => `<div class="bkMsg">${esc(x)}</div>`).join('')}</div><span class="bkN">${r.n}</span></label>`; }).join('')}</div>
         ${over > 0 ? `<div class="overNote">${ti('steps', 18)}<span>いまのプラン（${lim}人まで）を ${over}人こえます。「設定 → ご契約」でプランを変えてから登録してください。</span></div>` : ''}
         <div class="foot"><button class="btn w" id="bkBack">もどる</button><button class="btn g" id="bkGo" ${n && over <= 0 ? '' : 'disabled'}>${ti('plus', 18)}${n}人を登録する</button></div>`;
@@ -5309,11 +5424,11 @@ function openInvite(s0){
     <input class="i" id="invFind" placeholder="名前でさがす" style="margin-bottom:6px">
     <div class="invList">${others.map(({ x, same }) => `<label class="invRow${same ? ' same' : ''}" data-n="${esc(nameOf(x) + ' ' + (x.nickname || ''))}"><input type="checkbox" value="${x.id}"><span>${avatarDot(x, 1)} ${esc(nameOf(x))}${x.nickname ? `<small>（${esc(x.nickname)}）</small>` : ''}${same ? '<em class="invTag same">同じ名字</em>' : ''}</span></label>`).join('') || '<div class="muted">ほかの生徒がいません</div>'}</div>
     <label class="f" style="margin-top:14px">送りかた</label>
-    <div class="invSend"><button class="btn w" id="invLine">${ti('chat', 18)}LINEで送る</button><button class="btn w" id="invMail">${ti('invite', 18)}メールで送る</button><button class="btn w" id="invImg">${ti('qr', 18)}カードを画像で送る</button><button class="btn g" id="invCopy">${ti('copy', 18)}案内文をコピー</button></div>
+    <div class="invSend"><button class="btn w" id="invLine">${ti('chat', 18)}LINEで送る</button><button class="btn w" id="invMail">${ti('invite', 18)}メールで送る</button><button class="btn w" id="invImg">${ti('qr', 18)}<span><span class="nw">カードを</span><span class="nw">画像で送る</span></span></button><button class="btn g" id="invCopy">${ti('copy', 18)}案内文をコピー</button></div>
     <div class="note">「LINEで送る」は、LINEの友だちを選ぶ画面が開きます。「メールで送る」は、件名と本文が入ったメールが開くので、あて先に保護者のアドレスを入れてください。「カードを画像で送る」は、印刷用と同じ案内カードを画像にします（スマホではそのままLINEやメールを選べます）。</div>
     <div class="foot"><button class="btn w" id="invCancel">閉じる</button><button class="btn w" id="invCard">${ti('print', 18)}カードを印刷</button></div>`;
   $('invFind').addEventListener('input', e => { const q = e.target.value.trim(); sh.querySelectorAll('.invRow:not(.me)').forEach(r => r.classList.toggle('hide', !!q && !r.dataset.n.includes(q))); });
-  const invN = () => { const n = 1 + sh.querySelectorAll('.invRow:not(.me) input:checked').length; $('invCopy').innerHTML = `${ti('copy', 18)}案内文をコピー${n > 1 ? `（${n}人）` : ''}`; };
+  const invN = () => { const n = 1 + sh.querySelectorAll('.invRow:not(.me) input:checked').length; $('invCopy').innerHTML = `${ti('copy', 18)}<span><span class="nw">案内文を</span><span class="nw">コピー</span>${n > 1 ? `<span class="nw">（${n}人）</span>` : ''}</span>`; };
   sh.querySelectorAll('.invRow:not(.me) input').forEach(i => i.addEventListener('change', invN));
   $('invCancel').addEventListener('click', () => $('stuOv').classList.remove('show'));
   $('invCard').addEventListener('click', () => { const ids = [s0.id].concat([...sh.querySelectorAll('.invRow:not(.me) input:checked')].map(i => i.value)); $('stuOv').classList.remove('show'); openCards(ids); });
@@ -5712,6 +5827,7 @@ function openStudent(s, opt = {}){
       <div class="grid3"><div><label class="f">名前（先生だけに見えます）</label><input class="i" id="sDisp" value="${esc(s.display_name || '')}" placeholder="例：山田 はな"></div>
       <div><label class="f">ふりがな（50音順に使います）</label><input class="i" id="sKana" maxlength="40" value="${esc(s.kana || '')}" placeholder="例：やまだ はな" autocomplete="off"></div>
       <div><label class="f">ニックネーム（地図に出ます）</label><input class="i" id="sNick" maxlength="10" value="${esc(s.nickname || '')}" placeholder="例：はなちゃん"></div></div>
+      <div class="grid2 joinRow"><div><label class="f">入会日</label><input class="i" type="date" id="sJoin" value="${esc(isNew ? '' : joinDay(s))}"></div><div class="feHint" style="align-self:end;padding-bottom:8px">${isNew ? '<span class="nw">空けておくと、</span><span class="nw">今日の日付に</span><span class="nw">なります。</span>' : ''}<span class="nw">月謝の一覧は、</span><span class="nw">入会した月から</span><span class="nw">入ります。</span><span class="nw">名簿のCSVにも</span><span class="nw">出ます。</span></div></div>
       ${isOwner() && feeOn() ? `<div class="grid2"><div><label class="f">月謝（この子のいつもの金額）</label><div class="yenIn"><input class="i" id="sFee" type="number" inputmode="numeric" min="0" step="100" value="${+s.fee_amount > 0 ? +s.fee_amount : ''}" placeholder="${+(SET && SET.fee_default) || ''}"><span>円</span></div></div><div class="feHint" style="align-self:end;padding-bottom:8px">空けておくと、教室のいつもの月謝（${feeYen(+(SET && SET.fee_default) || 0)}）になります</div></div>` : ''}
       <div class="grid4"><div><label class="f">いつもの曜日</label><select class="i" id="sWd"><option value="">—</option>${WD.map((w, i) => `<option value="${i}" ${s.lesson_weekday === i ? 'selected' : ''}>${w}曜</option>`).join('')}</select></div>
       <div><label class="f">時刻</label>${timeSel('sTm', String(s.lesson_time || '').slice(0, 5), true)}</div>
@@ -5788,7 +5904,7 @@ function openStudent(s, opt = {}){
   };
   /* 写真を かえて かきなおす ときに、入力中の 名前などを のこす */
   let kept = null;
-  const keepForm = () => { kept = ['sDisp', 'sKana', 'sNick', 'sFee', 'sWd', 'sPer', 'sMin', 'sRoom', 'sTeach'].map(id => [id, $(id) ? $(id).value : null]); kept.push(['sTm', timeVal('sTm')]); };
+  const keepForm = () => { kept = ['sDisp', 'sKana', 'sNick', 'sJoin', 'sFee', 'sWd', 'sPer', 'sMin', 'sRoom', 'sTeach'].map(id => [id, $(id) ? $(id).value : null]); kept.push(['sTm', timeVal('sTm')]); };
   const restoreForm = () => { if(!kept) return; kept.forEach(([id, v]) => { if(id === 'sTm'){ if(v){ const b = $('sTm'), [hh, mm] = v.split(':'); b.querySelector('[data-p="h"]').value = String(+hh); b.querySelector('[data-p="m"]').value = String(+mm); } } else if($(id) && v != null) $(id).value = v; }); kept = null; };
   const collect = () => {
     odai = [...sh.querySelectorAll('.odaiEd')].map(odaiFromBox);
@@ -5804,6 +5920,8 @@ function openStudent(s, opt = {}){
     if($('sTeach')) row.teacher_id = $('sTeach').value || null;
     { const k = toHira($('sKana').value.trim()).replace(/[　]+/g, ' ').slice(0, 40) || null; if((k || null) !== (s.kana || null)) row.kana = k; }   /* かわった ときだけ おくる */
     if($('sFee')){ const v = $('sFee').value === '' ? null : Math.max(0, Math.round(+$('sFee').value || 0)) || null; if((v || null) !== (+s.fee_amount > 0 ? +s.fee_amount : null)) row.fee_amount = v; }
+    if($('sJoin')){ const v = /^\d{4}-\d{2}-\d{2}$/.test($('sJoin').value) ? $('sJoin').value : null;   /* かわった ときだけ おくる（空に したら 登録した日に もどる） */
+      if(isNew ? v : (v || null) !== (joinDay(s) || null) && (v || s.joined_on)) row.joined_on = v; }
     if(!row.display_name){ toast('名前を入れてください'); return; }
     if(!isNew && $('sAct')) row.active = $('sAct').checked;
     $('sSave').disabled = true;
@@ -5856,33 +5974,52 @@ function lessonHours(les){
   return { H: out, guess: true };
 }
 /* その日の あいている 時間（len 分 以上 あいている ところ）。お休み・中止・振替済みの レッスンは あいている あつかい */
-function freeRanges(ds, dayLes, H, len){
+function freeRanges(ds, dayLes, H, len, gap = 0){
   const [y, m, d] = ds.split('-').map(Number), w = new Date(y, m - 1, d).getDay(), h = H[w];
   if(!h || !h.f || !h.t) return [];
   let a0 = toMin(h.f); const a1 = toMin(h.t);
   if(ds === dayStr()){ const n = new Date(); a0 = Math.max(a0, Math.ceil((n.getHours() * 60 + n.getMinutes() + 1) / 5) * 5); }
-  const busy = (dayLes || []).filter(l => l.kind !== 'open' && !['absent', 'cancelled', 'moved'].includes(l.status)).map(l => { const t = new Date(l.starts_at), s0 = t.getHours() * 60 + t.getMinutes(); return [s0, s0 + (+l.minutes || 30)]; }).sort((p, q) => p[0] - q[0]);
+  /* ふさがっている 時間：レッスン（まえと あとに あいだを とる）と 休けい。お休み・中止・振替済みの レッスンは あき */
+  const busy = (dayLes || []).filter(l => l.kind !== 'open' && !['absent', 'cancelled', 'moved'].includes(l.status)).map(l => { const t = new Date(l.starts_at), s0 = t.getHours() * 60 + t.getMinutes(); return [s0 - gap, s0 + (+l.minutes || 30) + gap]; });
+  if(h.b && h.b.f && h.b.t && toMin(h.b.t) > toMin(h.b.f)) busy.push([toMin(h.b.f), toMin(h.b.t)]);
+  busy.sort((p, q) => p[0] - q[0]);
   const out = []; let cur = a0;
   busy.forEach(([b0, b1]) => { if(b0 > cur) out.push([cur, Math.min(b0, a1)]); cur = Math.max(cur, b1); });
   if(cur < a1) out.push([cur, a1]);
   const opens = (dayLes || []).filter(l => l.kind === 'open' && l.status === 'scheduled').map(l => { const t = new Date(l.starts_at); return t.getHours() * 60 + t.getMinutes(); });
-  return out.filter(([f, t]) => t - f >= len).map(([f, t]) => { const n = Math.floor((t - f) / len), starts = Array.from({ length: n }, (_, i) => f + i * len);
-    return { f, t, n, open: opens.filter(o => o >= f && o < t).length, todo: starts.filter(x => !opens.some(o => Math.abs(o - x) < len)) }; });
+  return out.filter(([f, t]) => t - f >= len).map(([f, t]) => { const step = len + gap, n = Math.floor((t - f + gap) / step), starts = Array.from({ length: n }, (_, i) => f + i * step);
+    return { f, t, n, starts, open: opens.filter(o => o >= f && o < t).length, todo: starts.filter(x => !opens.some(o => Math.abs(o - x) < len)) }; });
 }
+/* 空き時間の 長さと あいだ：教室の 設定（lesson_hours.len / gap）→ この端末 → きほん */
+let FREE_GAP = (() => { try{ const v = localStorage.getItem('mp_free_gap'); return v === null ? null : +v; }catch(e){ return null; } })();
+function freeLen(LH){ return FREE_LEN || (+(LH && LH.H && LH.H.len) || 0) || freeLenDefault(); }
+function freeGap(LH){ return FREE_GAP != null ? FREE_GAP : (+(LH && LH.H && LH.H.gap) || 0); }
+async function saveFreeOpt(key, v){
+  if(key === 'len'){ FREE_LEN = v; try{ localStorage.setItem('mp_free_len', v); }catch(e){} }
+  else { FREE_GAP = v; try{ localStorage.setItem('mp_free_gap', v); }catch(e){} }
+  if(SET && SET.lesson_hours && isOwner()){ const H = Object.assign({}, SET.lesson_hours, { [key]: v }); try{ await DB.updSettings({ lesson_hours: H }); SET.lesson_hours = H; }catch(e){} }
+}
+const hoursTxt = (H, order) => order.filter(w => H[w]).map(w => `${WD[w]} ${H[w].f}〜${H[w].t}${H[w].b ? `（休けい ${H[w].b.f}〜${H[w].b.t}）` : ''}`).join('・');
 function openHours(les){
   const LH = lessonHours(les), H = JSON.parse(JSON.stringify(LH.H)), sh = $('lesSheet');
   const order = WEEK_START ? [1, 2, 3, 4, 5, 6, 0] : [0, 1, 2, 3, 4, 5, 6];
   sh.innerHTML = `<h3>${ti('clock', 24)}レッスンできる時間</h3>
     <div class="muted">曜日ごとに、レッスンをしてよい時間を決めます。「空き時間」は、この時間から入っているレッスンをのぞいて出します。${LH.guess ? 'いまは、いつもの予定から見つもった時間が入っています。' : ''}</div>
     <div class="hrsList">${order.map(w => `<div class="hrsRow${H[w] ? '' : ' off'}" data-w="${w}"><label class="hrsOn"><input type="checkbox" ${H[w] ? 'checked' : ''}><b class="${w === 0 ? 'sun' : w === 6 ? 'sat' : ''}">${WD[w]}曜</b></label>
-      <div class="hrsT">${timeSel('hf' + w, H[w] ? H[w].f : '15:00', false, [7, 22])}<span>〜</span>${timeSel('ht' + w, H[w] ? H[w].t : '19:00', false, [7, 22])}</div><span class="hrsOff">お休み</span></div>`).join('')}</div>
+      <div class="hrsT">${timeSel('hf' + w, H[w] ? H[w].f : '15:00', false, [7, 22])}<span>〜</span>${timeSel('ht' + w, H[w] ? H[w].t : '19:00', false, [7, 22])}</div><span class="hrsOff">お休み</span>
+      <div class="hrsB${H[w] && H[w].b ? ' on' : ''}"><label><input type="checkbox" class="hrsBOn" ${H[w] && H[w].b ? 'checked' : ''}>休けい</label><div class="hrsBT">${timeSel('bf' + w, H[w] && H[w].b ? H[w].b.f : '12:00', false, [7, 22])}<span>〜</span>${timeSel('bt' + w, H[w] && H[w].b ? H[w].b.t : '13:00', false, [7, 22])}</div></div></div>`).join('')}</div>
+    <div class="note">お昼や夕方の休けいがある曜日は「休けい」にチェックを入れると、その時間は空き時間から外れます。教室のお休みの日（カレンダーで「教室お休み」にした日）も、空き時間には出ません。</div>
     <div class="foot"><button class="btn w" id="hrCancel">やめる</button><button class="btn g" id="hrSave">${ti('check', 18)}保存</button></div>`;
-  sh.querySelectorAll('.hrsRow').forEach(r => r.querySelector('input').addEventListener('change', e => r.classList.toggle('off', !e.target.checked)));
+  sh.querySelectorAll('.hrsRow').forEach(r => { r.querySelector('.hrsOn input').addEventListener('change', e => r.classList.toggle('off', !e.target.checked));
+    r.querySelector('.hrsBOn').addEventListener('change', e => r.querySelector('.hrsB').classList.toggle('on', e.target.checked)); });
   $('hrCancel').addEventListener('click', () => $('lesOv').classList.remove('show'));
   $('hrSave').addEventListener('click', async () => {
     const out = {}; let bad = '';
-    sh.querySelectorAll('.hrsRow').forEach(r => { const w = r.dataset.w; if(!r.querySelector('input').checked) return; const f = timeVal('hf' + w), t = timeVal('ht' + w); if(toMin(t) <= toMin(f)) bad = WD[w]; out[w] = { f, t }; });
-    if(bad){ toast(`${bad}曜の時間が逆になっています`); return; }
+    sh.querySelectorAll('.hrsRow').forEach(r => { const w = r.dataset.w; if(!r.querySelector('.hrsOn input').checked) return; const f = timeVal('hf' + w), t = timeVal('ht' + w); if(toMin(t) <= toMin(f)) bad = WD[w] + '曜の時間が逆になっています'; out[w] = { f, t };
+      if(r.querySelector('.hrsBOn').checked){ const bf = timeVal('bf' + w), bt = timeVal('bt' + w); if(toMin(bt) <= toMin(bf)) bad = WD[w] + '曜の休けいの時間が逆になっています'; else out[w].b = { f: bf, t: bt }; } });
+    if(bad){ toast(bad); return; }
+    ['len', 'gap'].forEach(k => { if(SET && SET.lesson_hours && SET.lesson_hours[k] != null) out[k] = SET.lesson_hours[k]; });
+    if(out.len == null && FREE_LEN) out.len = FREE_LEN; if(out.gap == null && FREE_GAP != null) out.gap = FREE_GAP;
     try{ localStorage.setItem('mp_lesson_hours', JSON.stringify(out)); }catch(e){}
     try{ await DB.updSettings({ lesson_hours: out }); SET.lesson_hours = out; toast('保存しました'); }
     catch(e){ toast(/lesson_hours/.test(e.message) ? 'この端末に保存しました（SQL をもう一度流すと、ほかの端末でも同じになります）' : '保存できませんでした：' + e.message, 5000); }
@@ -5943,7 +6080,7 @@ async function viewSched(m){
   const td = dayStr(), ym = y + '-' + pad(mo + 1);
   let view = 'cal'; try{ view = localStorage.getItem('mp_sched_view') || 'cal'; }catch(e){}
   h += `<div class="schedTools"><div class="seg" role="tablist"><button data-v="cal" class="${view === 'cal' ? 'on' : ''}">${ti('sched', 18)}カレンダー</button><button data-v="list" class="${view === 'list' ? 'on' : ''}">${ti('list', 18)}一覧</button><button data-v="free" class="${view === 'free' ? 'on' : ''}">${ti('clock', 18)}空き時間</button></div>${view === 'cal' ? weekStartSeg('wsCal') : ''}</div>`;
-  const LH = lessonHours(les), FLEN = FREE_LEN || freeLenDefault();
+  const LH = lessonHours(les), FLEN = freeLen(LH), GAP = freeGap(LH);
   if(view === 'cal'){
     if(!schedSel || !schedSel.startsWith(ym)) schedSel = td.startsWith(ym) ? td : (days[0] || ym + '-01');
     const startW = (new Date(y, mo, 1).getDay() - WEEK_START + 7) % 7, nDays = new Date(y, mo + 1, 0).getDate();
@@ -5958,7 +6095,7 @@ async function viewSched(m){
         const col = s ? COLORS[((s.avatar && s.avatar.c) | 0) % COLORS.length] : '#9BC7AE';
         return `<span class="cc ${cls}${l.kind !== 'open' && !l.published ? ' unpub' : ''}" data-l="${l.id}" title="${esc(hm(l.starts_at) + ' ' + (l.kind === 'open' ? '空き枠' : nameOf(s)) + (lesIrr(l) ? `（変更：${lesIrr(l).lab}。いつもは ${lesIrr(l).usual}）` : ''))}">${l.kind === 'open' ? '<em class="o">空</em>' : `<em style="background:${col};color:${inkOn(col)}">${esc(initName(s))}</em>`}${hm(l.starts_at)}<i>${l.kind === 'open' ? '空き枠' : esc(shortName(s))}</i></span>`;
       }).join('');
-      cal += `<button class="cd${ds === td ? ' today' : ''}${ds === schedSel ? ' sel' : ''}${closed.has(ds) ? ' closed' : ''}${w === 0 || jpHoliday(ds) ? ' sun' : w === 6 ? ' sat' : ''}${jpHoliday(ds) ? ' holi' : ''}" data-day="${ds}"><span class="dn">${dd}${closed.has(ds) ? '<span class="cl">教室お休み</span>' : ''}${jpHoliday(ds) ? `<span class="hol" title="${esc(jpHoliday(ds))}">${esc(jpHoliday(ds))}</span>` : ''}</span>${chips}${(() => { if(ds < td || closed.has(ds)) return ''; const n = freeRanges(ds, list, LH.H, FLEN).reduce((a, r) => a + r.n, 0); return n ? `<span class="freeTag" title="${FLEN}分のレッスンが入る あき">あき ${FLEN}分×${n}</span>` : ''; })()}</button>`;
+      cal += `<button class="cd${ds === td ? ' today' : ''}${ds === schedSel ? ' sel' : ''}${closed.has(ds) ? ' closed' : ''}${w === 0 || jpHoliday(ds) ? ' sun' : w === 6 ? ' sat' : ''}${jpHoliday(ds) ? ' holi' : ''}" data-day="${ds}"><span class="dn">${dd}${closed.has(ds) ? '<span class="cl">教室お休み</span>' : ''}${jpHoliday(ds) ? `<span class="hol" title="${esc(jpHoliday(ds))}">${esc(jpHoliday(ds))}</span>` : ''}</span>${chips}${(() => { if(ds < td || closed.has(ds)) return ''; const n = freeRanges(ds, list, LH.H, FLEN, GAP).reduce((a, r) => a + r.n, 0); return n ? `<span class="freeTag" title="${FLEN}分のレッスンが入る あき">あき ${FLEN}分×${n}</span>` : ''; })()}</button>`;
     }
     const tail = (7 - (startW + nDays) % 7) % 7; for(let i = 0; i < tail; i++) cal += '<div class="cd blank"></div>';
     cal += `</div><div class="calLeg"><span class="cc reg">いつもの</span><span class="cc reg irr">変更（いつもと別の日・時間）</span><span class="cc mk">振替</span><span class="cc ex">追加</span><span class="cc open">空き枠</span><span class="cc ab">お休み</span><span class="cc reg unpub">未公開</span></div></div>`;
@@ -5967,23 +6104,25 @@ async function viewSched(m){
     h += `<div class="card"><h2><span class="tile ${schedSel === td ? 'co' : 'mu'}">${ti('sched', 22)}</span><span>${sm}/${sd}（${WD[sw]}）${jpHoliday(schedSel) ? '・' + esc(jpHoliday(schedSel)) : ''}${schedSel === td ? '・きょう' : ''}</span>${closed.has(schedSel) ? '<span class="pill ab">教室お休み</span>' : ''}</h2><div class="dayActs"><button class="btn sm w" id="addDay">${ti('plus', 16)}この日にレッスンを入れる</button><button type="button" class="closeSw${closed.has(schedSel) ? ' on' : ''}" id="closeDay" role="switch" aria-checked="${closed.has(schedSel)}"><span class="csTrack"><span class="csKnob"></span></span><span class="csLab"><b>${closed.has(schedSel) ? 'この日は教室のお休みです' : 'この日を教室のお休みにする'}</b><small>${closed.has(schedSel) ? 'もう一度押すと、お休みをやめます' : '押すと、この日の予定は中止になります'}</small></span></button></div>
       <div class="list">${(byDay[schedSel] || []).length ? schedRows(byDay[schedSel]) : emptyRow('moon', 'この日の予定はありません')}</div></div>`;
   } else if(view === 'free'){
-    const lens = [...new Set([30, 45, 60, FLEN])].sort((a, b) => a - b);
+    const LENS = Array.from({ length: 24 }, (_, i) => 10 + i * 5), GAPS = [0, 5, 10, 15, 20, 25, 30];
     const order = WEEK_START ? [1, 2, 3, 4, 5, 6, 0] : [0, 1, 2, 3, 4, 5, 6];
-    const hrsTxt = order.filter(w => LH.H[w]).map(w => `${WD[w]} ${LH.H[w].f}〜${LH.H[w].t}`).join('・') || 'まだ決まっていません';
+    const hrsTxt = hoursTxt(LH.H, order) || 'まだ決まっていません';
     const nDays = new Date(y, mo + 1, 0).getDate();
     let rows = '', tot = 0;
     for(let dd = 1; dd <= nDays; dd++){
       const ds = ym + '-' + pad(dd); if(ds < td || closed.has(ds)) continue;
-      const R = freeRanges(ds, byDay[ds] || [], LH.H, FLEN); if(!R.length) continue;
+      const R = freeRanges(ds, byDay[ds] || [], LH.H, FLEN, GAP); if(!R.length) continue;
       const w = new Date(y, mo, dd).getDay(); tot += R.reduce((a, r) => a + r.n, 0);
-      rows += `<div class="frDay"><div class="frD${w === 0 || jpHoliday(ds) ? ' sun' : w === 6 ? ' sat' : ''}"><b>${mo + 1}/${dd}（${WD[w]}）</b>${jpHoliday(ds) ? `<small>${esc(jpHoliday(ds))}</small>` : ''}</div><div class="frList">${R.map(r => `<div class="frR"><div class="frT"><b>${fromMin(r.f)}〜${fromMin(r.t)}</b><small>${r.t - r.f}分あき・${FLEN}分のレッスンが${r.n}コマ入ります${r.open ? `（空き枠 ${r.open}つ 公開ずみ）` : ''}</small></div>
+      rows += `<div class="frDay"><div class="frD${w === 0 || jpHoliday(ds) ? ' sun' : w === 6 ? ' sat' : ''}"><b>${mo + 1}/${dd}（${WD[w]}）</b>${jpHoliday(ds) ? `<small>${esc(jpHoliday(ds))}</small>` : ''}</div><div class="frList">${R.map(r => `<div class="frR"><div class="frT"><b>${fromMin(r.f)}〜${fromMin(r.t)}</b><small>${FLEN}分のレッスンが${r.n}コマ入ります（${r.starts.map(fromMin).join('・')}）${r.open ? `・空き枠 ${r.open}つ 公開ずみ` : ''}</small></div>
         <div class="frB"><button type="button" class="btn sm w" data-fradd="${ds}|${fromMin(r.f)}">${ti('plus', 16)}レッスンを入れる</button>${r.todo.length ? `<button type="button" class="btn sm w" data-fropen="${ds}|${r.todo.join(',')}">${ti('plus', 16)}空き枠にする${r.todo.length > 1 ? `（${r.todo.length}コマ）` : ''}</button>` : `<span class="pill ok">${ti('check', 14)}空き枠 公開ずみ</span>`}</div></div>`).join('')}</div></div>`;
     }
     h += `<div class="card freeCard">${H2('clock', 'le', '空き時間をさがす', tot ? `${FLEN}分 × ${tot}コマ` : '')}
-      <div class="frTop"><span class="frLab">レッスンの長さ</span><div class="seg sm" id="frLen">${lens.map(n => `<button type="button" data-fl="${n}" class="${n === FLEN ? 'on' : ''}">${n}分</button>`).join('')}</div></div>
+      <div class="frTop"><label class="frOpt"><span class="frLab">レッスンの長さ</span><select class="i" id="frLenSel">${LENS.concat(LENS.includes(FLEN) ? [] : [FLEN]).sort((a, b) => a - b).map(n => `<option value="${n}" ${n === FLEN ? 'selected' : ''}>${n}分</option>`).join('')}</select></label>
+        <div class="seg sm" id="frLen">${[30, 45, 60].map(n => `<button type="button" data-fl="${n}" class="${n === FLEN ? 'on' : ''}">${n}分</button>`).join('')}</div>
+        <label class="frOpt"><span class="frLab">レッスンのあいだ</span><select class="i" id="frGapSel">${GAPS.concat(GAPS.includes(GAP) ? [] : [GAP]).sort((a, b) => a - b).map(n => `<option value="${n}" ${n === GAP ? 'selected' : ''}>${n ? n + '分あける' : 'あけない'}</option>`).join('')}</select></label></div>
       <div class="frHours"><span>${LH.guess ? '<b>レッスンできる時間（いまの予定から見つもり）</b>' : '<b>レッスンできる時間</b>'}<small>${esc(hrsTxt)}</small></span>${isOwner() ? `<button type="button" class="btn sm w" id="frHrs">${ti('pencil', 16)}${LH.guess ? '決める' : '変える'}</button>` : ''}</div>
       <div class="list frWrap">${rows || emptyRow('sparkle', `${mo + 1}月は、${FLEN}分のあきがありません（教室のお休みの日と、過ぎた日はのぞいています）`)}</div>
-      <div class="note">レッスンできる時間から、入っているレッスンをのぞいたところです。お休み・中止・振替済みのレッスンは、あいている時間として数えます。「空き枠にする」と、保護者が振替で選べる枠になります。</div></div>`;
+      <div class="note">レッスンできる時間から、入っているレッスンと休けいをのぞいたところです。「レッスンのあいだ」を決めると、前後のレッスンとのあいだにその分をあけて数えます。教室のお休みの日と過ぎた日は出ません。生徒のお休み・中止・振替済みのレッスンは、あいている時間として数えます。「空き枠にする」と、保護者が振替で選べる枠になります。</div></div>`;
   } else {
     h += '<div class="card">';
     if(!days.length) h += emptyRow('sched', 'この月の予定はまだありません。「いつもの曜日から下書きをつくる」で下書きができます');
@@ -5996,7 +6135,9 @@ async function viewSched(m){
   m.innerHTML = h;
   m.querySelectorAll('.seg [data-v]').forEach(b => b.addEventListener('click', () => { try{ localStorage.setItem('mp_sched_view', b.dataset.v); }catch(e){} render(); }));
   m.querySelectorAll('#wsCal [data-ws]').forEach(b => b.addEventListener('click', () => { if(+b.dataset.ws === WEEK_START) return; setWeekStart(+b.dataset.ws); render(); }));
-  m.querySelectorAll('#frLen [data-fl]').forEach(b => b.addEventListener('click', () => { FREE_LEN = +b.dataset.fl; try{ localStorage.setItem('mp_free_len', FREE_LEN); }catch(e){} render(); }));
+  m.querySelectorAll('#frLen [data-fl]').forEach(b => b.addEventListener('click', async () => { await saveFreeOpt('len', +b.dataset.fl); render(); }));
+  const fls = $('frLenSel'); if(fls) fls.addEventListener('change', async () => { await saveFreeOpt('len', +fls.value); render(); });
+  const fgs = $('frGapSel'); if(fgs) fgs.addEventListener('change', async () => { await saveFreeOpt('gap', +fgs.value); render(); });
   const frh = $('frHrs'); if(frh) frh.addEventListener('click', () => openHours(les));
   m.querySelectorAll('[data-fradd]').forEach(b => b.addEventListener('click', () => { const [d, t] = b.dataset.fradd.split('|'); openLesson(null, 'regular', d, t, FLEN); }));
   m.querySelectorAll('[data-fropen]').forEach(b => b.addEventListener('click', async () => {
@@ -6008,7 +6149,7 @@ async function viewSched(m){
     try{ await DB.addLessons(rows); toast(`空き枠を ${rows.length}つ つくりました`); render(); }catch(e){ toast('つくれませんでした：' + e.message); b.disabled = false; }
   }));
   /* 日を えらぶ。おなじ 日を すぐに もう1回（ダブルクリック・ダブルタップ）で、その日に レッスンを 入れる */
-  const dayTime = ds => { const R = freeRanges(ds, byDay[ds] || [], LH.H, FLEN); if(R.length) return fromMin(R[0].f);
+  const dayTime = ds => { const R = freeRanges(ds, byDay[ds] || [], LH.H, FLEN, GAP); if(R.length) return fromMin(R[0].f);
     const L = (byDay[ds] || []).filter(l => l.kind !== 'open' && l.status !== 'cancelled'); if(L.length){ const x = L[L.length - 1], t = new Date(x.starts_at); return fromMin(Math.min(22 * 60, t.getHours() * 60 + t.getMinutes() + (+x.minutes || 30))); }
     const w = new Date(ds + 'T12:00:00').getDay(); return (LH.H[w] && LH.H[w].f) || '16:00'; };
   m.querySelectorAll('.cd[data-day]').forEach(b => b.addEventListener('click', e => {
@@ -6615,7 +6756,7 @@ async function viewSettings(m){
       <span class="muted" style="flex:1">「保存」でアプリに反映されます</span><button class="btn g" id="cSave">保存</button></div>
     ${ntCardHTML()}${roomsTeachersHTML(invites)}${calCardHTML()}${DEMO_MULTI ? `<div class="card"><button class="btn w" id="asStaff">${ti('eye', 18)}講師の画面を見てみる（見本）</button></div>` : ''}
     <div class="row" style="justify-content:center;margin-top:8px;gap:18px;flex-wrap:wrap"><button class="linkBtn" id="suShow">${ti('flag', 16)}「はじめの準備」をもう一度出す</button>${DEMO ? '' : `<button class="linkBtn" id="logoutBtn2">${ti('door', 16)}ログアウト</button>`}</div>
-    <div class="verTag">先生の画面 v2026.09.30-11</div>`;
+    <div class="verTag">先生の画面 v2026.09.30-15</div>`;
   m.innerHTML = h;
   $('suShow').addEventListener('click', () => { try{ localStorage.removeItem(SETUP_KEY()); }catch(e){} SETUP_FORCE = true; goTab('today'); });
   /* 保存の バーは なにか かえた ときだけ 出す（あいた すきまや 重なりを ださない） */

@@ -2355,6 +2355,42 @@ body.kbd #nIntroSub::after{content:'けんばんに でる もじの キーで�
 /* 地図を スクロール中は 地図の アニメを とめる（iPhone で 絵が 間に合わず みどりだけ 見えるのを ふせぐ） */
 #mapScroll.scrolling #mapSvg *, #mapScroll.scrolling #mapSvg{animation-play-state:paused !important}
 .odMicNote{text-align:center;font-size:12.5px;line-height:1.6;color:var(--ink2,#6B5A4E);margin:8px auto 0;max-width:22em;word-break:keep-all;overflow-wrap:anywhere}
+/* 音のテスト */
+#otoOv{position:fixed;inset:0;z-index:9000;background:rgba(48,34,27,.5);display:none;align-items:flex-start;justify-content:center;padding:calc(16px + env(safe-area-inset-top,0px)) 14px 16px;overflow-y:auto}
+#otoOv.show{display:flex}
+.otoBox{background:var(--paper,#FFFBF2);color:var(--ink,#3B2A22);border-radius:22px;border:2.5px solid var(--ink,#3B2A22);max-width:460px;width:100%;padding:18px 16px 14px;box-shadow:0 6px 0 rgba(59,42,34,.9)}
+.otoBox h3{font-size:19px;font-weight:900;margin:0 0 6px}
+.otoBox p{font-size:13px;line-height:1.7;margin:0 0 12px;color:var(--ink2,#6B5A4E)}
+.otoBtns{display:grid;gap:8px}
+.otoBtns button,.otoFoot button{font:inherit;font-weight:900;font-size:15px;text-align:left;padding:12px 14px;border-radius:14px;border:2px solid var(--ink,#3B2A22);background:#fff;color:inherit;cursor:pointer;display:flex;gap:10px;align-items:center}
+.otoBtns button b{font-size:18px;color:#D9644C}
+.otoBtns button:active{transform:translateY(1px)}
+.otoSw{display:flex;align-items:center;gap:10px;margin:14px 0 8px;font-weight:900;font-size:14px}
+.otoSw span{flex:1;min-width:0}
+.otoSw small{display:block;font-weight:700;font-size:11.5px;color:var(--ink2,#6B5A4E);margin-top:2px}
+.otoSw input{width:26px;height:26px;flex:0 0 auto}
+.otoTbl{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:6px}
+.otoTbl th{text-align:left;font-weight:900;padding:5px 8px 5px 0;white-space:nowrap;vertical-align:top;width:1%}
+.otoTbl td{padding:5px 0;word-break:break-all}
+.otoTbl tr+tr{border-top:1px dashed #E3D7C4}
+.otoFoot{display:flex;justify-content:flex-end;margin-top:12px}
+.otoFoot button{justify-content:center;min-width:110px}
+/* あそびの とちゅうで 音が とまったとき */
+#stallOv{position:fixed;inset:0;z-index:8500;display:none;align-items:center;justify-content:center;background:rgba(48,34,27,.42);padding:16px;-webkit-tap-highlight-color:transparent}
+#stallOv.show{display:flex}
+#stallOv .stBox{background:var(--paper,#FFFBF2);border:2.5px solid var(--ink,#3B2A22);border-radius:24px;box-shadow:0 6px 0 rgba(59,42,34,.9);padding:22px 18px 18px;max-width:340px;width:100%;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+#stallOv b{font-size:21px;font-weight:900;color:var(--ink,#3B2A22)}
+#stallOv span{font-size:14px;font-weight:700;color:var(--ink2,#6B5A4E);line-height:1.6}
+#stallOv button{font:inherit;font-weight:900;border-radius:18px;border:2.5px solid var(--ink,#3B2A22);cursor:pointer;width:100%}
+#stallOv .stGo{margin-top:8px;min-height:72px;font-size:20px;background:#E07A5F;color:#FFFBF4;box-shadow:0 4px 0 var(--ink,#3B2A22)}
+#stallOv .stGo:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink,#3B2A22)}
+#stallOv .stAgain{display:none;min-height:52px;font-size:15px;background:#fff;color:var(--ink,#3B2A22)}
+#stallOv.hard .stAgain{display:block}
+/* おんぷ：あたらしい おとが はじめて でた とき、こたえの けんばんを ひからせる */
+#nFeedback.fresh{color:#B24A37}
+.akW.hintK,.akB.hintK{animation:hintK 1.1s ease-in-out infinite;box-shadow:inset 0 0 0 5px #E3B143,0 0 16px 3px rgba(227,177,67,.85)}
+@keyframes hintK{50%{box-shadow:inset 0 0 0 5px rgba(227,177,67,.55),0 0 4px 0 rgba(227,177,67,.3)}}
+@media (prefers-reduced-motion:reduce){ .akW.hintK,.akB.hintK{animation:none} }
 
 /* ---------- きょうざい（おだいに つく ずかん）：こどもアプリと 先生の がめんで いっしょ ---------- */
 .kzWrap{width:min(560px,100%);display:flex;flex-direction:column;gap:14px}
@@ -2944,7 +2980,7 @@ ruby rt{font-weight:700;color:#6E5B50}
    ・同じ地図に 教室みんなの主人公（ニックネーム・順位なし）
    ・おうちのひと：予定・振替・おしらせ・れんらくちょう
    ========================================================= */
-const APP_VER = 'v2026.09.30-11';   /* なおしたら かならず あげる（アップした ものが あたらしいか、おうちのかた→設定の いちばん したで たしかめられる） */
+const APP_VER = 'v2026.09.30-15';   /* なおしたら かならず あげる（アップした ものが あたらしいか、おうちのかた→設定の いちばん したで たしかめられる） */
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -3125,7 +3161,9 @@ let audio = null, songGain = null;
    ・マイクを つかう あいだだけ「再生と 録音」に する（「再生」の ままだと マイクが つかえない） */
 const IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 let MIC_USE = 0, SIL_EL = null;
-function sessPlayback(){ try{ if(navigator.audioSession && !MIC_USE && navigator.audioSession.type !== 'playback') navigator.audioSession.type = 'playback'; }catch(e){} }
+/* マナーモード対策：おうちのかた →「音のテスト」で きれる（音が でない 端末の しらべもの） */
+const IOS_FIX = () => { try{ return localStorage.getItem('mp_iosfix') !== 'off'; }catch(e){ return true; } };
+function sessPlayback(){ try{ if(IOS_FIX() && navigator.audioSession && !MIC_USE && navigator.audioSession.type !== 'playback') navigator.audioSession.type = 'playback'; }catch(e){} }
 function micSession(on){
   MIC_USE = Math.max(0, MIC_USE + (on ? 1 : -1));
   try{ if(navigator.audioSession) navigator.audioSession.type = MIC_USE ? 'play-and-record' : 'playback'; }catch(e){}
@@ -3138,8 +3176,9 @@ function silentWavUrl(){
   v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, 'data'); v.setUint32(40, n * 2, true);
   return URL.createObjectURL(new Blob([b], { type: 'audio/wav' }));
 }
+/* むおんの 音で みちを ひらくのは、「音の しゅるい」を 決められない 古い 端末・アプリの 中だけ（あたらしい Safari は sessPlayback で たりる） */
 function iosMediaChannel(){
-  if(!IOS || MIC_USE || document.visibilityState !== 'visible') return;
+  if(!IOS || MIC_USE || !IOS_FIX() || navigator.audioSession || document.visibilityState !== 'visible') return;
   try{
     if(!SIL_EL){ SIL_EL = document.createElement('audio'); SIL_EL.setAttribute('x-webkit-airplay', 'deny'); SIL_EL.setAttribute('playsinline', ''); SIL_EL.preload = 'auto'; SIL_EL.loop = true; SIL_EL.src = silentWavUrl(); SIL_EL.disableRemotePlayback = true; }
     if(SIL_EL.paused){ const r = SIL_EL.play(); if(r && r.catch) r.catch(() => {}); }
@@ -3168,12 +3207,17 @@ function ensureAudio(){
 /* iPhone・iPad：音は「タッチした その しゅんかん」に しか おこせない。
    どの タッチでも、とまっている 音を おこす（さいしょの 1かいは むおんを ならして 音の みちを ひらく） */
 let AUDIO_UNLOCKED = false;
+let AUDIO_BAD = 0;   /* タッチしても おきなかった かいすう */
 function audioWake(){
   try{
-    sessPlayback(); iosMediaChannel();
+    sessPlayback();
+    /* まえの タッチで おきなかった 音は、この タッチで つくりなおす（iPhone で「中断」の まま もどらない ことが ある） */
+    if(audio && AUDIO_BAD >= 2 && audio.state !== 'running' && !busyAudio()) audioReset();
     if(!audio) audio = new (window.AudioContext || window.webkitAudioContext)();
-    if(audio.state !== 'running'){ const r = audio.resume(); if(r && r.catch) r.catch(() => {}); }
+    if(audio.state !== 'running'){ const r = audio.resume(); if(r && r.catch) r.catch(() => {}); const a = audio; setTimeout(() => { if(a === audio) AUDIO_BAD = a.state === 'running' ? 0 : AUDIO_BAD + 1; }, 450); }
+    else AUDIO_BAD = 0;
     if(!AUDIO_UNLOCKED){ const b = audio.createBuffer(1, 1, 22050), s = audio.createBufferSource(); s.buffer = b; s.connect(audio.destination); s.start(0); AUDIO_UNLOCKED = true; }
+    iosMediaChannel();
   }catch(e){}
 }
 ['pointerdown', 'touchend', 'click', 'keydown'].forEach(ev => document.addEventListener(ev, audioWake, { capture: true, passive: true }));
@@ -3187,12 +3231,12 @@ function audioReady(ms = 900){
     chk();
   });
 }
-function audioHelp(){ toast('おとが でないときは、おとの おおきさと、iPhoneの よこの スイッチ（マナーモード）を たしかめて、もういちど タッチしてね', 5200); }
+function audioHelp(){ toast('おとが でないときは、おとの おおきさを たしかめて、もういちど タッチしてね（おうちのかた →「せってい」→「音のテスト」）', 5200); }
 /* ならしている あいだに 音が とまったら（でんわ・よみあげ・ほかの アプリ）、もどす */
 setInterval(() => {
+  if(STALL.on && !(STALL.alive && STALL.alive())) stallHide();   /* あそびが おわったら「とまっちゃった」も けす */
   if(!audio || audio.state === 'running' || document.visibilityState !== 'visible') return;
-  const busy = (typeof KM !== 'undefined' && KM.on) || (typeof playing !== 'undefined' && playing);
-  if(busy){ const r = audio.resume(); if(r && r.catch) r.catch(() => {}); }
+  if(busyAudio()){ const r = audio.resume(); if(r && r.catch) r.catch(() => {}); }
 }, 500);
 /* ほかの アプリから もどった とき、とまった 音を もどす */
 document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible' && audio && audio.state !== 'running'){ const r = audio.resume(); if(r && r.catch) r.catch(() => {}); } });
@@ -3224,6 +3268,108 @@ function gameHush(){
   const g = GAME_OUT, t = audio.currentTime; GAME_OUT = null;
   try{ g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(0, t + .06); }catch(e){}
   setTimeout(() => { try{ g.disconnect(); }catch(e){} }, 180);
+}
+function busyAudio(){ try{ return (typeof KM !== 'undefined' && KM.on) || (typeof MT !== 'undefined' && MT.on) || (typeof playing !== 'undefined' && playing) || (typeof nPlaying !== 'undefined' && nPlaying && typeof nRow !== 'undefined' && nRow && nRow.timed); }catch(e){ return false; } }
+/* ---------- あそびの とちゅうで 音の とけいが とまったら ----------
+   リズム・おんぷ（リズムに のって よむ）は 音の とけいで すすむ。iPhone で 音が とめられると（よみあげ・通知・ほかの 音）、
+   画面も そこで とまる。そのときは「とまっちゃった」を 出して、タッチで 音を おこす（音と 画面は ずれずに つづく）。
+   2かい タッチしても うごかない ときだけ「はじめから やりなおす」を 出す */
+const STALL = { t: -1, p: 0, on: false, tries: 0, restart: null, alive: null };
+function audioStallCheck(restart, alive){
+  if(!audio) return false;
+  const t = audio.currentTime, p = performance.now();
+  STALL.restart = restart; STALL.alive = alive;
+  if(t !== STALL.t){ STALL.t = t; STALL.p = p; if(STALL.on) stallHide(); return false; }
+  if(!STALL.on && p - STALL.p > 450 && document.visibilityState === 'visible') stallShow();
+  return STALL.on;
+}
+function stallShow(){
+  STALL.on = true; STALL.tries = 0;
+  let o = document.getElementById('stallOv');
+  if(!o){
+    o = document.createElement('div'); o.id = 'stallOv'; document.body.appendChild(o);
+    o.addEventListener('click', e => {
+      const b = e.target.closest('button');
+      if(b && b.dataset.st === 'again'){ const r = STALL.restart; stallHide(); try{ if(r) r(); }catch(x){} if(!busyAudio()){ audioReset(); audioWake(); } return; }
+      STALL.tries++; audioWake();
+      try{ if(audio){ const r = audio.resume(); if(r && r.catch) r.catch(() => {}); } }catch(x){}
+      setTimeout(() => { if(STALL.on && STALL.tries >= 2) o.classList.add('hard'); }, 600);
+    });
+  }
+  o.className = 'show';
+  o.innerHTML = `<div class="stBox"><b>おとが とまっちゃった</b><span>タッチすると、つづきから はじまるよ</span><button type="button" data-st="go" class="stGo">タッチして つづける</button><button type="button" data-st="again" class="stAgain">はじめから やりなおす</button></div>`;
+}
+function stallHide(){ STALL.on = false; STALL.tries = 0; const o = document.getElementById('stallOv'); if(o) o.className = ''; }
+/* 音の しくみを つくりなおす（まえの しくみに つないだ ものも ぜんぶ はずす） */
+function audioReset(){
+  try{ if(typeof MT !== 'undefined' && MT.on && typeof mtStop === 'function') mtStop(); }catch(e){}
+  try{ if(typeof KM !== 'undefined' && KM.on && typeof kmStop === 'function') kmStop(); }catch(e){}
+  const old = audio; audio = null; fxBus = null; GAME_OUT = null; AUDIO_UNLOCKED = false; AUDIO_BAD = 0;
+  if(songGain){ try{ songGain.disconnect(); }catch(e){} songGain = null; }
+  try{ if(typeof MT !== 'undefined') MT.gain = null; }catch(e){}
+  try{ if(typeof KM !== 'undefined') KM.gain = null; }catch(e){}
+  try{ if(old && old.close) old.close().catch(() => {}); }catch(e){}
+}
+/* ---------- 音のテスト（おうちのかた →「せってい」、または ?oto で ひらく） ----------
+   音が でない 端末で、どこで とまっているかを 画面に だす。スクリーンショットを 教室に おくって もらう */
+let OTO_URL = null, OTO_IV = 0, OTO_LAST = '';
+function otoToneUrl(){
+  if(OTO_URL) return OTO_URL;
+  const sr = 22050, n = Math.floor(sr * 1.3), b = new ArrayBuffer(44 + n * 2), v = new DataView(b), w = (o, t) => { for(let i = 0; i < t.length; i++) v.setUint8(o + i, t.charCodeAt(i)); };
+  w(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); w(8, 'WAVE'); w(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, 'data'); v.setUint32(40, n * 2, true);
+  const notes = [60, 64, 67, 72];
+  for(let i = 0; i < n; i++){
+    const t = i / sr; let x = 0;
+    notes.forEach((m, k) => { const t0 = k * .18, d = t - t0; if(d < 0) return; const f = mf(m), env = Math.min(1, d / .01) * Math.exp(-d * 3.2); x += env * (Math.sin(2 * Math.PI * f * d) * .7 + Math.sin(4 * Math.PI * f * d) * .15); });
+    v.setInt16(44 + i * 2, Math.max(-1, Math.min(1, x * .38)) * 32767, true);
+  }
+  return (OTO_URL = URL.createObjectURL(new Blob([b], { type: 'audio/wav' })));
+}
+function otoEnv(){
+  const ua = navigator.userAgent, os = (ua.match(/OS (\d+)[_.](\d+)/) || [])[0], an = (ua.match(/Android [\d.]+/) || [])[0];
+  const br = /Line\//i.test(ua) ? 'LINEの中' : /CriOS/.test(ua) ? 'Chrome' : /FxiOS/.test(ua) ? 'Firefox' : /Instagram|FBAN|FBAV/.test(ua) ? 'SNSアプリの中' : /Version\/[\d.]+.*Safari/.test(ua) ? 'Safari' : /Chrome\//.test(ua) ? 'Chrome' : 'ほか';
+  return (os ? 'iOS ' + os.replace(/^OS /, '').replace('_', '.') : an || (navigator.platform || '')) + '・' + br + (window.matchMedia && matchMedia('(display-mode: standalone)').matches ? '（ホーム画面から）' : '');
+}
+const otoSt = a => !a ? 'まだ つくっていない' : ({ running: 'うごいている', suspended: 'とまっている', interrupted: '中断されている', closed: 'とじている' })[a.state] || a.state;
+function otoRows(){
+  const st = otoSt(audio);
+  const ses = navigator.audioSession ? navigator.audioSession.type : 'この端末には ない';
+  const sil = !IOS ? '—' : navigator.audioSession ? 'つかわない（音の種類で 対策）' : !SIL_EL ? 'まだ' : SIL_EL.paused ? 'とまっている' : 'ながしている';
+  return [['版', APP_VER], ['端末', otoEnv()], ['音のしくみ', st + (audio ? `（${audio.sampleRate}Hz）` : '')], ['時計', audio ? (audio._otoMove ? 'すすんでいる' : 'とまっている') : '—'],
+    ['音の種類', ses], ['マイク', MIC_USE ? 'つかっている' : 'つかっていない'], ['むおんの音', sil], ['さいごに ためしたこと', OTO_LAST || '—']];
+}
+function openOtoTest(){
+  let ov = document.getElementById('otoOv');
+  if(!ov){ ov = document.createElement('div'); ov.id = 'otoOv'; document.body.appendChild(ov); }
+  const fix = IOS_FIX();
+  ov.innerHTML = `<div class="otoBox" role="dialog" aria-label="音のテスト"><h3>音のテスト</h3>
+    <p>上から順に押して、<wbr>音が鳴るか<wbr>確かめてください。<wbr>鳴らないときは、<wbr>この画面の<wbr>スクリーンショットを<wbr>教室に<wbr>送ってください。</p>
+    <div class="otoBtns"><button type="button" data-oto="a"><b>①</b>ピアノの音（いつものしくみ）</button><button type="button" data-oto="b"><b>②</b>べつのしくみの音</button><button type="button" data-oto="c"><b>③</b>音のしくみを つくりなおして鳴らす</button></div>
+    <label class="otoSw"><span>マナーモード対策<small>iPhone・iPad。<wbr>オフにすると、<wbr>マナーモードのときは<wbr>鳴りません</small></span><input type="checkbox" id="otoFix" ${fix ? 'checked' : ''}></label>
+    <table class="otoTbl"><tbody></tbody></table>
+    <div class="otoFoot"><button type="button" data-oto="x">とじる</button></div></div>`;
+  ov.classList.add('show');
+  const draw = () => {
+    if(audio){ const t = audio.currentTime; setTimeout(() => { if(audio) audio._otoMove = audio.currentTime > t; }, 250); }
+    const tb = ov.querySelector('.otoTbl tbody'); if(tb) tb.innerHTML = otoRows().map(([k, v]) => `<tr><th>${k}</th><td>${String(v).replace(/[<>&]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' })[c])}</td></tr>`).join('');
+  };
+  const piano = () => { ensureAudio(); [60, 64, 67, 72].forEach((m, i) => pKeyNote(m, .95, i * .18)); };
+  ov.querySelectorAll('[data-oto]').forEach(b => b.addEventListener('click', () => {
+    const k = b.dataset.oto;
+    if(k === 'x'){ ov.classList.remove('show'); clearInterval(OTO_IV); return; }
+    if(k === 'a'){ piano(); OTO_LAST = '①（しくみ：' + otoSt(audio) + '）'; }
+    if(k === 'b'){ try{ const el = new Audio(otoToneUrl()); el.setAttribute('playsinline', ''); const r = el.play(); OTO_LAST = '②'; if(r && r.then) r.then(() => { OTO_LAST = '②（再生できた）'; draw(); }, e => { OTO_LAST = '②（再生できない：' + (e && e.name || e) + '）'; draw(); }); }catch(e){ OTO_LAST = '②（エラー：' + e.message + '）'; } }
+    if(k === 'c'){ audioReset(); audioWake(); piano(); OTO_LAST = '③（つくりなおした：' + otoSt(audio) + '）'; }
+    setTimeout(draw, 60); setTimeout(draw, 600);
+  }));
+  ov.querySelector('#otoFix').addEventListener('change', e => {
+    try{ localStorage.setItem('mp_iosfix', e.target.checked ? 'on' : 'off'); }catch(x){}
+    if(e.target.checked) sessPlayback(); else { try{ if(navigator.audioSession && !MIC_USE) navigator.audioSession.type = 'auto'; }catch(x){} try{ if(SIL_EL) SIL_EL.pause(); }catch(x){} }
+    OTO_LAST = 'マナーモード対策を ' + (e.target.checked ? 'オン' : 'オフ'); draw();
+  });
+  clearInterval(OTO_IV); OTO_IV = setInterval(() => { if(!ov.classList.contains('show')) return clearInterval(OTO_IV); draw(); }, 700);
+  draw();
 }
 function melodyNote(m, t, dur, vol = .2, type = 'triangle', dest = null){
   if(!audio) return;
@@ -5373,7 +5519,8 @@ function kzStarPath(cx, cy, r){
 function kzFiveCard(m){
   const lh = m.c === 'b', clef = lh ? 'b' : 't', sc = kzScale(m.key), five = sc.slice(0, 5);
   const base = lh ? -10 : 2;
-  const off = kzBestOff(five.map(d => d.dia), base, lh ? [-7, -14] : [0, 7]);
+  /* みぎては いつも まんなかの ド の オクターブから（ド の ときは まんなかの ド。かせんが 1本 でても こちらが ピアノの きほん） */
+  const off = lh ? kzBestOff(five.map(d => d.dia), base, [-7, -14]) : 0;
   const shift = 12 * off / 7;
   const midis = five.map(d => d.midi + shift);
   const fing = i => lh ? 5 - i : i + 1;
@@ -5396,7 +5543,7 @@ function kzFiveCard(m){
   const tag = d => `<span class="kzTag${kzIsBlack(d.midi) ? ' bk' : ''}">${kzH(d.name)}</span>`;
   const el = document.createElement('div');
   el.className = 'kzCard';
-  el.innerHTML = `<div class="kzHead"><span class="kzHand">${lh ? 'ひだりて' : 'みぎて'}</span>${lh ? '5' : '1'}の ゆびを <span style="white-space:nowrap">${tag(five[0])} に おこう</span></div>
+  el.innerHTML = `<div class="kzHead"><span class="kzHand">${lh ? 'ひだりて' : 'みぎて'}</span>${lh ? '5' : '1'}の ゆびを <span style="white-space:nowrap">${midis[0] === 60 ? 'まんなかの ' : ''}${tag(five[0])} に おこう</span></div>
     <div class="kzKbHost">${kzKbd({ from, whites, marks })}</div>
     <div class="kzNote">${blacks.length ? `<b class="kzRed">あかい けんばん</b>は くろい けんばん。${blacks.map(n => `<b>${n}</b>`).join('・')} も ひくよ` : 'しろい けんばん だけで ひけるよ'}${whiteAcc.length ? `<br>${whiteAcc.map(n => `<b>${n}</b>`).join('・')} は しろい けんばん だよ` : ''}</div>
     ${staffSvg}
@@ -5425,7 +5572,7 @@ function kzCadCard(m){
   const lh = m.c === 'b', clef = lh ? 'b' : 't', sc = kzScale(m.key), l = sc[0].dia, base = lh ? -10 : 2, mi = kzMinor(m.key);
   const lt = mi ? kzRaise(sc[6]) : sc[6], third = mi ? 3 : 4;
   const rel = [[0, 2, 4], [-1, 3, 4], [0, 2, 4]];
-  const off = kzBestOff(rel.flat().map(x => l + x), base, lh ? [-7, -14] : [0, 7]);
+  const off = lh ? kzBestOff(rel.flat().map(x => l + x), base, [-7, -14]) : 0;   /* みぎては まんなかの ド の オクターブ（ハ長調の V7 は まんなかの ド の したの シ） */
   const shift = 12 * off / 7, r = sc[0].midi + shift;
   const deg = x => { const i = ((x % 7) + 7) % 7; return i === 6 ? lt : sc[i]; };
   const CH = [
@@ -5438,16 +5585,19 @@ function kzCadCard(m){
   const st = kzStaff({ W: 340, g: 13, T: 38, clef });
   let cols = '', under = '';
   const xs = [0, 1, 2].map(i => st.xStart + 30 + i * ((340 - st.xStart - 60) / 2));
+  /* I・V7 の もじは、いちばん したの おと（まんなかの ド の したの シ など）に かさならない ところへ */
+  const lowY = st.y(Math.min(...CH.flatMap(c => c.notes.map(n => n.d)))) + .46 * st.g;
+  const labY = Math.max(st.bot + 32, Math.ceil(lowY + 22)), bgH = labY + 2;
   CH.forEach((c, i) => {
-    under += `<rect class="kzBg" data-c="${i}" x="${kzF(xs[i] - 30)}" y="6" width="60" height="${st.bot + 34}" rx="14" fill="#FBE6B8"/>`;
+    under += `<rect class="kzBg" data-c="${i}" x="${kzF(xs[i] - 30)}" y="6" width="60" height="${bgH}" rx="14" fill="#FBE6B8"/>`;
     cols += `<g class="kzCol" data-c="${i}">
-      <rect x="${kzF(xs[i] - 30)}" y="6" width="60" height="${st.bot + 34}" fill="transparent"/>${kzColumn(xs[i], c.notes, st, { halo: false })}
-      <text x="${kzF(xs[i])}" y="${st.bot + 32}" text-anchor="middle" font-size="18" font-weight="900" font-family="serif" fill="${INK}">${c.lab}</text></g>`;
+      <rect x="${kzF(xs[i] - 30)}" y="6" width="60" height="${bgH}" fill="transparent"/>${kzColumn(xs[i], c.notes, st, { halo: false })}
+      <text x="${kzF(xs[i])}" y="${labY}" text-anchor="middle" font-size="18" font-weight="900" font-family="serif" fill="${INK}">${c.lab}</text></g>`;
   });
   const el = document.createElement('div');
   el.className = 'kzCard';
   el.innerHTML = `<div class="kzHead"><span class="kzHand">わおん</span>I → V7 → I を ${lh ? 'ひだりて' : 'みぎて'}で</div>
-    <svg class="kzSvg" viewBox="0 0 340 ${st.bot + 44}" xmlns="http://www.w3.org/2000/svg">${under}${st.s}${cols}</svg>
+    <svg class="kzSvg" viewBox="0 0 340 ${labY + 12}" xmlns="http://www.w3.org/2000/svg">${under}${st.s}${cols}</svg>
     <div class="kzChips">${CH.map((c, i) => `<button class="kzChip" data-c="${i}">${c.lab}</button>`).join('')}</div>
     <div class="kzKbHost">${kbFor(CH[0])}</div>
     <div class="kzNote" data-cap>ボタンを おすと、ゆびの いちと おとが かわるよ</div>
@@ -9705,6 +9855,7 @@ function setupLevel(){
   $('rPanel').classList.remove('hide');
   $('rResult').classList.add('hide'); $('rhythm').classList.remove('res');
   $('rhythm').classList.add('pre');   /* はじめる まえは たたく パッドを ださない */
+  say(L.hint);   /* ヒントは えらんだ ときに よむ（はじめる ときには よまない） */
   if(two){
     const e = exOf(L);
     $('padR').classList.toggle('rest', !e.R);
@@ -9839,7 +9990,7 @@ function resize(){
 }
 window.addEventListener('resize', () => setTimeout(resize, 60));
 
-let playing = false, startTime = 0, markers = [], scheduled = [];
+let playing = false, startTime = 0, markers = [], scheduled = [], endAt = 0;   /* endAt：おわる 音の じこく（音の とけいで みる） */
 let gBeatDur = .75;   /* いまのレベルの1拍の長さ（秒） */
 let combo = 0, maxCombo = 0, perfectN = 0, goodN = 0, missN = 0;
 let charJump = 0, charWobble = 0, popups = [], sparks = [];
@@ -9885,7 +10036,7 @@ function buildMarkers(){
 }
 
 function resetGame(){
-  playing = false;
+  playing = false; endAt = 0;
   scheduled.forEach(id => clearTimeout(id)); scheduled = [];
   if(songGain){ try{ songGain.disconnect(); }catch(e){} songGain = null; }
   combo = 0; maxCombo = 0; perfectN = 0; goodN = 0; missN = 0;
@@ -9918,8 +10069,8 @@ function startGame(demo = false){
     for(let b = 0; b < len; b++) tick(startTime + b * beatDur, b % bpb === 0, 1);
     melOf(e).forEach(n => melodyNote(n.m, startTime + n.t * beatDur, Math.max(n.d * beatDur * .92, .12), .17));
     if(demo) markers.forEach(mk => { if(mk.hand === 'L') handSnd('L', startTime + mk.time); });
-    const endS = Math.max(...markers.map(m => m.time + (m.long ? m.dur : 0))) + 1.6;
-    scheduled.push(setTimeout(demo ? endDemo : showResult, (startTime - audio.currentTime + endS) * 1000));
+    const endS = Math.max(...markers.map(m => m.time + (m.long ? m.dur : 0)), ...melOf(e).map(n => (n.t + n.d) * beatDur)) + 1.2;
+    endAt = startTime + endS;   /* 音の とけいで おわりを みる（音が とまった あいだに けっかが 出ないように） */
     return;
   }
   $('tapBtn').disabled = false;
@@ -9931,18 +10082,21 @@ function startGame(demo = false){
   for(let b = 0; b < len; b++) soft ? tick(startTime + b * beatDur, b % song.beatsPerBar === 0, 1) : beatClick(startTime + b * beatDur, b % song.beatsPerBar === 0);
   for(let c = 0; c < song.beatsPerBar; c++)
     soft ? tick(startTime - (song.beatsPerBar - c) * beatDur, c === 0, 1.6) : beatClick(startTime - (song.beatsPerBar - c) * beatDur, c === 0);
-  const endS = Math.max(...markers.map(m => m.time)) + 1.6;
-  scheduled.push(setTimeout(showResult, (startTime - audio.currentTime + endS) * 1000));
+  /* おわりは「さいごの 音が なりおわって、ぱっ の はんていが すんでから」。
+     ぜんおんぷ・にぶおんぷで おわる きょくは、たたいた ときから 1.6秒では まだ ぎゅー の とちゅう */
+  const songEnd = Math.max(0, ...song.notes.map(n => (n.t + n.d) * beatDur));
+  const endS = Math.max(...markers.map(m => m.long ? m.time + m.dur + .8 : m.time + 1.6), songEnd + .5);
+  endAt = startTime + endS;
 }
 $('goBtn').addEventListener('click', async () => {
   ensureAudio();   /* iPhone：タッチした しゅんかんに 音を おこす（あとで おこしても おきない） */
-  const L = LEVELS[curLv - 1];
-  say(L.hint);
-  const [ok] = await Promise.all([audioReady(), new Promise(r => setTimeout(r, 400))]);   /* 音声ガイドのあとにカウントが始まる */
+  /* よみあげは レベルを えらんだ ときに すませて、ここでは とめる（iPhone は よみあげが 音を とめて、リズムが とまる ことが ある） */
+  hush();
+  const [ok] = await Promise.all([audioReady(), new Promise(r => setTimeout(r, 400))]);
   if(!ok) audioHelp();
   startGame(false);
 });
-$('demoBtn').addEventListener('click', async () => { ensureAudio(); popSfx(); say('おてほんを きいてね'); const [ok] = await Promise.all([audioReady(), new Promise(r => setTimeout(r, 400))]); if(!ok) audioHelp(); startGame(true); });
+$('demoBtn').addEventListener('click', async () => { ensureAudio(); hush(); popSfx(); const [ok] = await Promise.all([audioReady(), new Promise(r => setTimeout(r, 400))]); if(!ok) audioHelp(); startGame(true); });
 function endDemo(){
   if(!playing) return;
   playing = false; demoMode = false;
@@ -9954,7 +10108,7 @@ function endDemo(){
 
 /* --- タップ判定（甘め設定） --- */
 function tap(hand = 'R'){
-  if(!playing || demoMode) return;
+  if(!playing || demoMode || STALL.on) return;
   ensureAudio();
   const two = twoHands();
   if(two){ handSnd(hand); flashPad(hand); }
@@ -10105,6 +10259,10 @@ function drawStar(x, y, r, color){
 function render(){
   requestAnimationFrame(render);
   if(!document.getElementById('rhythm').classList.contains('show')) return;
+  if(playing && audio){
+    if(audioStallCheck(() => { stopAll(); setupLevel(); }, () => playing && document.getElementById('rhythm').classList.contains('show'))) return;   /* 音が とまったら 画面も まつ */
+    if(endAt && audio.currentTime >= endAt){ endAt = 0; demoMode ? endDemo() : showResult(); }
+  }
   if(!W) resize();
   ctx.clearRect(0, 0, W, H);
   if(twoHands()){ renderTwo(); return; }
@@ -10457,10 +10615,11 @@ const NLEVELS = [
     row: { m: 3, f: 'h hd', step: 2, total: 15 },
     hint: 'こんどは 1・2・3の 3びょうし', sub: 'ふてん にぶおんぷは 3はく' },
   /* ── ヘ音きごう ── */
-  { lv: 8,  name: 'ヘおん はじめ（ド・シ・ラ・ソ）', layout: 'grand-bass', dias: [0, -1, -2, -3], focus: [-1, -2, -3], color: true, labels: 'all',
+  /* ヘ音の はじめは ト音の レベル1と おなじ 3つから。あたらしい おとは 1つずつ ふえる（step） */
+  { lv: 8,  name: 'ヘおん はじめ（ド・シ・ラ）', layout: 'grand-bass', dias: [0, -1, -2], focus: [-1, -2], color: true, labels: 'all', step: true,
     hint: 'まんなかの ドから したへ おりていこう', sub: 'うえは みぎての おうち、したは ひだりての おうち。まんなかの ドは その あいだ' },
-  { lv: 9,  name: 'ヘおん ファ〜ド',          layout: 'grand-bass', dias: range(-4, 0),  focus: [-4],          color: true,  labels: 'all',
-    hint: 'ヘおんきごうの 2つの てんの あいだは ファ!', sub: 'ファ から まんなかの ド まで' },
+  { lv: 9,  name: 'ヘおん ド〜ファ',          layout: 'grand-bass', dias: range(-4, 0),  focus: [-3, -4],      color: true,  labels: 'all', step: true,
+    hint: 'ソと ファも でてくるよ', sub: 'ヘおんきごうの 2つの てんの あいだは ファ' },
   { lv: 10, name: 'ヘおん ひくいド〜ド',      layout: 'grand-bass', dias: range(-7, 0),  focus: [-7, -6, -5],  color: false, labels: 'all',
     hint: 'ひくい ドまで おりてみよう', sub: 'いろの おたすけなしで!' },
   { lv: 11, name: 'よこよみ ヘおん',          layout: 'grand-bass', dias: range(-7, 0),  focus: range(-7, 0),  color: false, labels: 'all',
@@ -10983,8 +11142,11 @@ function rowTimedStart(){
   R.knots = knots;
   const fx = $('rowFx'); if(fx) fx.insertAdjacentHTML('beforebegin', `<line id="rowHead" x1="0" x2="0" y1="${f1((STF.grand ? STF.tt : STF.tt) - STF.g * 1.6)}" y2="${f1((STF.grand ? STF.bb : STF.tb) + STF.g * 1.6)}" stroke="#E3B143" stroke-width="3" stroke-linecap="round" opacity=".0"/>`);
   $('rowCur').innerHTML = '';
-  const loop = () => {
-    if(sess !== nSess || nRow !== R || !nPlaying) return;
+  /* 1コマで エラーが おきても、つぎの コマは かならず うごかす（ここで とまると 画面ごと うごかなくなる） */
+  const loop = () => { let go = false; try{ go = frame(); }catch(e){ go = sess === nSess && nRow === R && nPlaying; try{ console.error(e); }catch(x){} } if(go) requestAnimationFrame(loop); };
+  const frame = () => {
+    if(sess !== nSess || nRow !== R || !nPlaying) return false;
+    if(audioStallCheck(() => setupNote(), () => sess === nSess && nRow === R && nPlaying)) return true;   /* 音が とまったら 画面も まつ */
     const now = audio.currentTime, beat = (now - t0) / b;
     let x = knots[0][1];
     for(let k = 0; k < knots.length - 1; k++){ const [b0, xa] = knots[k], [b1, xb] = knots[k + 1]; if(beat >= b0 && beat < b1){ x = xa + (xb - xa) * (beat - b0) / (b1 - b0); break; } if(beat >= b1) x = xb; }
@@ -10995,12 +11157,13 @@ function rowTimedStart(){
     if(now > R.tEnd + .15){ $('rowCur').innerHTML = ''; if(hl) hl.remove(); R.i = R.notes.length; nLocked = true;
       const ok = R.notes.filter(n => n.ok).length, all = R.notes.filter(n => !n.rest).length;
       $('nFeedback').textContent = ok === all ? 'ぜんぶ ぴったり!' : `${all}この うち ${ok}こ できたよ`; $('nFeedback').className = ok === all ? 'good' : '';
-      nLater(nextQ, 900); return; }
-    requestAnimationFrame(loop);
+      nLater(nextQ, 900); return false; }
+    return true;
   };
   requestAnimationFrame(loop);
 }
 function rowTimedAnswer(midi, key){
+  if(STALL.on) return;
   const R = nRow, now = audio.currentTime;
   const i = R.notes.findIndex(n => !n.rest && !n.done && now >= n.w0 && now < n.w1);
   if(i < 0){ if(now < R.t0 - .35 * R.b){ $('nFeedback').textContent = 'カウントの あとで!'; } return; }
@@ -11095,7 +11258,7 @@ function setupNote(){
   const L = NLEVELS[nCurLv - 1];
   /* みだしは こどもの ことばで。ちょうの なまえ（ト長調 など）は ちいさく そえる */
   setHead($('nTitle'), 'おんぷ', L.name, L.formal ? '<small>（' + esc(L.formal) + '）</small>' : '');
-  $('nIntroMsg').textContent = L.hint;
+  $('nIntroMsg').textContent = L.hint; say(L.hint);
   $('nIntroSub').textContent = L.sub || '';
   $('nPanelArt').innerHTML = '<div style="display:flex;gap:6px;justify-content:center">' + (L.layout.startsWith('grand') ? ICON('house', 40) + ICON('piano', 48) + ICON('house', 40) : friendSVG('pipi', 64) + ICON('note', 48)) + '</div>';
   $('nPanel').classList.remove('hide');
@@ -11117,6 +11280,7 @@ function buildQueue(){
     return;
   }
   nTotal = N_BASE;
+  if(L.step){ nQueue = stepQueue(L); return; }
   const q = [];
   /* きのう までに まちがえた おと（この レベルの はんいの もの）から */
   const miss = Object.keys(S.noteMiss).map(Number).filter(d => L.dias.includes(d) && S.noteMiss[d].n > 0)
@@ -11133,6 +11297,22 @@ function buildQueue(){
   /* ♯・♭の レベルは ♯か♭の もんだいを すくなくとも はんぶん */
   if(L.acc){ const cand = nQueue.filter(x => !x.a && ((L.acc.s || []).includes(pc(x.d)) || (L.acc.f || []).includes(pc(x.d))));
     while(nQueue.filter(x => x.a).length < N_BASE / 2 && cand.length){ const x = cand.shift(); x.a = (L.acc.s || []).includes(pc(x.d)) ? 1 : -1; } }
+}
+/* あたらしい おとを 1つずつ：しっている おと → 1つめの あたらしい おと → 2つめ… の じゅんに まぜる。
+   あたらしい おとが はじめて でる ときは「あたらしい おと」と 名前を だして、けんばんも ひからせる */
+function stepQueue(L){
+  const known = L.dias.filter(d => !L.focus.includes(d));
+  const fo = L.focus.slice().sort((a, b) => Math.abs(a) - Math.abs(b));   /* まんなかの ドに ちかい じゅん */
+  const per = Math.max(2, Math.floor(N_BASE / (fo.length + 1)));
+  const q = [];
+  if(known.length) q.push({ d: known.includes(0) ? 0 : known[0] });   /* さいしょは しっている おと（まんなかの ド）で あんしん */
+  fo.forEach((nd, k) => {
+    const end = k === fo.length - 1 ? N_BASE : Math.min(N_BASE, q.length + per);
+    q.push({ d: nd, fresh: true });
+    const bag = known.concat(fo.slice(0, k + 1), [nd, nd]);   /* いま ふえた おとは おおめに */
+    while(q.length < end){ let d, g = 0; do{ d = bag[Math.floor(Math.random() * bag.length)]; g++; } while(d === q[q.length - 1].d && g < 20); q.push({ d }); }
+  });
+  return q.slice(0, N_BASE).map(x => ({ d: x.d, a: 0, st: null, base: true, fresh: !!x.fresh }));
 }
 function nPickAcc(L, d){
   if(!L.acc || Math.random() >= L.acc.p) return 0;
@@ -11151,8 +11331,7 @@ function updateNProg(){
 }
 $('nGoBtn').addEventListener('click', () => {
   ensureAudio();
-  const L = NLEVELS[nCurLv - 1];
-  say(L.hint);
+  hush();   /* よみあげは レベルを えらんだ ときに（リズムに のって よむ レベルで、よみあげが 音を とめない ように） */
   setTimeout(() => { buildQueue(); nPlaying = true; $('nPanel').classList.add('hide'); nextQ(); }, 300);
 });
 function nextQ(){
@@ -11173,11 +11352,12 @@ function nextQ(){
   nRow = null;
   nCurrent = nQueue[nQi];
   nLocked = false;
-  $('nFeedback').textContent = nCurrent.base ? 'この おんぷは どれかな?' : 'もう いちど! さっきの おと だよ';
-  $('nFeedback').className = '';
+  $('nFeedback').textContent = nCurrent.fresh ? `あたらしい おと「${fullName(nCurrent.d)}」だよ。ひかっている けんばんを おそう` : nCurrent.base ? 'この おんぷは どれかな?' : 'もう いちど! さっきの おと だよ';
+  $('nFeedback').className = nCurrent.fresh ? 'fresh' : '';
   drawStaffN(L.layout);
   nCurDraw = drawNoteCard(nCurrent.d, L.layout, L.color ? colorOf(nCurrent.d) : null, nCurrent.a, nCurrent.st);
-  $('answerKb').querySelectorAll('.akW,.akB').forEach(k => k.classList.remove('ok', 'showOk'));
+  $('answerKb').querySelectorAll('.akW,.akB').forEach(k => k.classList.remove('ok', 'showOk', 'hintK'));
+  if(nCurrent.fresh){ const k = keyEl(noteMidi(nCurrent)); if(k) k.classList.add('hintK'); say(fullName(nCurrent.d)); }
   melodyNote(noteMidi(nCurrent), audio.currentTime + .15, .5);
   nShownAt = performance.now();
 }
@@ -12659,7 +12839,8 @@ function famPlayCard(){
 function famSettingsCommon(){
   return `<div class="fCard"><h3>${ICON('sound', 22)}音声・効果音</h3><label class="toggle"><span style="font-size:13.5px">声で案内する</span><input type="checkbox" id="setVoice" ${S.voice ? 'checked' : ''}></label>
     <label class="toggle"><span style="font-size:13.5px">効果音（ボタンや にわの ピコッ・ポン）</span><input type="checkbox" id="setSfx" ${S.sfx === false ? '' : 'checked'}></label>
-    <div class="fNote">ピアノの音・リズムの音楽はそのまま鳴ります。</div></div>
+    <div class="fNote">ピアノの音・リズムの音楽はそのまま鳴ります。</div>
+    <button type="button" class="fBtn s sm" id="otoOpen" style="margin-top:10px">${ICON('sound', 18)}音のテスト（音が出ないとき）</button></div>
     <div class="fCard" id="sibCard"><h3>${ICON('family', 22)}きょうだい</h3>
     <p>1台の端末で、きょうだいそれぞれの主人公・おうち・レベルを別々に進められます。開くと「だれが ひらく?」で選びます。</p>
     <div class="sibList">${KIDS.map(k => `<div class="sibRow${k.id === KID ? ' on' : ''}">${heroSVG(k.av || { c: k.c | 0, w: k.w || 'none' }, 40)}<span class="nm">${esc(k.name || '名前未設定')}${k.id === KID ? '<small>いま開いている子</small>' : ''}</span>${k.id === KID ? '' : `<button class="fBtn s sm" data-sw="${k.id}">この子に切り替え</button><button class="sibRm" data-rm="${k.id}" aria-label="この端末から外す">×</button>`}</div>`).join('')}</div>
@@ -12707,6 +12888,7 @@ function wirePlayCard(){
 function wireSettingsCommon(){
   wirePlayCard();
   $('setVoice').addEventListener('change', e => { S.voice = e.target.checked; saveState(); });
+  if($('otoOpen')) $('otoOpen').addEventListener('click', () => openOtoTest());
   $('setSfx').addEventListener('change', e => { S.sfx = e.target.checked; saveState(); if(fxBus) fxBus.gain.value = S.sfx ? .4 : 0; });
   if($('setKeys')) $('setKeys').addEventListener('change', async e => {
     const on = e.target.checked; S.keysOn = on; saveState();
@@ -18026,6 +18208,8 @@ $('kidSwitch').addEventListener('click', async () => { ensureAudio(); popSfx(); 
   /* もう つながっている きかいで、きょうだいを ふくむ リンクを ひらいた とき：たりない子だけ たす */
   if(linked() && codeParam() && !ssGet('mp2_code_done')){ ssSet('mp2_code_done', '1'); joinByCode(codeParam(), true); }
 })();
+/* ?oto で ひらくと、音のテストが すぐ でる（音が でない ときの しらべもの） */
+if(QS.has('oto')) setTimeout(() => openOtoTest(), 400);
 
 </script>
 </body>
