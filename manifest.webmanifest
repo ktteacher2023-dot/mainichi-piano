@@ -1,0 +1,17 @@
+{
+  "name": "まいにちピアノ",
+  "short_name": "まいにちピアノ",
+  "description": "ピアノ教室と おうちを つなぐ 練習アプリ",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#F6ECD8",
+  "theme_color": "#BFE0C8",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512m.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

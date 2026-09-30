@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>まいにちピアノ｜ピアノ教室と おうちの毎日をつなぐアプリ</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23FFF8EC'/%3E%3Cg transform='translate%2827 51%29 scale%28.0545 -.0545%29 translate%28-147.5 0%29'%3E%3Crect x='272' y='42' width='46' height='833' fill='%233B2A22'/%3E%3Cpath d='M238 -790C238 -790 264 -695 264 -617C264 -492 212 -374 149 -274C98 -195 56 -109 40 -13C37 3 29 9 19 9C8 9 0 6 0 -6V-245C66 -257 161 -393 197 -478C212 -512 221 -569 221 -628C221 -673 214 -720 197 -765C195 -771 194 -776 194 -780C194 -796 204 -805 210 -809C211 -810 213 -810 215 -810C222 -810 234 -804 238 -790Z' transform='translate%28272 885%29' fill='%233B2A22'/%3E%3Cpath d='M97 -125C186 -125 295 -43 295 42C295 93 255 125 198 125C88 125 0 44 0 -42C0 -94 43 -125 97 -125Z' fill='%23E07A5F' stroke='%233B2A22' stroke-width='40'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
+<style>:root{--paper:#F6ECD8;--ink:#3B2A22;--ink2:#6E5B50;--line:#E3D3BA;--card:#FFFBF2;--coral:#E07A5F;--coral-d:#B55B43;--leaf:#7FAE6D;--sky-d:#4C84A4}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'Zen Maru Gothic',system-ui,sans-serif;line-height:1.85;font-size:15px}
+main{max-width:760px;margin:0 auto;padding:28px 18px 60px}
+h1{font-size:24px;line-height:1.5;margin:0 0 4px}
+h2{font-size:17px;margin:30px 0 6px;padding-top:14px;border-top:2px dashed var(--line)}
+.sub{color:var(--ink2);font-size:13px}
+p,li{margin:6px 0}
+ul,ol{padding-left:1.4em}
+table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;margin-top:10px}
+th,td{border-bottom:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top;font-size:14px}
+th{width:34%;background:#F1E4CB;font-weight:900}
+.todo{background:#FFE9A8;padding:0 4px;border-radius:4px}
+a{color:var(--sky-d)}
+footer{max-width:760px;margin:0 auto;padding:0 18px 40px;color:var(--ink2);font-size:12px}
+footer a{color:var(--ink2);margin-right:10px}
+@media (max-width:520px){th{width:40%}}
+</style></head><body>
+<style>
+:root{--paper:#F6ECD8;--paper2:#FBF3E4;--ink:#3B2A22;--ink2:#6E5B50;--mute:#8A7A6E;--line:#E3D3BA;--card:#FFFBF2;--coral:#E07A5F;--coral-d:#B55B43;--leaf:#6E9E5C;--leafBg:#E4EFDA;--sky:#6EA7C6;--sky-d:#3F6E8A;--skyBg:#E2EEF4;--must:#E3B143;--mustBg:#FBEFCF}
+body{font-size:15.5px;line-height:1.9;line-break:strict}
+main.lp{max-width:1080px;padding:0 20px 40px}
+.nw{white-space:nowrap;display:inline-block}
+.lp h2{border:none;padding:0;margin:0 0 10px;font-size:clamp(22px,4.2vw,30px);line-height:1.5;letter-spacing:.02em}
+.lp h3{font-size:17px;margin:0 0 4px;line-height:1.55}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:900;color:var(--coral-d);letter-spacing:.08em}
+.eyebrow::before{content:'';width:22px;height:2px;background:currentColor;border-radius:2px}
+section{padding:56px 0 8px}
+.lead{font-size:16.5px;color:#4A3A30;max-width:40em}
+/* ヘッダー */
+.top{display:flex;align-items:center;gap:10px;padding:16px 0}
+.top img{width:36px;height:36px;border-radius:10px}
+.top b{font-size:18px;font-weight:900;letter-spacing:.03em}
+.top .sp{flex:1}
+.top a.mini{font-size:13px;font-weight:900;color:var(--ink);text-decoration:none;border:2px solid var(--ink);border-radius:999px;padding:4px 14px;background:var(--card)}
+/* ボタン */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:2.5px solid var(--ink);border-radius:16px;padding:12px 22px;font-weight:900;text-decoration:none;color:var(--ink);background:var(--card);box-shadow:0 4px 0 var(--ink);line-height:1.4;text-align:center;transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn.pri{background:var(--coral);color:#FFFBF2;font-size:17px;padding:14px 26px}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px;align-items:center}
+.note{font-size:13px;color:var(--ink2);margin-top:10px}
+/* ヒーロー */
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:36px;align-items:center}
+.hero h1{font-size:clamp(28px,5vw,44px);line-height:1.45;margin:10px 0 14px;letter-spacing:.02em}
+.hero h1 em{font-style:normal;background:linear-gradient(transparent 62%,#F7D48A 62%)}
+.trust{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;padding:0;list-style:none}
+.trust li{margin:0;font-size:12.5px;font-weight:900;color:var(--ink2);background:var(--paper2);border:1.5px solid var(--line);border-radius:999px;padding:3px 12px}
+.duo{position:relative;height:560px;max-width:430px;margin:0 auto;width:100%}
+.phone{border:3px solid var(--ink);border-radius:32px;overflow:hidden;background:#fff;box-shadow:0 6px 0 var(--ink),0 24px 40px -24px rgba(59,42,34,.6)}
+.phone img{display:block;width:100%;height:auto}
+.duo .phone{position:absolute;width:62%}
+.duo .p1{left:0;top:0;z-index:2}
+.duo .p2{right:0;top:70px;transform:rotate(3deg)}
+.duo .tag{position:absolute;z-index:3;font-size:12px;font-weight:900;background:var(--ink);color:#FFFBF2;border-radius:999px;padding:3px 12px}
+.duo .t1{left:10px;top:-12px}.duo .t2{right:6px;top:58px}
+/* 数字 */
+.stat{display:grid;grid-template-columns:auto 1fr;gap:26px;align-items:center;background:var(--card);border:2.5px solid var(--ink);border-radius:24px;padding:26px 28px;box-shadow:0 5px 0 var(--ink);margin-top:14px}
+.stat .big{font-size:clamp(46px,9vw,72px);font-weight:900;line-height:1;color:var(--coral-d);font-variant-numeric:tabular-nums}
+.stat .big small{font-size:.38em;margin-left:2px}
+.stat p{margin:0}
+.stat .src{font-size:12px;color:var(--mute);margin-top:8px;line-height:1.7}
+.stat .src a{color:var(--ink2)}
+.bridge{font-size:17px;font-weight:900;margin-top:22px;line-height:1.8}
+/* 3つの ステップ */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:22px;counter-reset:st}
+.step{background:var(--card);border:2px solid var(--line);border-radius:24px;padding:18px 18px 20px;display:flex;flex-direction:column;gap:12px}
+.step .no{counter-increment:st;display:flex;align-items:center;gap:8px;font-weight:900;font-size:15px;line-height:1.5;margin-bottom:6px}
+.step .no::before{content:counter(st);flex:0 0 auto;width:28px;height:28px;border-radius:50%;background:var(--ink);color:#FFFBF2;display:inline-flex;align-items:center;justify-content:center;font-size:14px}
+.step .phone{max-width:230px;margin:0 auto;border-width:2px;border-radius:24px;box-shadow:none}
+.step p{margin:0;font-size:14.5px}
+/* 子どもの せかい */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:460px;margin:0 auto;width:100%}
+.pair .phone{border-width:2px;border-radius:24px}
+.pair .phone:nth-child(2){margin-top:44px}
+.checks{list-style:none;padding:0;margin:14px 0 0;display:flex;flex-direction:column;gap:10px}
+.checks li{margin:0;padding-left:30px;position:relative;font-size:15px}
+.checks li::before{content:'';position:absolute;left:0;top:.45em;width:18px;height:18px;border-radius:50%;background:var(--leafBg);border:2px solid var(--leaf)}
+.checks li::after{content:'';position:absolute;left:6.5px;top:calc(.45em + 4px);width:5px;height:8px;border:solid var(--leaf);border-width:0 2.4px 2.4px 0;transform:rotate(45deg)}
+.checks b{font-weight:900}
+/* 先生の しごと */
+.work{margin-top:22px;display:flex;flex-direction:column;gap:12px}
+.wk{display:grid;grid-template-columns:150px 1fr 1.35fr;background:var(--card);border:2px solid var(--line);border-radius:20px;overflow:hidden}
+.wk>div{padding:14px 18px}
+.wk .k{font-weight:900;font-size:15px;display:flex;align-items:center;background:var(--paper2);border-right:2px solid var(--line)}
+.wk .b{color:var(--mute);font-size:14px}
+.wk .b::before{content:'いままで';display:block;font-size:11px;font-weight:900;letter-spacing:.08em;color:var(--mute)}
+.wk .a{font-size:14.5px;background:linear-gradient(90deg,var(--leafBg),#F1F7EC)}
+.wk .a::before{content:'まいにちピアノなら';display:block;font-size:11px;font-weight:900;letter-spacing:.08em;color:var(--leaf)}
+.shots{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:26px;align-items:start}
+.shots figure{margin:0;display:flex;flex-direction:column;gap:8px}
+.shots .phone{border-width:2px;border-radius:22px;box-shadow:none}
+.shots figcaption{font-size:13px;font-weight:900;text-align:center;color:var(--ink2)}
+.paper{background:#fff;border:1.5px solid var(--line);border-radius:10px;box-shadow:0 10px 24px -16px rgba(59,42,34,.5);overflow:hidden}
+.paper img{display:block;width:100%;height:auto}
+.prints{display:grid;grid-template-columns:1.1fr 1fr;gap:24px;margin-top:26px;align-items:start}
+.prints figure{margin:0}
+.prints figcaption{font-size:13.5px;margin-top:10px;color:#4A3A30}
+.prints figcaption b{display:block;font-size:15px;color:var(--ink)}
+/* 保護者 */
+.fam{background:var(--card);border:2.5px solid var(--ink);border-radius:28px;padding:30px;box-shadow:0 5px 0 var(--ink)}
+/* 大事に していること */
+.care{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
+.care div{background:#FFF3DA;border:2px dashed #C9B39A;border-radius:20px;padding:16px 18px}
+.care b{display:block;font-size:15.5px;margin-bottom:2px}
+.care p{margin:0;font-size:14px;color:#4A3A30}
+/* 料金 */
+.plans{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:18px}
+.plan{background:var(--card);border:2.5px solid var(--ink);border-radius:20px;padding:16px 10px;text-align:center;display:flex;flex-direction:column;gap:2px}
+.plan b{font-size:15px}
+.plan .pr{font-size:24px;font-weight:900;font-variant-numeric:tabular-nums;line-height:1.3}
+.plan .pr small{font-size:12px;color:var(--ink2);margin-left:1px}
+.plan .ppl{font-size:13px;color:var(--ink2);font-weight:700}
+.plan .yr{font-size:11.5px;color:var(--mute)}
+.lead2{margin:8px 0 0;font-size:15px;color:var(--ink2)}
+.money{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+.money div{background:var(--paper2);border:1.5px solid var(--line);border-radius:18px;padding:14px 16px}
+.money b{display:block;font-size:15px}
+.money p{margin:2px 0 0;font-size:13.5px;color:#4A3A30}
+.lineT{margin-top:16px;background:var(--card);border:1.5px solid var(--line);border-radius:18px;overflow:hidden}
+.lineT table{margin:0;border-radius:0;background:transparent}
+.lineT th,.lineT td{font-size:13.5px;padding:9px 14px}
+.lineT th{width:auto;background:transparent;font-weight:700}
+.lineT td.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:900}
+.lineT caption{caption-side:top;text-align:left;font-weight:900;font-size:14px;padding:12px 14px 4px}
+/* よくある しつもん */
+.faq{margin-top:14px;display:flex;flex-direction:column;gap:10px}
+.faq details{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:0 18px}
+.faq summary{cursor:pointer;list-style:none;font-weight:900;font-size:15px;padding:14px 26px 14px 0;position:relative;line-height:1.6}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:'';position:absolute;right:4px;top:50%;width:10px;height:10px;border:solid var(--ink2);border-width:0 2.5px 2.5px 0;transform:translateY(-70%) rotate(45deg);transition:transform .15s}
+.faq details[open] summary::after{transform:translateY(-30%) rotate(-135deg)}
+.faq details p{margin:0 0 16px;font-size:14.5px;color:#4A3A30}
+.last{text-align:center;background:var(--ink);color:#FFFBF2;border-radius:30px;padding:40px 22px;margin-top:56px}
+.last h2{color:#FFFBF2}
+.last p{color:#E9DCC8;margin:6px auto 0;max-width:34em}
+.last .cta{justify-content:center}
+.last .btn{border-color:#FFFBF2;box-shadow:0 4px 0 #1E1511}
+.last .btn:not(.pri){background:transparent;color:#FFFBF2}
+.op{font-size:12.5px;color:var(--ink2);margin-top:22px;text-align:center}
+footer{max-width:1080px;padding:0 20px 40px}
+@media (max-width:900px){
+  .hero,.split{grid-template-columns:1fr}
+  .duo{height:auto;max-width:380px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .duo .phone{position:static;width:auto;transform:none}
+  .duo .p2{margin-top:40px}
+  .duo .tag{display:none}
+  .shots{grid-template-columns:repeat(2,1fr)}
+  .plans{grid-template-columns:repeat(3,1fr)}
+  .money{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  main.lp{padding:0 16px 30px}
+  section{padding-top:44px}
+  .pcbr{display:none}
+  .cta .btn{width:100%}
+  .stat{grid-template-columns:1fr;gap:12px;padding:20px}
+  .steps{grid-template-columns:1fr}
+  .step{flex-direction:row;align-items:flex-start;gap:14px}
+  .step .phone{flex:0 0 38%;max-width:none;order:2;margin:0}
+  .step .tx{flex:1;min-width:0}
+  .wk{grid-template-columns:1fr}
+  .wk .k{border-right:none;border-bottom:2px solid var(--line);padding:10px 16px}
+  .wk>div{padding:10px 16px}
+  .prints{grid-template-columns:1fr}
+  .care{grid-template-columns:1fr}
+  .plans{grid-template-columns:1fr 1fr}
+  .plan:last-child{grid-column:1 / -1}
+  .fam{padding:20px}
+  .top a.mini{display:none}
+}
+</style>
+<main class="lp">
+<header class="top"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='13' fill='%233B2A22'/%3E%3Cg stroke='%23E3B143' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M24 7.2v3.4M12.6 11.8l2.3 2.4M35.4 11.8l-2.3 2.4M8 21.6h3.2M36.8 21.6H40'/%3E%3C/g%3E%3Ccircle cx='24' cy='25.6' r='9.6' fill='%23E3B143'/%3E%3Crect x='7.6' y='24.6' width='32.8' height='15.4' rx='2.8' fill='%23FFF8EC'/%3E%3Cpath d='M14.16 24.6V40M20.72 24.6V40M27.28 24.6V40M33.84 24.6V40' stroke='%233B2A22' stroke-width='1.4'/%3E%3Cg fill='%233B2A22'%3E%3Crect x='12.26' y='24.6' width='3.8' height='8.8' rx='.9'/%3E%3Crect x='18.82' y='24.6' width='3.8' height='8.8' rx='.9'/%3E%3Crect x='31.94' y='24.6' width='3.8' height='8.8' rx='.9'/%3E%3C/g%3E%3Crect x='7.6' y='23.4' width='32.8' height='2.6' rx='1.2' fill='%23E07A5F'/%3E%3C/svg%3E" alt=""><b>まいにちピアノ</b><span class="sp"></span><a class="mini" href="teacher.html?demo=1" target="_blank">見本をさわる</a></header>
+
+<section class="hero" style="padding-top:18px">
+  <div>
+    <div class="eyebrow">ピアノ教室のためのアプリ</div>
+    <h1><span class="nw">レッスンの「おだい」が、</span><br><em><span class="nw">おうちの毎日の練習</span></em><span class="nw">になる。</span></h1>
+    <p class="lead">子どもがピアノを弾くたびに、アプリの中の主人公が「おとの くに」を1歩ずつ進みます。先生は、予定・振替・連絡帳・月謝の記録まで、ひとつの画面で。</p>
+    <div class="cta"><a class="btn pri" href="teacher.html?signup">30日間 無料ではじめる</a><a class="btn" href="teacher.html?demo=1" target="_blank">先生の画面を見る</a><a class="btn" href="index.html?demo&reset" target="_blank">子どもの画面を見る</a></div>
+    <ul class="trust"><li>カードの登録なし</li><li>アプリのインストールなし</li><li>LINEの設定なしで始められる</li><li>ご家庭の負担なし</li></ul>
+  </div>
+  <div class="duo"><span class="tag t1">子ども</span><span class="tag t2">先生</span>
+    <div class="phone p1"><img src="lp/map.jpg" alt="子どもの画面：おとの くにの地図。練習すると主人公が1歩進む" width="540" height="1169"></div>
+    <div class="phone p2"><img src="lp/teacher.jpg" alt="先生の画面：今日のレッスンと、練習した子の人数" width="540" height="1169" loading="lazy"></div></div>
+</section>
+
+<section>
+  <div class="eyebrow">先生の悩み</div>
+  <h2><span class="nw">「練習してきてくれない」は、</span><span class="nw">多くの先生の悩みです。</span></h2>
+  <div class="stat">
+    <div class="big">27.6<small>%</small></div>
+    <div><p>「満足のいく練習をしてくる生徒は何割ぐらいですか？」という問いに、<b>7割以上</b>と答えた先生の割合です（ほぼ100%：2.6%、70%以上：25%）。残りの7割あまりの先生は、それより少ないと答えています。</p>
+      <div class="src">出典：一般社団法人全日本ピアノ指導者協会（ピティナ）「<a href="https://seminar.piano.or.jp/news/2024/02/entry_354.html" target="_blank" rel="noopener">ピアノの練習時間に関するアンケート結果報告</a>」（2023年6月実施・指導者617件の回答）</div></div>
+  </div>
+  <p class="bridge">まいにちピアノは、レッスンとレッスンのあいだの6日間を、<br class="pcbr">先生の「おだい」でつなぐためのアプリです。</p>
+</section>
+
+<section>
+  <div class="eyebrow">しくみ</div>
+  <h2><span class="nw">先生が出して、子どもが弾いて、</span><span class="nw">先生が見る。</span></h2>
+  <div class="steps">
+    <div class="step"><div class="tx"><div class="no"><span><span class="nw">先生が</span><span class="nw">「おだい」を出す</span></span></div><p>いま練習している曲と、5指ポジションなどの練習の2つ。曲名を入れるだけで始められます。ワークやハノンなど、教室ごとの宿題も「毎日」「レッスンまでに○回」で出せます。</p></div><div class="phone"><img src="lp/odai.jpg" alt="子どもの画面：先生のおだい。1回弾いたら○をタッチ" width="540" height="1169" loading="lazy"></div></div>
+    <div class="step"><div class="tx"><div class="no"><span><span class="nw">子どもが</span><span class="nw">ピアノで弾く</span></span></div><p>本物のピアノで1回弾くごとに○をタッチ。リズムとおんぷは50段階で、その子のペースで進みます。</p></div><div class="phone"><img src="lp/note.jpg" alt="子どもの画面：おんぷカード。けんばんで答える" width="540" height="1169" loading="lazy"></div></div>
+    <div class="step"><div class="tx"><div class="no"><span><span class="nw">先生は</span><span class="nw">「記録」で見る</span></span></div><p>週ごとに、1人あたり何日ピアノに向かったかが棒グラフで出ます。レッスンの前に、その子の2週間の様子もわかります。</p></div><div class="phone"><img src="lp/report.jpg" alt="先生の画面：週ごとの練習した日の棒グラフ" width="540" height="1169" loading="lazy"></div></div>
+  </div>
+</section>
+
+<section class="split">
+  <div class="txt">
+    <div class="eyebrow">子どもの画面</div>
+    <h2><span class="nw">毎日ひらきたくなる</span><span class="nw">「おとの くに」。</span></h2>
+    <p>じぶんで作った主人公が、練習するたびに道を進みます。友だちのおうちに遊びに行ったり、合格した曲がレコードになって積み上がったり。</p>
+    <ul class="checks">
+      <li><b>1日に進めるのは3歩まで。</b>まとめてやるより、毎日少しずつのほうが進めるようにしています。</li>
+      <li><b>順位はつけません。</b>地図に出るのはニックネームと歩数だけで、出さない設定もできます。</li>
+      <li><b>あそびは練習のあと。</b>その日の練習を1つしてから開き、1日に遊べる時間は保護者の方が決められます。</li>
+      <li><b>休んだ子を置いていきません。</b>しばらく空いた子には「おいかぜ」が吹いて、追いつきやすくなります。</li>
+    </ul>
+  </div>
+  <div class="pair"><div class="phone"><img src="lp/plaza.jpg" alt="子どもの画面：ひろば。なかまのおうちへ遊びに行ける" width="540" height="1169" loading="lazy"></div><div class="phone"><img src="lp/tower.jpg" alt="子どもの画面：ごうかくのタワー。合格した曲がレコードになって重なる" width="540" height="1169" loading="lazy"></div></div>
+</section>
+
+<section>
+  <div class="eyebrow">先生の画面</div>
+  <h2><span class="nw">教室の事務も、</span><span class="nw">ここでまとめて。</span></h2>
+  <p class="lead">予定表づくり、振替のやりとり、月謝の確認。レッスンのあとの小さな事務を、アプリの中で終わらせます。</p>
+  <div class="work">
+    <div class="wk"><div class="k">来月の予定</div><div class="b">表をつくって、家庭ごとに連絡</div><div class="a">いつもの曜日と時間から1か月分をつくり、保護者のアプリに公開。「確認しました」も見えます。教室の公式LINEで1通ずつ送ることもできます。</div></div>
+    <div class="wk"><div class="k">振替</div><div class="b">空いている日を何度もやりとり</div><div class="a">教室の決まりの中なら、保護者が空き枠を選ぶとその場で決まります。決まった振替は先生の予定にも入ります。</div></div>
+    <div class="wk"><div class="k">月謝</div><div class="b">月謝袋と名簿で確認</div><div class="a">受け取った家庭に「受け取った」を押すだけ。まだの家庭がひと目でわかり、1年分はCSVで書き出せます。</div></div>
+    <div class="wk"><div class="k">連絡</div><div class="b">先生の個人のLINEに、夜も届く</div><div class="a">家庭とは連絡帳でやりとり。受付時間を家庭に表示でき、先生のLINEには、決めた時刻にまとめてお知らせが届きます。</div></div>
+    <div class="wk"><div class="k">発表会</div><div class="b">プログラムを一からつくる</div><div class="a">出演の順番と曲名を並べるだけで、A4のプログラムに。参加の確認は、お知らせのアンケートで。</div></div>
+    <div class="wk"><div class="k">はじめの案内</div><div class="b">家庭ごとに使いかたを説明</div><div class="a">QRコードつきの案内カードを印刷して、レッスンで手渡し。カメラで読むだけで、その子とつながります。</div></div>
+  </div>
+  <div class="shots">
+    <figure><div class="phone"><img src="lp/teacher.jpg" alt="先生の画面：今日" width="540" height="1169" loading="lazy"></div><figcaption>今日のレッスンと練習のようす</figcaption></figure>
+    <figure><div class="phone"><img src="lp/sched.jpg" alt="先生の画面：予定" width="540" height="1169" loading="lazy"></div><figcaption>予定をつくって、届ける</figcaption></figure>
+    <figure><div class="phone"><img src="lp/fee.jpg" alt="先生の画面：月謝の受け取り" width="540" height="1169" loading="lazy"></div><figcaption>月謝の受け取り</figcaption></figure>
+    <figure><div class="phone"><img src="lp/report.jpg" alt="先生の画面：記録" width="540" height="1169" loading="lazy"></div><figcaption>週ごとの記録</figcaption></figure>
+  </div>
+  <div class="prints">
+    <figure><div class="paper"><img src="lp/program.jpg" alt="印刷した発表会のプログラムの見本" width="760" height="934" loading="lazy"></div><figcaption><b>発表会のプログラム</b>曲名の欄には、その子の合格した曲と、いま練習している曲が候補に出ます。休憩や講師演奏も入れられます。</figcaption></figure>
+    <figure><div class="paper"><img src="lp/card.jpg" alt="印刷した家庭への案内カードの見本" width="560" height="478" loading="lazy"></div><figcaption><b>家庭への案内カード</b>A4に6枚。保護者がスマホのカメラでQRコードを読むと、LINEの中でアプリが開いて、その子とつながります。パスワードはありません。</figcaption></figure>
+  </div>
+</section>
+
+<section>
+  <div class="fam split">
+    <div class="txt">
+      <div class="eyebrow">保護者の画面</div>
+      <h2><span class="nw">おうちの方は、</span><span class="nw">となりで聞くだけ。</span></h2>
+      <ul class="checks">
+        <li>次のレッスンの日と、月の予定がすぐわかる</li>
+        <li>決まりの中なら、振替やお休みの連絡がその場ですむ</li>
+        <li>レッスンノートで、先生からのひとことが届く</li>
+        <li>「きいたよ」を押すと、子どもの画面にはなまるが出る</li>
+        <li>月のがんばりと、あそびの時間が見える</li>
+      </ul>
+    </div>
+    <div class="pair"><div class="phone"><img src="lp/family.jpg" alt="保護者の画面：次のレッスン" width="540" height="1169" loading="lazy"></div><div class="phone"><img src="lp/prac.jpg" alt="保護者の画面：月のがんばりとあそびの時間" width="540" height="1169" loading="lazy"></div></div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">大事にしていること</div>
+  <h2>練習のための道具として。</h2>
+  <div class="care">
+    <div><b>いちばん大きく進むのは、ピアノを弾いたとき</b><p>アプリの中のあそびは、練習の準備運動という位置づけです。あそびでは主人公は進みません。</p></div>
+    <div><b>ほかの子とくらべない</b><p>順位や点数のランキングはありません。くらべる相手は、きのうの自分です。</p></div>
+    <div><b>集める情報は少なく</b><p>ニックネームと練習の記録が中心です。住所・電話番号・生年月日は集めません。くわしくは<a href="privacy.html">プライバシーポリシー</a>へ。</p></div>
+    <div><b>約束しないこと</b><p>練習を続けるための道具です。上達や結果を約束するものではありません。</p></div>
+  </div>
+</section>
+
+<section id="price">
+  <div class="eyebrow">料金</div>
+  <h2><span class="nw">生徒10人ごとに、月3,000円。</span><span class="nw">ご家庭の負担はありません。</span></h2>
+  <p class="lead2">生徒さんの人数に合わせて、10人ずつ選べます。1人あたり月300円です。</p>
+  <div class="plans">
+    <div class="plan"><div class="ppl">生徒 10人まで</div><div class="pr">3,000<small>円／月</small></div><div class="yr">年払い 30,000円</div></div>
+    <div class="plan"><div class="ppl">生徒 20人まで</div><div class="pr">6,000<small>円／月</small></div><div class="yr">年払い 60,000円</div></div>
+    <div class="plan"><div class="ppl">生徒 30人まで</div><div class="pr">9,000<small>円／月</small></div><div class="yr">年払い 90,000円</div></div>
+    <div class="plan"><div class="ppl">生徒 50人まで</div><div class="pr">15,000<small>円／月</small></div><div class="yr">年払い 150,000円</div></div>
+    <div class="plan"><div class="ppl">生徒 100人まで</div><div class="pr">30,000<small>円／月</small></div><div class="yr">年払い 300,000円</div></div>
+  </div>
+  <p class="note">税込・初期費用なし。年払いは10か月分（2か月分おトク）。生徒さんが増えたら、先生の画面から10人ずつ増やせます。上限を少しこえても（5人まで）、そのまま使えます。100人をこえる教室はご相談ください。</p>
+  <div class="money">
+    <div><b>はじめの30日は無料</b><p>カードの登録はいりません。すべての機能を、生徒さんと一緒に使ってみてください。</p></div>
+    <div><b>お試しが終わったら</b><p>7日間はそのまま使えます。そのあとは「お休みモード」になり、見ることはできますが、保存やLINEの配信が止まります。データは消えません。</p></div>
+    <div><b>いつでも解約できます</b><p>自動で更新され、次の更新から止められます。解約から90日はデータを残し、その間に名簿や月謝の記録をCSVで書き出せます。</p></div>
+  </div>
+  <div class="lineT"><table><caption>教室の公式LINEでも送る場合の通数のめやす（生徒30人・月3回の教室）</caption>
+    <tr><th>来月の予定（1家庭1通）</th><td class="n">約30通</td></tr>
+    <tr><th>レッスン前日のリマインド</th><td class="n">約90通</td></tr>
+    <tr><th>お知らせ（月1回）</th><td class="n">約30通</td></tr>
+    <tr><th>先生への通知（新しい連絡があった回だけ）</th><td class="n">連絡の件数まで</td></tr></table></div>
+  <p class="note">LINEの費用は教室の公式LINEの契約によります（無料プランは月200通まで）。保護者がボタンを押したときの返事と、アプリの中の連絡帳は数えません。LINEをつながなくても、予定・連絡帳・お知らせはアプリの中で届きます。</p>
+</section>
+
+<section id="faq">
+  <div class="eyebrow">よくある質問</div>
+  <h2>よくある質問</h2>
+  <div class="faq">
+    <details><summary>アプリのインストールは必要ですか？</summary><p>いりません。スマホやタブレットのブラウザか、LINEの中で開けます。保護者の方には、先生の画面からコピーした案内文をLINEで送るか、QRコードつきの案内カードを手渡しします。</p></details>
+    <details><summary>子どもが自分の端末（クロームブック・タブレット）で使えますか？</summary><p>使えます。ブラウザで開いて招待コードを入れるだけで、保護者のスマホと同じ主人公・同じ記録で続きができます。横長の画面やキーボードにも合わせています。学校から配られた端末は、学校のきまりやフィルタで使えないことがあるので、ご家庭で学校に確かめていただくよう案内しています。</p></details>
+    <details><summary>LINE公式アカウントがなくても使えますか？</summary><p>使えます。予定・連絡帳・お知らせは、アプリの中で届きます。予定の案内や前日のリマインドをLINEにも送りたいときだけ、教室のLINE公式アカウントをつなぎます。あとからつないでも大丈夫です。</p></details>
+    <details><summary>始めるまでに、どんな準備がいりますか？</summary><p>生徒さんの名簿を表から貼りつけて登録し、保護者の方に案内を送り、おだいと来月の予定を入れる、の順です。先生の画面の「はじめの準備」に、いまどこまでできたかが出ます。</p></details>
+    <details><summary>使ってみて変わったかどうかは、どう確かめますか？</summary><p>先生の画面の「記録」で、週ごとに、1人あたりピアノに向かった日数、練習した子の人数、保護者の「きいたよ」の回数を見られます。使い始めて2週間ほどで、保護者の方に1分のアンケートも出ます（答えるかどうかは自由です）。</p></details>
+    <details><summary>ゲームばかりになりませんか？</summary><p>アプリの中のあそびは、その日の練習（ピアノのおだい・リズム・おんぷのどれか）を1つしてから開くようにしています。1日に遊べる時間は、保護者の方が10分・20分・30分から選べます（はじめは20分）。主人公が進むのは練習をしたときだけです。</p></details>
+    <details><summary>高学年や大人の生徒にも使えますか？</summary><p>生徒ごとに「ジュニア」「おとな」の落ちついた画面に切りかえられます。練習タイマー・先生の課題・曲の記録・メトロノーム・録音（端末の中だけに保存）が入っています。</p></details>
+    <details><summary>月謝の記録は、だれが見られますか？</summary><p>代表の先生だけです。講師の先生と保護者の方には見えません。「受け取りました」の連絡を送る設定にしたときは、その家庭の連絡帳にだけ届きます。</p></details>
+    <details><summary>講師の先生や、ほかの会場があっても使えますか？</summary><p>使えます。会場を分けて登録でき、講師の先生は受け持つ会場と担当の生徒さんだけを見られます。先生ごとのカレンダー（Googleカレンダー・iPhone・タイムツリー）にも予定を出せます。</p></details>
+    <details><summary>子どもの個人情報はどこまで集めますか？</summary><p>ニックネームと練習の記録が中心です。住所・電話番号・生年月日は集めません。顔写真は、教室が保護者の方の了解を得て登録したときだけ、先生の画面で見分けるために使います。くわしくは<a href="privacy.html">プライバシーポリシー</a>をご覧ください。</p></details>
+    <details><summary>教材の図は、どの教本に合わせていますか？</summary><p>特定の教本ではなく、5指ポジション・I–V7–I・和音I〜VII・調の見つけかたなど、どの教本でも出てくる内容を、アプリのための絵と言葉で作っています。</p></details>
+  </div>
+</section>
+
+<div class="last">
+  <h2>まずは、見本でさわってみてください。</h2>
+  <p>見本では、12人の生徒さんが通う教室の画面を、そのまま動かせます。入力したものは保存されません。</p>
+  <div class="cta"><a class="btn pri" href="teacher.html?signup">30日間 無料ではじめる</a><a class="btn" href="teacher.html?demo=1" target="_blank">先生の画面を見る</a><a class="btn" href="index.html?demo&reset" target="_blank">子どもの画面を見る</a></div>
+</div>
+<p class="op">運営：合同会社Lyric Flow（静岡市）</p>
+</main>
+
+<footer><a href="lp.html">まいにちピアノについて</a><a href="terms.html">利用規約</a><a href="privacy.html">プライバシーポリシー</a><a href="tokushoho.html">特定商取引法に基づく表記</a><div style="margin-top:6px">© 合同会社Lyric Flow</div></footer>
+</body></html>
