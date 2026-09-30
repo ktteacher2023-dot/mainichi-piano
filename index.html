@@ -2338,6 +2338,8 @@ body.kbd #nIntroSub::after{content:'けんばんに でる もじの キーで�
 @media (max-width:440px){ .stTools:has(> :nth-child(5)){grid-template-columns:repeat(2,minmax(0,1fr))} .stBtn.big{padding:10px 14px} }
 .stBtn{white-space:nowrap}
 .stTool b,.stTool small{word-break:keep-all;overflow-wrap:anywhere}
+/* 地図を スクロール中は 地図の アニメを とめる（iPhone で 絵が 間に合わず みどりだけ 見えるのを ふせぐ） */
+#mapScroll.scrolling #mapSvg *, #mapScroll.scrolling #mapSvg{animation-play-state:paused !important}
 
 /* ---------- きょうざい（おだいに つく ずかん）：こどもアプリと 先生の がめんで いっしょ ---------- */
 .kzWrap{width:min(560px,100%);display:flex;flex-direction:column;gap:14px}
@@ -2926,7 +2928,7 @@ ruby rt{font-weight:700;color:#6E5B50}
    ・同じ地図に 教室みんなの主人公（ニックネーム・順位なし）
    ・おうちのひと：予定・振替・おしらせ・れんらくちょう
    ========================================================= */
-const APP_VER = 'v2026.09.30-3';   /* なおしたら かならず あげる（アップした ものが あたらしいか、おうちのかた→設定の いちばん したで たしかめられる） */
+const APP_VER = 'v2026.09.30-6';   /* なおしたら かならず あげる（アップした ものが あたらしいか、おうちのかた→設定の いちばん したで たしかめられる） */
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -2944,9 +2946,30 @@ function addDays(ds, n){ const [y, m, d] = ds.split('-').map(Number); return day
 function weekStart(ds = todayStr()){ const [y, m, d] = ds.split('-').map(Number); const t = new Date(y, m - 1, d); return addDays(ds, -t.getDay()); }
 const WDAY = ['にち','げつ','か','すい','もく','きん','ど'];
 const WD_K = ['日','月','火','水','木','金','土'];
+/* 日本の 祝日（先生の 画面と おなじ 計算。振替休日・国民の休日も） */
+const HOLI_C = {};
+function jpHolidays(y){
+  if(HOLI_C[y]) return HOLI_C[y];
+  const H = {}, p2 = n => String(n).padStart(2, '0'), k = (m, d) => y + '-' + p2(m) + '-' + p2(d), ds = t => t.getFullYear() + '-' + p2(t.getMonth() + 1) + '-' + p2(t.getDate());
+  const nthMon = (m, n) => { const w = new Date(y, m - 1, 1).getDay(); return 1 + ((8 - w) % 7) + (n - 1) * 7; };
+  const add = (m, d, n) => { H[k(m, d)] = n; };
+  add(1, 1, '元日'); add(1, nthMon(1, 2), '成人の日'); add(2, 11, '建国記念の日');
+  if(y >= 2020) add(2, 23, '天皇誕生日');
+  add(3, Math.floor(20.8431 + 0.242194 * (y - 1980) - Math.floor((y - 1980) / 4)), '春分の日');
+  add(4, 29, '昭和の日'); add(5, 3, '憲法記念日'); add(5, 4, 'みどりの日'); add(5, 5, 'こどもの日');
+  if(y === 2021){ add(7, 22, '海の日'); add(7, 23, 'スポーツの日'); add(8, 8, '山の日'); }
+  else { add(7, nthMon(7, 3), '海の日'); add(8, 11, '山の日'); add(10, nthMon(10, 2), 'スポーツの日'); }
+  add(9, nthMon(9, 3), '敬老の日');
+  add(9, Math.floor(23.2488 + 0.242194 * (y - 1980) - Math.floor((y - 1980) / 4)), '秋分の日');
+  add(11, 3, '文化の日'); add(11, 23, '勤労感謝の日');
+  Object.keys(H).sort().forEach(d => { const t = new Date(d + 'T12:00:00'); t.setDate(t.getDate() + 2); if(H[ds(t)]){ t.setDate(t.getDate() - 1); if(!H[ds(t)] && t.getDay() !== 0) H[ds(t)] = '国民の休日'; } });
+  Object.keys(H).sort().forEach(d => { const t = new Date(d + 'T12:00:00'); if(t.getDay() !== 0) return; do{ t.setDate(t.getDate() + 1); }while(H[ds(t)]); H[ds(t)] = '振替休日'; });
+  return (HOLI_C[y] = H);
+}
+function jpHolidayOf(d){ const p2 = n => String(n).padStart(2, '0'); return jpHolidays(d.getFullYear())[d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate())] || ''; }
 function fmtJ(iso, withWd = true){
-  const d = new Date(iso);
-  return (d.getMonth() + 1) + '/' + d.getDate() + (withWd ? '（' + WD_K[d.getDay()] + '）' : '') + ' ' +
+  const d = new Date(iso), hol = withWd ? jpHolidayOf(d) : '';
+  return (d.getMonth() + 1) + '/' + d.getDate() + (withWd ? '（' + WD_K[d.getDay()] + (hol ? '・' + hol : '') + '）' : '') + ' ' +
     String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
 }
 function daysUntil(iso){
@@ -5824,6 +5847,21 @@ function decoFor(r, R, rand, season = 0, roadD = ''){
   return items.map(i => i.svg).join('');
 }
 
+/* まだ 行けない 地方の 色を うすくする。SVGの フィルター（feColorMatrix）は iPhone で すばやく スクロールすると
+   えがくのが まにあわず、みどりの 地面だけが 見えて しまうので、色そのものを さいしょに けいさんして おく */
+const DESAT_S = .2, DESAT_C = {};
+function desatHex(h){
+  if(DESAT_C[h]) return DESAT_C[h];
+  let x = h.slice(1); if(x.length === 3) x = x.split('').map(c => c + c).join('');
+  const R = parseInt(x.slice(0, 2), 16), G = parseInt(x.slice(2, 4), 16), B = parseInt(x.slice(4, 6), 16), s = DESAT_S;
+  const c = v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0');
+  const r2 = (.213 + .787 * s) * R + (.715 - .715 * s) * G + (.072 - .072 * s) * B;
+  const g2 = (.213 - .213 * s) * R + (.715 + .285 * s) * G + (.072 - .072 * s) * B;
+  const b2 = (.213 - .213 * s) * R + (.715 - .715 * s) * G + (.072 + .928 * s) * B;
+  return (DESAT_C[h] = '#' + c(r2) + c(g2) + c(b2));
+}
+const desatSVG = str => str.replace(/(["':\s])(#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3})(?=["';\s)])/g, (m, pre, hex) => pre + desatHex(hex));
+
 /* ---------- 地図を つくる ---------- */
 let worldBuilt = false;
 function buildWorld(stepsInSeason, season){
@@ -5885,7 +5923,7 @@ function buildWorld(stepsInSeason, season){
     if(R.key === 'sea'){
       for(let i = 0; i < 10; i++){ const y = top + 60 + i * 95; g += `<path d="M0 ${y} Q100 ${y - 8} 200 ${y} T400 ${y}" stroke="#4A5A8E" stroke-width="2" fill="none" opacity=".5"/>`; }
     }
-    grounds += locked ? `<g filter="url(#desat)">${g}</g>` : g;
+    grounds += locked ? desatSVG(g) : g;
   }
   out += grounds;
 
@@ -5901,7 +5939,7 @@ function buildWorld(stepsInSeason, season){
       const hi = st === 'rock' ? (upper.key === 'cave' ? '#8A7C9A' : '#E7ECEF') : lower.patch;
       s = borderRow(b, -14, gx - 38, st, rr, fill, edge, hi) + borderRow(b, gx + 38, 414, st, rr, fill, edge, hi);
     }
-    return b + 1 > cur ? `<g filter="url(#desat)" opacity=".92">${s}</g>` : `<g>${s}</g>`;
+    return b + 1 > cur ? `<g>${desatSVG(s)}</g>` : `<g>${s}</g>`;
   };
   for(let r = MAP.N - 1; r >= 0; r--){
     const R = REGIONS[r], top = regionTop(r);
@@ -5938,9 +5976,9 @@ function buildWorld(stepsInSeason, season){
       let fog = `<path d="M-10 ${f1(edgeY(r, -10))}${edgeLine(r, 0, 410, 10)}${bot}Z" fill="#FBF7EE" opacity=".3"/>`;
       for(let i = 0; i < 10; i++){
         const cx = fr() * 400, cy = top + 60 + i * 96;
-        fog += `<g class="fogBlob" style="animation-delay:${-i * 1.7}s"><path d="${scallop(cx, cy, 110 + fr() * 80, 38 + fr() * 18, 9, fr, .2)}" fill="#FBF7EE" opacity=".72" stroke="#E6E0D6" stroke-width="1.2"/></g>`;
+        fog += `<g${r === cur + 1 ? ` class="fogBlob" style="animation-delay:${-i * 1.7}s"` : ''}><path d="${scallop(cx, cy, 110 + fr() * 80, 38 + fr() * 18, 9, fr, .2)}" fill="#FBF7EE" opacity=".72" stroke="#E6E0D6" stroke-width="1.2"/></g>`;
       }
-      out += `<g class="locked" filter="url(#desat)">${g}</g><g pointer-events="none">${fog}</g>`;
+      out += `<g class="locked">${desatSVG(g)}</g><g pointer-events="none">${fog}</g>`;
     } else out += `<g>${g}</g>`;
     if(r > 0) out += border(r - 1);
   }
@@ -6050,6 +6088,13 @@ const STAMP_PICK = ['clap', 'fight'];   /* えらべるのは 2つだけ（う�
 const seasonOf = st => st <= 0 ? 0 : Math.floor((st - 1) / MAP.TOTAL);
 function inSeason(st){ const s = st % MAP.TOTAL; return (st > 0 && s === 0) ? MAP.TOTAL : s; }
 function avatarMe(){ return avatarOf(S.hero, S.wear); }
+/* 教室に ある アイコンと いまの 主人公が おなじか（いろ・かお・ぼうし・きがえ など） */
+function sameAvatar(a, b){
+  if(!a || !b || typeof a !== 'object') return false;
+  const ks = new Set(Object.keys(a).concat(Object.keys(b)));
+  for(const k of ks){ if(String(a[k] == null ? '' : a[k]) !== String(b[k] == null ? '' : b[k])) return false; }
+  return true;
+}
 function keysOn(){ return !!S.keysOn; }
 /* スタートダッシュは やめた（途中から 入った 子は おいかぜが おいつかせる）。むかしの よびだしの ために 0 を かえす */
 function dashDaysLeft(){ return 0; }
@@ -6088,6 +6133,10 @@ function odaiList(){
 
 /* ---------- 地図の 上の 主人公たち ---------- */
 function nodeXY(stIn){ return NODES[Math.max(0, Math.min(MAP.TOTAL, stIn))] || NODES[0]; }
+/* 地図を スクロールして いる あいだは、地図の中の 小さな アニメ（きり・きらきら など）を とめる。
+   うごかしながら えがきなおすと、iPhone で えがくのが おいつかず 地面だけが 見えるため */
+(() => { const sc = document.getElementById('mapScroll'); if(!sc) return; let t = 0;
+  sc.addEventListener('scroll', () => { if(!t) sc.classList.add('scrolling'); clearTimeout(t); t = setTimeout(() => { sc.classList.remove('scrolling'); t = 0; }, 180); }, { passive: true }); })();
 function scaleNow(){ mapScale = $('mapSvg').clientWidth / MAP.W || 1; return mapScale; }
 function placeEl(el, stIn, dx = 0){
   const [x, y] = nodeXY(stIn), k = scaleNow();
@@ -6527,6 +6576,9 @@ async function refreshFromServer(){
         if(slNote && slNote !== seen.note){ if(slNote > S.noteLv) S.noteLv = Math.min(typeof NLEVELS !== 'undefined' ? NLEVELS.length : 50, slNote); seen.note = slNote; }
         if(h.me.avatar && typeof h.me.avatar.c === 'number' && !S.heroSetLocal){
           const a = h.me.avatar; ['c', 'e', 'm', 'h', 't', 'p', 's', 'f'].forEach(k => { if(typeof a[k] === 'number') S.hero[k] = a[k]; });
+        } else if(S.heroSetLocal && !DEMO && linked() && !sameAvatar(h.me.avatar, avatarMe())){
+          /* つながる まえに つくった 主人公・べつの 端末で かえた ものを 教室にも おくる（先生の 画面の アイコンに 出る） */
+          API.profile(h.me.nickname ? null : (S.hero.name || null), avatarMe(), null).catch(() => {});
         }
       }
       if('line_oa_id' in h) S.oaId = h.line_oa_id;
@@ -12503,9 +12555,6 @@ function famSettingsCommon(){
   return `<div class="fCard"><h3>${ICON('sound', 22)}音声・効果音</h3><label class="toggle"><span style="font-size:13.5px">声で案内する</span><input type="checkbox" id="setVoice" ${S.voice ? 'checked' : ''}></label>
     <label class="toggle"><span style="font-size:13.5px">効果音（ボタンや にわの ピコッ・ポン）</span><input type="checkbox" id="setSfx" ${S.sfx === false ? '' : 'checked'}></label>
     <div class="fNote">ピアノの音・リズムの音楽はそのまま鳴ります。</div></div>
-    <div class="fCard"><h3>${ICON('video', 22)}演奏動画を先生に送る</h3><p>60秒くらいまでの動画がおすすめです。LINEの共有先で「<span class="nw">教室の公式LINE</span>」を選んでください。</p>
-    <input type="file" id="vidInput" accept="video/*" style="display:none"><button class="fBtn s" id="vidPick">${ICON('video', 20)}動画をとる・えらぶ</button>
-    <div class="fNote">動画はアプリのサーバーには保存されません。お使いの端末から、<span class="nw">教室の公式LINE</span>に直接送られます。</div></div>
     <div class="fCard" id="sibCard"><h3>${ICON('family', 22)}きょうだい</h3>
     <p>1台の端末で、きょうだいそれぞれの主人公・おうち・レベルを別々に進められます。開くと「だれが ひらく?」で選びます。</p>
     <div class="sibList">${KIDS.map(k => `<div class="sibRow${k.id === KID ? ' on' : ''}">${heroSVG(k.av || { c: k.c | 0, w: k.w || 'none' }, 40)}<span class="nm">${esc(k.name || '名前未設定')}${k.id === KID ? '<small>いま開いている子</small>' : ''}</span>${k.id === KID ? '' : `<button class="fBtn s sm" data-sw="${k.id}">この子に切り替え</button><button class="sibRm" data-rm="${k.id}" aria-label="この端末から外す">×</button>`}</div>`).join('')}</div>
@@ -12558,15 +12607,6 @@ function wireSettingsCommon(){
     const on = e.target.checked; S.keysOn = on; saveState();
     if(linked()) try{ await API.setKeys(on); if(HOME && HOME.me) HOME.me.show_keys = on; }catch(err){ toast('保存できませんでした'); }
     toast(on ? '「けんばん」を出しました' : '「けんばん」をかくしました');
-  });
-  $('vidPick').addEventListener('click', () => $('vidInput').click());
-  $('vidInput').addEventListener('change', async e => {
-    const f = e.target.files[0]; if(!f) return;
-    const text = '【まいにちピアノ】えんそう動画です（' + (S.hero.name || '') + '）';
-    try{
-      if(navigator.canShare && navigator.canShare({ files: [f] })){ await navigator.share({ files: [f], text }); toast('送りました'); }
-      else if(openLineTalk(text)) toast('LINEのトークで、動画を添付して送ってください');
-    }catch(err){}
   });
   document.querySelectorAll('#sibCard [data-sw]').forEach(b => b.addEventListener('click', () => switchKid(b.dataset.sw, 'family')));
   document.querySelectorAll('#sibCard [data-rm]').forEach(b => b.addEventListener('click', () => {
