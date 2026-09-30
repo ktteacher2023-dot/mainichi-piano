@@ -2909,7 +2909,7 @@ ruby rt{font-weight:700;color:#6E5B50}
    ・同じ地図に 教室みんなの主人公（ニックネーム・順位なし）
    ・おうちのひと：予定・振替・おしらせ・れんらくちょう
    ========================================================= */
-const APP_VER = 'v2026.09.30-1';   /* なおしたら かならず あげる（アップした ものが あたらしいか、おうちのかた→設定の いちばん したで たしかめられる） */
+const APP_VER = 'v2026.09.30-2';   /* なおしたら かならず あげる（アップした ものが あたらしいか、おうちのかた→設定の いちばん したで たしかめられる） */
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -12292,15 +12292,19 @@ function famMessages(){
 }
 /* 先生が 連絡を 読む 時間（教室が きめている ときだけ） */
 const hmNum = s => { const [h, m] = String(s || '').split(':').map(Number); return isNaN(h) ? null : h * 60 + (m || 0); };
+/* 0時〜24時（または 「から」と「まで」が おなじ）は 24時間 */
+const famContact24 = c => { const f = hmNum(c.from), t = hmNum(c.to); return f === t || (f === 0 && t >= 1440); };
 function famContactOpen(){
   const c = FAM && FAM.contact; if(!c || !c.from || !c.to) return true;
+  if(famContact24(c)) return true;
   const d = new Date(), n = d.getHours() * 60 + d.getMinutes(), f = hmNum(c.from), t = hmNum(c.to);
   return f <= t ? n >= f && n < t : n >= f || n < t;
 }
 function famContactHTML(){
   const c = FAM && FAM.contact; if(!c || !c.from || !c.to) return '';
   const hmTx = s => { const [h, m] = String(s).split(':').map(Number); return h + '時' + (m ? m + '分' : ''); };
-  return `<div class="fHours${famContactOpen() ? '' : ' off'}">${ICON('clock', 20)}<span><b>先生が連絡を読むのは ${hmTx(c.from)}〜${hmTx(c.to)}</b>${famContactOpen() ? '' : '<small>いまは時間外です。送っておくと、受付時間に読んでもらえます。</small>'}${c.note ? `<small>${esc(c.note)}</small>` : ''}</span></div>`;
+  const when = famContact24(c) ? '連絡は24時間いつでも受けつけています' : `先生が連絡を読むのは ${hmTx(c.from)}〜${hmNum(c.from) > hmNum(c.to) ? '翌' : ''}${hmTx(c.to)}`;
+  return `<div class="fHours${famContactOpen() ? '' : ' off'}">${ICON('clock', 20)}<span><b>${when}</b>${famContactOpen() ? '' : '<small>いまは時間外です。送っておくと、受付時間に読んでもらえます。</small>'}${c.note ? `<small>${esc(c.note)}</small>` : ''}</span></div>`;
 }
 function wireMessages(){
   const nm = $('notesMore'); if(nm) nm.addEventListener('click', () => { famNotesAll = true; renderFam(); });

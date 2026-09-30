@@ -1164,7 +1164,7 @@ details.adv summary{font-size:12.5px;font-weight:900;color:var(--ink2);cursor:po
     <div id="rsMsg" class="authMsg" role="status"></div>
   </div>
   <div class="legal"><a href="terms.html" target="_blank">利用規約</a>・<a href="privacy.html" target="_blank">プライバシーポリシー</a>・<a href="tokushoho.html" target="_blank">特定商取引法に基づく表記</a></div>
-  <div class="legal verTag">v2026.09.30-1</div>
+  <div class="legal verTag">v2026.09.30-2</div>
 </div>
 
 <!-- 本体 -->
@@ -4039,7 +4039,7 @@ function feeIntro(){
   sh.innerHTML = `<h3>${ti('fee', 26)}月謝の受け取りを記録する</h3>
     <div class="feeIntro"><p>月謝袋や通帳を見ながら、受け取った家庭に「受け取った」を押すだけです。まだの家庭がひと目でわかり、1年分の合計はCSVで書き出せます（確定申告の下準備に）。</p>
     <p class="muted">代表の先生だけが見られます。講師の先生と家庭には見えません。</p></div>
-    <div class="grid2"><div><label class="f">いつもの月謝</label><div class="yenIn"><input class="i" id="fiA" type="number" inputmode="numeric" min="0" step="500" value="${esc((SET && SET.fee_default) || '')}" placeholder="8000"><span>円</span></div></div>
+    <div class="grid2"><div><label class="f">いつもの月謝</label><div class="yenIn"><input class="i" id="fiA" type="number" inputmode="numeric" min="0" step="100" value="${esc((SET && SET.fee_default) || '')}" placeholder="8000"><span>円</span></div></div>
     <div><label class="f">いつもの受け取りかた</label><select class="i" id="fiM">${FEE_METHODS.map(x => `<option ${x === ((SET && SET.fee_method) || '現金') ? 'selected' : ''}>${x}</option>`).join('')}</select></div></div>
     <label class="toggle"><span>受け取ったら、連絡帳に「受け取りました」を送る<small>月謝袋のはんこのかわりになります（その家庭だけが見られます）</small></span><input type="checkbox" id="fiT" ${SET && SET.fee_thanks ? 'checked' : ''}></label>
     <div class="note">金額がちがう生徒（きょうだい割引・コースちがい）は、あとで生徒ごとに直せます。直した金額が、次の月からその子のいつもの金額になります。</div>
@@ -4055,7 +4055,7 @@ function feeIntro(){
 function feeEditor(o){
   const r = o.r || {};
   return `<div class="feeEd" data-sid="${o.s.id}">
-    <div class="grid2"><div><label class="f">金額</label><div class="yenIn"><input class="i" type="number" inputmode="numeric" min="0" step="500" id="feA" value="${o.amt || ''}"><span>円</span></div></div>
+    <div class="grid2"><div><label class="f">金額</label><div class="yenIn"><input class="i" type="number" inputmode="numeric" min="0" step="100" id="feA" value="${o.amt || ''}"><span>円</span></div></div>
     <div><label class="f">受け取った日</label><input class="i" type="date" id="feD" value="${r.paid_on || (o.k === 'todo' ? dayStr() : '')}"></div></div>
     <div class="feHint">日付を空けて保存すると、「まだ」のまま金額だけを直せます。</div>
     <label class="f">受け取りかた</label><div class="seg feM">${FEE_METHODS.map(x => `<button type="button" data-m="${x}" class="${x === o.meth ? 'on' : ''}">${x}</button>`).join('')}</div>
@@ -5402,13 +5402,14 @@ function schedRows(list){
       <div class="sub">${l.minutes || 30}分${l.kind !== 'open' ? (l.published ? '・公開ずみ' : '・<span style="color:var(--coral-d)">未公開</span>') : ''}${l.confirmed_at ? '・家庭が確認' : ''}${l.note ? '・' + esc(l.note) : ''}</div></div>${l.confirmed_at ? ti('check', 20) : ''}${ti('chevR', 18, 'chev')}</div>`; }).join('');
 }
 /* じこくは 5ふん きざみで えらぶ（スマホの じこく ホイールは 1ぷん きざみに なるため） */
-function timeSel(id, val, allowEmpty = false){
+/* hr：えらべる 時の はんい（レッスンは 7〜22時。連絡の 受付時間は 0〜24時） */
+function timeSel(id, val, allowEmpty = false, hr = [7, 22]){
   const [h0, m0] = String(val || '').split(':').map(Number), empty = allowEmpty && isNaN(h0);
   const hh = isNaN(h0) ? 16 : h0, mm = isNaN(m0) ? 0 : (Math.round(m0 / 5) * 5) % 60;
-  return `<div class="tsel" id="${id}"><select class="i" data-p="h" aria-label="時">${allowEmpty ? `<option value="" ${empty ? 'selected' : ''}>—</option>` : ''}${Array.from({ length: 16 }, (_, i) => i + 7).map(v => `<option value="${v}" ${!empty && v === hh ? 'selected' : ''}>${v}時</option>`).join('')}</select>
+  return `<div class="tsel" id="${id}"><select class="i" data-p="h" aria-label="時">${allowEmpty ? `<option value="" ${empty ? 'selected' : ''}>—</option>` : ''}${Array.from({ length: hr[1] - hr[0] + 1 }, (_, i) => i + hr[0]).map(v => `<option value="${v}" ${!empty && v === hh ? 'selected' : ''}>${v}時</option>`).join('')}</select>
     <select class="i" data-p="m" aria-label="分">${Array.from({ length: 12 }, (_, i) => i * 5).map(v => `<option value="${v}" ${v === mm ? 'selected' : ''}>${pad(v)}分</option>`).join('')}</select></div>`;
 }
-function timeVal(id){ const b = $(id), h = b.querySelector('[data-p="h"]').value; return h === '' ? '' : pad(+h) + ':' + pad(+b.querySelector('[data-p="m"]').value); }
+function timeVal(id){ const b = $(id), h = b.querySelector('[data-p="h"]').value; return h === '' ? '' : +h >= 24 ? '24:00' : pad(+h) + ':' + pad(+b.querySelector('[data-p="m"]').value); }
 const shortName = s => s ? (s.display_name ? String(s.display_name).trim().split(/\s+/).pop() : (s.nickname || '')).slice(0, 5) : '';
 async function viewSched(m){
   const y = schedMonth.getFullYear(), mo = schedMonth.getMonth();
@@ -6025,12 +6026,13 @@ async function viewSettings(m){
     <div class="muted" style="margin-top:6px">LINEとつながった家庭：${act.filter(s => linkedStu.has(s.id)).length} / ${act.length}人</div></div>
     <div class="card">${H2('fee', 'mu', '月謝')}
     <label class="toggle"><span>月謝の受け取りを記録する<small>「今日」の「月謝」から、1タップで受け取りを記録できます。代表の先生だけが見られます</small></span><input type="checkbox" id="cFee" ${SET.fee_on ? 'checked' : ''}></label>
-    <div class="grid2"><div><label class="f">いつもの月謝</label><div class="yenIn"><input class="i" id="cFeeA" type="number" inputmode="numeric" min="0" step="500" value="${esc(SET.fee_default || '')}" placeholder="8000"><span>円</span></div></div>
+    <div class="grid2"><div><label class="f">いつもの月謝</label><div class="yenIn"><input class="i" id="cFeeA" type="number" inputmode="numeric" min="0" step="100" value="${esc(SET.fee_default || '')}" placeholder="8000"><span>円</span></div></div>
     <div><label class="f">いつもの受け取りかた</label><select class="i" id="cFeeM">${FEE_METHODS.map(x => `<option ${x === (SET.fee_method || '現金') ? 'selected' : ''}>${x}</option>`).join('')}</select></div></div>
     <label class="toggle"><span>受け取ったら、連絡帳に「受け取りました」を送る<small>月謝袋のはんこのかわりになります（その家庭だけが見られます）</small></span><input type="checkbox" id="cFeeT" ${SET.fee_thanks ? 'checked' : ''}></label></div>
     <div class="card">${H2('clock', 'sk', '連絡の受付時間')}
     <label class="toggle"><span>受付時間を家庭の連絡帳に出す<small>時間外に届いた連絡は、次の受付時間に読むことが家庭に伝わります</small></span><input type="checkbox" id="cCh" ${SET.contact_hours ? 'checked' : ''}></label>
-    <div class="grid2"><div><label class="f">から</label>${timeSel('cChF', (SET.contact_hours && SET.contact_hours.from) || '09:00')}</div><div><label class="f">まで</label>${timeSel('cChT', (SET.contact_hours && SET.contact_hours.to) || '20:00')}</div></div>
+    <div class="grid2"><div><label class="f">から</label>${timeSel('cChF', (SET.contact_hours && SET.contact_hours.from) || '09:00', false, [0, 23])}</div><div><label class="f">まで</label>${timeSel('cChT', (SET.contact_hours && SET.contact_hours.to) || '20:00', false, [0, 24])}</div></div>
+    <div class="note">0時から24時までにすると、家庭には「24時間いつでも受けつけています」と出ます。21時から翌9時のように、夜をまたぐ時間にもできます。</div>
     <label class="f">ひとこと（急ぎのときの連絡先など）</label><input class="i" id="cChN" maxlength="60" value="${esc((SET.contact_hours && SET.contact_hours.note) || '')}" placeholder="例：当日の急なお休みは、教室の電話へどうぞ"></div>
     <div class="card">${H2('calOff', 'pl', '教室のお休み')}
     <div class="row" style="flex-wrap:nowrap"><input class="i" id="cdIn" type="date" style="flex:1;min-width:0"><button class="btn s" id="cdAdd">${ti('plus', 18)}追加</button></div>
@@ -6040,7 +6042,7 @@ async function viewSettings(m){
       <span class="muted" style="flex:1">「保存」でアプリに反映されます</span><button class="btn g" id="cSave">保存</button></div>
     ${ntCardHTML()}${roomsTeachersHTML(invites)}${calCardHTML()}${DEMO_MULTI ? `<div class="card"><button class="btn w" id="asStaff">${ti('eye', 18)}講師の画面を見てみる（見本）</button></div>` : ''}
     <div class="row" style="justify-content:center;margin-top:8px;gap:18px;flex-wrap:wrap"><button class="linkBtn" id="suShow">${ti('flag', 16)}「はじめの準備」をもう一度出す</button>${DEMO ? '' : `<button class="linkBtn" id="logoutBtn2">${ti('door', 16)}ログアウト</button>`}</div>
-    <div class="verTag">先生の画面 v2026.09.30-1</div>`;
+    <div class="verTag">先生の画面 v2026.09.30-2</div>`;
   m.innerHTML = h;
   $('suShow').addEventListener('click', () => { try{ localStorage.removeItem(SETUP_KEY()); }catch(e){} SETUP_FORCE = true; goTab('today'); });
   /* 保存の バーは なにか かえた ときだけ 出す（あいた すきまや 重なりを ださない） */
