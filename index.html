@@ -1159,6 +1159,12 @@ button.stCard{cursor:pointer}
 .stOd .reps{display:flex;gap:8px;flex-wrap:wrap}
 .stOd .rp{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--stMute2);background:var(--stPaper);font-family:inherit;font-weight:700;font-size:13px;color:var(--stMute);cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
 .stOd .rp.on{background:var(--stGreen);border-color:var(--stGreen);color:#fff}
+.stOd .reps.cnt{align-items:center;gap:12px}
+.stOd .rp.big{width:auto;min-width:64px;height:44px;border-radius:999px;padding:0 16px;font-size:15px;color:var(--stInk,#2b2b2b);border-color:var(--stMute2)}
+.stOd .cntTx{font-size:13px;color:var(--stInk2);font-variant-numeric:tabular-nums}
+.stOd .cntTx b{font-size:18px;color:var(--stInk,inherit)}
+.stOd .cntBar{flex:1 1 120px;height:8px;border-radius:999px;background:var(--stPaper);border:1px solid var(--stMute2);overflow:hidden;min-width:80px}
+.stOd .cntBar i{display:block;height:100%;background:var(--stGreen)}
 .stOd.done .t b::after{content:'できました';margin-left:8px;font-size:11px;color:var(--stGreen);background:var(--stGreenL);border-radius:999px;padding:1px 8px;vertical-align:2px}
 .stKz:empty{display:none}
 .stKz{margin-top:8px;border-radius:14px;background:#F6ECD8;padding:8px;overflow:auto}
@@ -1989,6 +1995,17 @@ body.kmOn #apBody,body.kmOn #asBody,body.kmOn #odaiPlay{padding-bottom:calc(84px
   background:conic-gradient(var(--sun) var(--p,0%),transparent 0);-webkit-mask:radial-gradient(circle,transparent 62%,#000 64%);mask:radial-gradient(circle,transparent 62%,#000 64%);
   animation:repRest var(--rest,6000ms) linear forwards}
 @property --p{syntax:'<percentage>';inherits:false;initial-value:0%}
+/* ○が 11〜20こ：すこし ちいさく */
+#repRow.many{gap:8px;max-width:420px}
+#repRow.many .rep{width:52px;height:52px;font-size:20px;border-width:2.5px}
+/* 21かい いじょう：かぞえる ボタン ＋ すすみぐあいの バー */
+#repRow.count{flex-direction:column;align-items:center;gap:12px;width:100%}
+#repRow .repBig{width:148px;height:148px;flex-direction:column;gap:0;line-height:1}
+#repRow .repBig b{font-size:52px;font-weight:900;font-variant-numeric:tabular-nums}
+#repRow .repBig small{font-size:15px;font-weight:900;margin-top:4px}
+#repRow .repBig:not(.on){color:var(--ink);border-style:solid;border-color:var(--ink);box-shadow:0 4px 0 var(--ink)}
+.repBar{width:min(300px,78vw);height:12px;border-radius:999px;background:#F0E6DC;border:2px solid var(--ink);overflow:hidden}
+.repBar i{display:block;height:100%;background:var(--coral);transition:width .3s}
 @keyframes repRest{from{--p:0%}to{--p:100%}}
 .prStats b small{font-size:13px;margin-left:2px;font-weight:900}
 .prStats b.sm{font-size:15px;line-height:1.6}
@@ -2909,7 +2926,7 @@ ruby rt{font-weight:700;color:#6E5B50}
    ・同じ地図に 教室みんなの主人公（ニックネーム・順位なし）
    ・おうちのひと：予定・振替・おしらせ・れんらくちょう
    ========================================================= */
-const APP_VER = 'v2026.09.30-2';   /* なおしたら かならず あげる（アップした ものが あたらしいか、おうちのかた→設定の いちばん したで たしかめられる） */
+const APP_VER = 'v2026.09.30-3';   /* なおしたら かならず あげる（アップした ものが あたらしいか、おうちのかた→設定の いちばん したで たしかめられる） */
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -3408,10 +3425,10 @@ const Demo = (() => {
     async home(){
       const me = S.steps;
       return { me: { display_name: 'みほん', nickname: S.hero.name, avatar: avatarMe(), show_keys: !!S.keysOn, joined_at: S.since || null, start_levels: {}, public_id: 'me', mode: S.mode || 'kids',
-          map_opt_out: false, odai: S.mode === 'adult' || S.mode === 'junior' ? [
+          map_opt_out: false, pos_on: !QS.has('posoff'), odai: S.mode === 'adult' || S.mode === 'junior' ? [
             { id: 'o1', t: 'メヌエット ト長調', h: '左手の和音を そろえて、ゆっくり通す', n: 3, i: 'notes' },
             { id: 'o3', t: 'ト長調の I・V7・I', h: '両手で 和音を 3つ つづけて', n: 3, i: 'notes', m: { k: 'cad', key: 'G' } }] : [
-            { id: 'o1', t: 'かえるのうた', h: 'みぎてで ゆっくり', n: 3, i: 'keron' },
+            { id: 'o1', t: 'かえるのうた', h: 'みぎてで ゆっくり', n: QS.has('reps') ? Math.max(1, +QS.get('reps') || 3) : 3, i: 'keron' },
             { id: 'o3', t: 'ソの 5ゆび ポジション', h: 'みぎてで のぼって おりて', n: 3, i: 'piano', m: { k: 'five', key: 'G' } }],
           repertoire: S.demoRep || (S.demoRep = (S.mode === 'adult' || S.mode === 'junior' ? [['ブルグミュラー 素直な心', 60], ['ソナチネ Op.36-1 第1楽章', 38], ['エリーゼのために', 20], ['アラベスク', 6]] : [['ちょうちょう', 40], ['かえるの うた', 26], ['きらきらぼし', 12], ['ぶんぶんぶん', 3]]).map(([t, ago], i) => ({ id: 'd0' + i, t, d: addDays(todayStr(), -ago) }))),
           steps_total: me, today_steps: todaySteps(),
@@ -6051,11 +6068,20 @@ function windInfo(){
 function dayMul(){ return windInfo().on ? 2 : 1; }
 /* もう1しゅう は やめた（1つ 1ぽ に なったので） */
 function extraLeft(){ return null; }
-/* ピアノの おだいは 2つ：いま れんしゅうしている きょく ＋ ポジション れんしゅう（先生が きめていなければ ドの 5ゆび） */
+/* ピアノの おだいは 2つ：いま れんしゅうしている きょく ＋ ポジション れんしゅう（先生が きめていなければ ドの 5ゆび）。
+   先生が「ポジション練習なし」に した 子は 1つ（きめるのは サーバーの pos_on。ないときは おだいの off） */
 const DEFAULT_POS = { id: 'pos', t: 'ドの 5ゆび ポジション', h: 'みぎてで のぼって おりて', n: 3, i: 'piano', m: { k: 'five', key: 'C' } };
+function posOn(list){
+  const me = HOME && HOME.me;
+  if(me && typeof me.pos_on === 'boolean') return me.pos_on;
+  if(typeof S.posOn === 'boolean') return S.posOn;
+  const p = (list || []).find(x => x && x.m);
+  return !(p && p.off);
+}
 function odaiList(){
   const o = (HOME && HOME.me && Array.isArray(HOME.me.odai) && HOME.me.odai.length) ? HOME.me.odai : (S.odaiCache && S.odaiCache.length ? S.odaiCache : DEFAULT_ODAI);
   const piece = o.find(x => x && x.t && !x.m) || DEFAULT_ODAI[0];
+  if(!posOn(o)) return [piece];
   const pos = o.find(x => x && x.m) || DEFAULT_POS;
   return [piece, pos];
 }
@@ -6476,6 +6502,7 @@ async function refreshFromServer(){
       HOME = h;
       if(h.me){
         if(Array.isArray(h.me.odai)) S.odaiCache = h.me.odai;
+        if(typeof h.me.pos_on === 'boolean') S.posOn = h.me.pos_on;
         if(Array.isArray(h.me.repertoire)) S.repCache = h.me.repertoire;
         if(typeof hwMerge === 'function') hwMerge(h.me);   /* 先生からの しゅくだい */
         if(!DEMO && mergeServerState(h.me.game_state) && curScreen === 'home') renderSideBadges();
@@ -9099,10 +9126,14 @@ function lostReturn(id){
    ピアノの じかん：先生の おだいを ピアノで ひく
    ・ひけたら ○を タッチ（「正しく ひけた かいすう」を かぞえる）
    ・おだいは 2つ（いま れんしゅうしている きょく・ポジション れんしゅう）。どちらも できたら ピアノは クリア
+     （先生が ポジション練習を「なし」に した 子は 1つ）
+   ・○の かずは 先生が きめる（1〜99）。21かい からは ○の かわりに「かぞえる ボタン」
    ・おうちのひとが「きいたよ」→ かけざんに こたえて → 1ほ（1日1かい。子どもだけでは おせない）
    ・マイクは おまけ：おとが きこえると 主人公が よろこぶ（はんていは しない）
    ========================================================= */
 let odaiCur = null, repsDone = 0;
+const REP_DOTS = 20;   /* これより おおいと ○を ならべず、かぞえる ボタンに */
+const repCount = o => Math.max(1, Math.min(99, Math.round(+(o && o.n) || 3)));
 
 function openOdai(){
   stopMic();
@@ -9146,12 +9177,16 @@ function startOdai(o){
   $('odaiScene').classList.toggle('hide', kz);
   $('odMat').classList.toggle('hide', !kz);
   if(kz) kzRender($('odMat'), o.m); else { kzStop(); $('odMat').innerHTML = ''; $('odaiScene').innerHTML = pianoSceneSVG(avatarMe()); }
-  const n = Math.max(1, Math.min(10, o.n || 3));
+  const n = repCount(o);
   const already = doneToday('odai', o.id);
-  $('repRow').innerHTML = Array.from({ length: n }, (_, i) => `<button class="rep${already ? ' on' : ''}" data-i="${i}">${i + 1}</button>`).join('');
+  const count = n > REP_DOTS;
+  $('repRow').className = count ? 'count' : n > 10 ? 'many' : '';
+  $('repRow').innerHTML = count
+    ? `<button class="rep repBig${already ? ' on' : ''}" data-i="0"><b id="repNum">${already ? n : 0}</b><small>/ ${n}かい</small></button><div class="repBar"><i id="repFill" style="width:${already ? 100 : 0}%"></i></div>`
+    : Array.from({ length: n }, (_, i) => `<button class="rep${already ? ' on' : ''}" data-i="${i}">${i + 1}</button>`).join('');
   repsDone = already ? n : 0;
-  $('repHint').innerHTML = already ? 'きょうの この おだいは クリアずみ! もっと ひいても いいよ' : (kz ? kzRepHint(o.m) : 'ピアノで <b>1かい ひけたら</b> ○を タッチ!');
-  $('repRow').querySelectorAll('.rep').forEach(b => b.addEventListener('click', () => tapRep(b, n)));
+  $('repHint').innerHTML = already ? 'きょうの この おだいは クリアずみ! もっと ひいても いいよ' : (kz ? kzRepHint(o.m) : count ? 'ピアノで <b>1かい ひけたら</b> ボタンを タッチ!' : 'ピアノで <b>1かい ひけたら</b> ○を タッチ!');
+  $('repRow').querySelectorAll('.rep').forEach(b => b.addEventListener('click', () => count ? tapCount(b, n) : tapRep(b, n)));
   refreshOkBox();
   odShowNext(already);
   say(o.t + '。' + (o.h || '') + '。' + n + 'かい ひいてみよう!');
@@ -9183,6 +9218,29 @@ async function tapRep(b, n){
   playSeq([72 + [0, 4, 7, 12, 16][repsDone % 5]], .1, .6);
   sceneCheer();
   if(repsDone < n){ say(repsDone + 'かい! いいね'); return; }
+  await repFinish(n);
+}
+/* 21かい いじょう：1つの 大きな ボタンで かぞえる（おすたびに すこし やすむのは ○と おなじ） */
+async function tapCount(b, n){
+  ensureAudio();
+  if(repsDone >= n){ sceneCheer(); chime(true); return; }
+  if(b.classList.contains('rest')){ b.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-4px)' }, { transform: 'translateX(4px)' }, { transform: 'translateX(0)' }], { duration: 260 }); say('ひいてから タッチしてね'); $('repHint').textContent = 'ピアノで ひいてから タッチしてね'; return; }
+  repsDone++;
+  $('repNum').textContent = repsDone; $('repFill').style.width = Math.round(repsDone / n * 100) + '%';
+  b.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.08)' }, { transform: 'scale(1)' }], { duration: 260, easing: 'cubic-bezier(.34,1.56,.64,1)' });
+  sparkAt(b, ['note', 'sparkle', 'star']);
+  playSeq([72 + [0, 4, 7, 12, 16][repsDone % 5]], .1, .6);
+  sceneCheer();
+  if(repsDone < n){
+    if(!(typeof DEMO !== 'undefined' && DEMO && QS.has('fastrep'))){ b.classList.add('rest'); b.style.setProperty('--rest', REP_REST + 'ms'); clearTimeout(b._t); b._t = setTimeout(() => b.classList.remove('rest'), REP_REST); }
+    const left = n - repsDone;
+    say(repsDone + 'かい!' + (left <= 3 ? ' あと ' + left + 'かい' : ''));
+    return;
+  }
+  b.classList.add('on');
+  await repFinish(n);
+}
+async function repFinish(n){
   say('できた! ' + odaiCur.t + '、クリア!');
   fanfare(); confetti(24);
   const add = await award('odai', odaiCur.id, { reps: n, t: odaiCur.t });
@@ -12377,7 +12435,7 @@ function famPractice(){
   return windCard + (typeof famHwCard === 'function' ? famHwCard() : '') + famMonthCard() + famPlayTimeCard() + `<div class="fCard"><h3>${ICON('foot', 22)}この2週間</h3><div class="calRow">${['日','月','火','水','木','金','土'].map(x => `<div style="text-align:center;font-size:11px;color:var(--mute)">${x}</div>`).join('')}${cal}</div>
     <div class="prStats"><div><b>${days}<small>日</small></b><span>練習した日</span></div><div><b>${odai}<small>回</small></b><span>おだい達成</span></div><div><b>${ok}<small>回</small></b><span>きいたよ</span></div>${play >= 60 ? `<div><b>${Math.round(play / 60)}<small>分</small></b><span>ピアノの音</span></div>` : ''}</div>
     <p>リズム：レベル${S.rhythmLv}　おんぷ：レベル${S.noteLv}${keysOn() ? '　けんばん：レベル' + S.pianoLv : ''}</p>
-    <p class="fNote">主人公は、ピアノのおだい（2つとも）・リズム・おんぷが<b>1つできるごとに1歩</b>、1日に最大3歩すすみます（しばらく練習があいた子には「おいかぜ」が吹きます）。あしあとの印がその日です。「きいたよ」を押すと、にわに植える花のたねが1つ届きます。</p></div>
+    <p class="fNote">主人公は、ピアノのおだい（全部）・リズム・おんぷが<b>1つできるごとに1歩</b>、1日に最大3歩すすみます（しばらく練習があいた子には「おいかぜ」が吹きます）。あしあとの印がその日です。「きいたよ」を押すと、にわに植える花のたねが1つ届きます。</p></div>
     <div class="fCard"><h3>${ICON('piano', 22)}練習のやくそく</h3><p>「いつ・どこで」を1つ決めておくと、習慣になりやすいことが分かっています。決めた言葉は、地図の画面に小さく出ます。</p>
     <input class="fInput" id="promiseIn" maxlength="24" placeholder="例：ゆうごはんの まえに ふたを あける" value="${esc(S.promise || '')}">
     <button class="fBtn g" id="promiseSave">やくそくを保存</button></div>
@@ -12754,19 +12812,20 @@ function stCelebrate(){
   const r = $('stRing'); if(r) r.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }], { duration: 700, easing: 'ease-out' });
 }
 
-/* ---------- 先生の 課題（おだい 2つ） ---------- */
+/* ---------- 先生の 課題（おだい 2つ。ポジションなしの 子は 1つ） ---------- */
 function stOdaiTitle(o){ return o.id === 'free' || o.t === DEFAULT_ODAI[0].t ? '練習中の曲' : o.t; }
 function stOdaiHTML(){
   const od = odaiList();
   return `<section class="stCard"><h2 class="stH">${ti('note', 22)}先生からの課題<small>通して弾けたら ○ を押します</small></h2>
-    ${od.map((o, i) => { const done = doneToday('odai', o.id), n = Math.max(1, Math.min(10, o.n || 3)), got = done ? n : ((S.stReps || {})[todayStr() + ':' + o.id] || 0);
+    ${od.map((o, i) => { const done = doneToday('odai', o.id), n = repCount(o), got = done ? n : Math.min(n, (S.stReps || {})[todayStr() + ':' + o.id] || 0);
       return `<div class="stOd${done ? ' done' : ''}" data-od="${esc(o.id)}"><div class="t"><b>${esc(stOdaiTitle(o))}</b>${o.h ? `<small>${esc(o.h)}</small>` : ''}</div>
-        <div class="reps">${Array.from({ length: n }, (_, k) => `<button type="button" class="rp${k < got ? ' on' : ''}" data-k="${k}" aria-label="${k + 1}回め">${k < got ? stIc('check') : k + 1}</button>`).join('')}</div>
+        ${n > REP_DOTS ? `<div class="reps cnt"><button type="button" class="rp big${done ? ' on' : ''}" data-k="${got}" aria-label="${got + 1}回め">${done ? stIc('check') : '＋1'}</button><span class="cntTx"><b>${got}</b> / ${n}回</span><span class="cntBar"><i style="width:${Math.round(got / n * 100)}%"></i></span></div>`
+          : `<div class="reps">${Array.from({ length: n }, (_, k) => `<button type="button" class="rp${k < got ? ' on' : ''}" data-k="${k}" aria-label="${k + 1}回め">${k < got ? stIc('check') : k + 1}</button>`).join('')}</div>`}
         ${kzHas(o) ? `<button type="button" class="stLinkBtn sm" data-kz="${i}">${ti('eye', 16)}譜例を見る</button><div class="stKz" data-kzbox="${i}"></div>` : ''}</div>`; }).join('')}</section>`;
 }
 async function stRep(odEl, k){
   const id = odEl.dataset.od, o = odaiList().find(x => x.id === id); if(!o) return;
-  const n = Math.max(1, Math.min(10, o.n || 3)), key = todayStr() + ':' + id;
+  const n = repCount(o), key = todayStr() + ':' + id;
   S.stReps = S.stReps || {};
   if(doneToday('odai', id)) return;
   const got = S.stReps[key] || 0;

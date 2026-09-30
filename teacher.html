@@ -627,6 +627,31 @@ ruby rt{font-weight:700;color:#6E5B50}
 .repBtns button{flex:1;max-width:64px;min-height:42px;border:1.5px solid var(--line);background:var(--paper);border-radius:12px;font:inherit;font-weight:900;font-size:17px;color:var(--ink2);cursor:pointer}
 .repBtns button small{font-size:10.5px;margin-left:1px}
 .repBtns button.on{background:var(--ink);border-color:var(--ink);color:#FFFBF4}
+.repBtns{flex-wrap:wrap;align-items:center}
+.repBtns>button{min-width:46px}
+.repMore{display:inline-flex;align-items:center;gap:2px;border:1.5px dashed var(--line);border-radius:12px;padding:2px;min-height:42px;background:var(--paper)}
+.repMore.on{border:1.5px solid var(--ink);background:var(--ink)}
+.repMore button{flex:none;width:34px;min-height:36px;max-width:none;border:none;background:transparent;font-size:19px;color:var(--ink2)}
+.repMore.on button{color:#FFFBF4}
+.repMore input{width:44px;border:none;background:transparent;text-align:center;font:inherit;font-weight:900;font-size:17px;color:var(--ink2);padding:0;-moz-appearance:textfield;appearance:textfield}
+.repMore input::-webkit-outer-spin-button,.repMore input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.repMore input:focus{outline:2px solid var(--mustard);border-radius:8px}
+.repMore.on input{color:#FFFBF4}
+.repMore small{font-size:10.5px;font-weight:900;color:var(--ink2);margin-right:2px}
+.repMore.on small{color:#E8DCCB}
+/* ポジション練習の あり・なし */
+.posSw{display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:12.5px;font-weight:900;color:var(--ink2);flex:none}
+.odaiEd .posNow+.posSw{margin-left:6px}
+.posSw input{appearance:none;-webkit-appearance:none;width:40px;height:24px;border-radius:999px;background:#E3D7C4;position:relative;cursor:pointer;margin:0;transition:background .15s;flex:none}
+.posSw input::after{content:'';position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transition:transform .15s}
+.posSw input:checked{background:var(--leaf)}
+.posSw input:checked::after{transform:translateX(16px)}
+.posSw input:focus-visible{outline:2px solid var(--mustard);outline-offset:2px}
+.posOffNote{display:none;font-size:12.5px;color:var(--ink2);line-height:1.7;margin-top:2px}
+.odaiEd.pos.off{background:var(--paper)}
+.odaiEd.pos.off .posBody,.odaiEd.pos.off .posNow{display:none}
+.odaiEd.pos.off .posOffNote{display:block}
+.odaiEd.pos.off .posSw{margin-left:auto}
 .icPick{margin-top:12px}
 .icPick summary{list-style:none;display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:900;color:var(--ink2);cursor:pointer;border:1.5px solid var(--line);border-radius:999px;padding:3px 12px 3px 10px;background:var(--paper)}
 .icPick summary::-webkit-details-marker{display:none}
@@ -1164,7 +1189,7 @@ details.adv summary{font-size:12.5px;font-weight:900;color:var(--ink2);cursor:po
     <div id="rsMsg" class="authMsg" role="status"></div>
   </div>
   <div class="legal"><a href="terms.html" target="_blank">利用規約</a>・<a href="privacy.html" target="_blank">プライバシーポリシー</a>・<a href="tokushoho.html" target="_blank">特定商取引法に基づく表記</a></div>
-  <div class="legal verTag">v2026.09.30-2</div>
+  <div class="legal verTag">v2026.09.30-3</div>
 </div>
 
 <!-- 本体 -->
@@ -4977,8 +5002,16 @@ function kzChipLab(k, v){
 }
 function kzChipSub(k, v){ return k === 'key' ? kzKeyName(KZ_ORDER[v[0]][+v.slice(1)], false) : kzKeyName(v, false); }
 /* おだいの ならび（曲名と 回数） */
-const odaiSum = list => (list || []).filter(o => o && o.t).map(o => `${esc(o.t)}<small class="odN">×${Math.max(1, Math.min(10, +o.n || 3))}</small>`).join('・');
-function repBtns(n){ return `<div class="repBtns">${[1, 2, 3, 4, 5].map(x => `<button type="button" class="${+n === x ? 'on' : ''}" data-n="${x}">${x}<small>回</small></button>`).join('')}</div>`; }
+const REP_MAX = 99;   /* 正しく弾く回数の 上限（子どもの 画面は 21回から「かぞえる ボタン」に なる） */
+const repN = v => Math.max(1, Math.min(REP_MAX, Math.round(+v || 3)));
+/* ポジション練習は「なし」に できる（おだいの ポジションに off）。えらんで いない 子は 教室の きほん */
+const posOff = o => !!(o && o.m && o.off);
+const odaiSum = list => (list || []).filter(o => o && o.t && !posOff(o)).map(o => `${esc(o.t)}<small class="odN">×${repN(o.n)}</small>`).join('・');
+function repBtns(n){
+  n = repN(n);
+  return `<div class="repBtns">${[1, 2, 3, 4, 5].map(x => `<button type="button" class="${n === x ? 'on' : ''}" data-n="${x}">${x}<small>回</small></button>`).join('')}
+    <span class="repMore${n > 5 ? ' on' : ''}"><button type="button" data-d="-1" aria-label="1回へらす">−</button><input class="repNum" type="number" inputmode="numeric" min="1" max="${REP_MAX}" value="${n}" aria-label="回数"><small>回</small><button type="button" data-d="1" aria-label="1回ふやす">＋</button></span></div>`;
+}
 function odaiEditor(list, stu){
   return list.map((o, i) => {
     const m = o.m && KZ_TYPES[o.m.k] ? o.m : null, k = m ? m.k : '', v = m ? (k === 'key' ? (m.acc || 'b') + (m.n || 3) : m.key) : '';
@@ -4999,8 +5032,11 @@ function odaiEditor(list, stu){
     const kk = k || 'five', vv = v || 'C', cc = m && (m.c === 'b' || m.c === 'lr') ? m.c : 't';
     const meta = kzMeta(kk, vv, cc);
     const auto = !o.t || o.t === meta.t;
-    return `<div class="odaiEd pos" data-i="1" data-id="${esc(o.id)}" data-orig-i="${esc(ic)}" data-k="${kk}" data-v="${esc(vv)}" data-c="${cc}" data-n="${n}" data-auto="${esc(auto ? meta.t : '')}">
-      <div class="top"><span class="num">2</span><b>ポジション練習</b><span class="posNow">${esc(o.t || meta.t)}</span></div>
+    return `<div class="odaiEd pos${o.off ? ' off' : ''}" data-i="1" data-id="${esc(o.id)}" data-orig-i="${esc(ic)}" data-k="${kk}" data-v="${esc(vv)}" data-c="${cc}" data-n="${n}" data-auto="${esc(auto ? meta.t : '')}">
+      <div class="top"><span class="num">2</span><b>ポジション練習</b><span class="posNow">${esc(o.t || meta.t)}</span>
+        <label class="posSw"><input type="checkbox" class="posOn" ${o.off ? '' : 'checked'}><span>${o.off ? 'なし' : 'あり'}</span></label></div>
+      <div class="posOffNote">この子は ポジション練習なし。ピアノは ①の曲だけで クリアになります。</div>
+      <div class="posBody">
       <div class="subLab">練習</div>
       <div class="kindRow">${Object.keys(KZ_TYPES).map(x => `<button type="button" class="chip kind${kk === x ? ' on' : ''}" data-k="${x}">${KZ_KIND_SHORT[x]}</button>`).join('')}</div>
       <div class="subLab">${kk === 'key' ? '♯・♭の数' : '調'}</div>
@@ -5011,7 +5047,7 @@ function odaiEditor(list, stu){
       <details class="nameEdit"${auto ? '' : ' open'}><summary>子どもの画面に出る名前・ひとことを直す</summary>
         <input class="i oT" maxlength="24" value="${esc(o.t || meta.t)}"><input class="i oH" maxlength="30" value="${esc(o.h || meta.h)}" style="margin-top:6px"></details>
       <div class="row" style="gap:8px;margin-top:10px"><button type="button" class="btn sm w oPrev">${ti('eye', 18)}子どもの画面で見る</button>${icons}</div>
-      <div class="kzPrev"></div></div>`;
+      <div class="kzPrev"></div></div></div>`;
   }).join('');
 }
 /* 調の チップ：はじめは よく つかう 調だけ。「ぜんぶ」で 長調15・短調13 */
@@ -5026,15 +5062,28 @@ function kzKeyChips(k, v, all){
 function kzOf(box){ const k = box.dataset.k; return k ? kzMeta(k, box.dataset.v, box.dataset.c) : null; }
 function odaiFromBox(b){
   const on = b.querySelector('[data-ic].on'), meta = kzOf(b);
-  const o = { id: b.dataset.id, t: b.querySelector('.oT').value.trim(), h: b.querySelector('.oH').value.trim(), n: +b.dataset.n || 3, i: on ? on.dataset.ic : (b.dataset.origI || 'piano') };
-  if(meta){ o.m = meta.m; if(!o.t) o.t = meta.t; }
+  const o = { id: b.dataset.id, t: b.querySelector('.oT').value.trim(), h: b.querySelector('.oH').value.trim(), n: repN(b.dataset.n), i: on ? on.dataset.ic : (b.dataset.origI || 'piano') };
+  if(meta){ o.m = meta.m; if(!o.t) o.t = meta.t; if(b.classList.contains('off')) o.off = true; }
   return o;
 }
 function wireOdaiBox(box){
   const prev = box.querySelector('.kzPrev');
   const pickIcon = id => { const b = box.querySelector(`[data-ic="${id}"]`); if(!b) return; box.querySelectorAll('[data-ic]').forEach(x => x.classList.remove('on')); b.classList.add('on'); const sm = box.querySelector('.icPick summary'); if(sm) sm.innerHTML = `しるし ${odaiMark(id, 22)}<span>かえる</span>`; };
   box.querySelectorAll('[data-ic]').forEach(b => b.addEventListener('click', () => pickIcon(b.dataset.ic)));
-  box.querySelectorAll('.repBtns button').forEach(b => b.addEventListener('click', () => { box.dataset.n = b.dataset.n; box.querySelectorAll('.repBtns button').forEach(x => x.classList.toggle('on', x === b)); }));
+  const setN = v => {
+    v = repN(v); box.dataset.n = v;
+    box.querySelectorAll('.repBtns [data-n]').forEach(x => x.classList.toggle('on', +x.dataset.n === v));
+    const inp = box.querySelector('.repNum'); if(inp && document.activeElement !== inp) inp.value = v;
+    const mo = box.querySelector('.repMore'); if(mo) mo.classList.toggle('on', v > 5);
+  };
+  box._setN = setN;
+  box.querySelectorAll('.repBtns [data-n]').forEach(b => b.addEventListener('click', () => setN(b.dataset.n)));
+  box.querySelectorAll('.repMore [data-d]').forEach(b => b.addEventListener('click', () => { const inp = box.querySelector('.repNum'); setN(repN(box.dataset.n) + +b.dataset.d); if(inp) inp.value = box.dataset.n; }));
+  const rn = box.querySelector('.repNum');
+  if(rn){ rn.addEventListener('input', () => { if(rn.value !== '') setN(rn.value); }); rn.addEventListener('change', () => { setN(rn.value); rn.value = box.dataset.n; }); }
+  /* ② ポジションの あり・なし */
+  const ps = box.querySelector('.posOn');
+  if(ps) ps.addEventListener('change', () => { box.classList.toggle('off', !ps.checked); ps.nextElementSibling.textContent = ps.checked ? 'あり' : 'なし'; if(!ps.checked){ kzStop(); const pv = box.querySelector('.kzPrev'); if(pv) pv.innerHTML = ''; } });
   /* ① 曲名の こうほ・ひとこと */
   box.querySelectorAll('.sug').forEach(b => b.addEventListener('click', () => { const t = box.querySelector('.oT'); t.value = b.dataset.t; box.querySelectorAll('.sug').forEach(x => x.classList.toggle('on', x === b)); t.classList.add('flash'); setTimeout(() => t.classList.remove('flash'), 500); }));
   const hIn = box.querySelector('.oH');
@@ -5051,7 +5100,7 @@ function wireOdaiBox(box){
     box.querySelector('.keyRow').previousElementSibling.textContent = box.dataset.k === 'key' ? '♯・♭の数' : '調';
     wireKeys();
     const t = box.querySelector('.oT'), h = box.querySelector('.oH');
-    if(!t.value.trim() || t.value.trim() === box.dataset.auto){ t.value = meta.t; h.value = meta.h; box.dataset.n = meta.n; box.querySelectorAll('.repBtns button').forEach(x => x.classList.toggle('on', +x.dataset.n === meta.n)); pickIcon(meta.i); box.dataset.auto = meta.t; }
+    if(!t.value.trim() || t.value.trim() === box.dataset.auto){ t.value = meta.t; h.value = meta.h; setN(meta.n); pickIcon(meta.i); box.dataset.auto = meta.t; }
     box.querySelector('.posNow').textContent = t.value.trim() || meta.t;
     if(prev.innerHTML) kzRender(prev, meta.m);
   };
@@ -5211,16 +5260,18 @@ function hwCopySheet(from, items){
   });
 }
 
+/* 教室の きほん：ポジション練習を 入れない（設定 → ピアノのおだい） */
+const posDefaultOff = () => !!(SET && SET.pos_default === false);
 /* おだい だけを なおす 小さな シート（生徒の いちらん・レッスンノート から） */
 function openOdaiQuick(s, opt = {}){
   $('stuSheet').scrollTop = 0;
   const od0 = JSON.parse(JSON.stringify(s.odai || []));
   const piece0 = od0.find(o => !o.m) || { id: 'o' + Date.now().toString(36), t: '', h: '', n: 3, i: 'piano' };
   const pm = kzMeta('five', 'C', 't');
-  const pos0 = od0.find(o => o.m) || { id: 'p' + Date.now().toString(36), t: pm.t, h: pm.h, n: pm.n, i: pm.i, m: pm.m };
+  const pos0 = od0.find(o => o.m) || { id: 'p' + Date.now().toString(36), t: pm.t, h: pm.h, n: pm.n, i: pm.i, m: pm.m, off: posDefaultOff() };
   const sh = $('stuSheet');
   sh.innerHTML = `<h3>${avatarDot(s)}${esc(nameOf(s))}さんのおだい・宿題</h3>
-    <div class="muted">2つとも弾けたら、主人公が1歩進みます（リズムで1歩・おんぷで1歩。1日3歩まで）。</div>
+    <div class="muted">おだいが全部弾けたら、主人公が1歩進みます（リズムで1歩・おんぷで1歩。1日3歩まで）。ポジション練習は「なし」にもできます。</div>
     ${piece0.t ? `<div class="oqPass"><span>${ti('record', 20)}「${esc(piece0.t)}」が弾けるようになったら</span><button type="button" class="btn sm g" id="oqPass">ごうかく！ → つぎの曲へ</button></div>` : ''}
     <div id="odaiBoxQ">${odaiEditor([piece0, pos0], s)}</div>
     <div class="sec hwSec" id="hwTopQ"><div class="lab">${ti('hw', 22)}先生からの宿題<small>おだいのほかに・なくてもOK</small></div>
@@ -5266,7 +5317,7 @@ function openStudent(s, opt = {}){
   const od0 = JSON.parse(JSON.stringify(s.odai || []));
   const piece0 = od0.find(o => !o.m) || { id: 'o' + Date.now().toString(36), t: '', h: '', n: 3, i: 'piano' };
   const pm = kzMeta('five', 'C', 't');
-  const pos0 = od0.find(o => o.m) || { id: 'p' + Date.now().toString(36), t: pm.t, h: pm.h, n: pm.n, i: pm.i, m: pm.m };
+  const pos0 = od0.find(o => o.m) || { id: 'p' + Date.now().toString(36), t: pm.t, h: pm.h, n: pm.n, i: pm.i, m: pm.m, off: posDefaultOff() };
   let odai = [piece0, pos0];
   let keys = !!s.show_keys, focusId = null, mode = s.mode || 'kids', photo = s.photo || null;
   let sl = Object.assign({ rhythm: 1, note: 1 }, s.start_levels || {});
@@ -5294,8 +5345,8 @@ function openStudent(s, opt = {}){
         <div class="grid2"><div><label class="f">リズム</label><select class="i" id="sSlR">${Array.from({ length: 50 }, (_, i) => i + 1).map(n => `<option value="${n}" ${+sl.rhythm === n ? 'selected' : ''}>${n}${rhyStage(n)}</option>`).join('')}</select></div>
         <div><label class="f">おんぷカード</label><select class="i" id="sSlN">${NOTE_STAGES.map((t, i) => `<option value="${i + 1}" ${+sl.note === i + 1 ? 'selected' : ''}>${i + 1}（${t}）</option>`).join('')}</select></div></div>
         <div class="muted" style="margin-top:8px">アプリのレベルをここまで開きます（下げることはありません）。そのあとは、星3つでひとつずつ開きます。リズムはとてもよくできたときに自動で1〜2つ飛ばし、つまずいたレベルはテンポを少し落として出します。遅れて入った子には「おいかぜ」が吹いて、みんなに追いつけます。</div></details>
-      <div class="sec" id="odaiTop"><div class="lab">${ti('note', 22)}先生のおだい（2つ）</div>
-      <div class="muted">2つとも弾けたら、主人公が1歩進みます（リズムで1歩・おんぷで1歩。1日3歩まで）。①が空のままだと、子どもの画面には「いま れんしゅうしている きょく」と出ます。</div>
+      <div class="sec" id="odaiTop"><div class="lab">${ti('note', 22)}先生のおだい</div>
+      <div class="muted">おだいが全部弾けたら、主人公が1歩進みます（リズムで1歩・おんぷで1歩。1日3歩まで）。ポジション練習は「なし」にもできます。①が空のままだと、子どもの画面には「いま れんしゅうしている きょく」と出ます。</div>
       <div id="odaiBox">${odaiEditor(odai, isNew ? null : s)}</div>
 </div>
       <div class="sec hwSec" id="hwTop"><div class="lab">${ti('hw', 22)}先生からの宿題<small>おだいのほかに・なくてもOK</small></div>
@@ -6007,7 +6058,10 @@ async function viewSettings(m){
     <div class="card">${H2('wind', 'sk', 'おいかぜ（遅れた子の救済）')}
     <label class="toggle"><span>練習があいた子に「おいかぜ」を吹かせる<small>教室の真ん中より30歩以上うしろの子に、自動で吹きます</small></span><input type="checkbox" id="cWind" ${SET.oikaze === false ? '' : 'checked'}></label>
     <div class="note">吹いているあいだは、ピアノ・リズム・おんぷが1つできるごとに2歩すすみます。真ん中の近くまで追いつくと止むので、毎日つづけている子を追いこすことはありません。</div>
-    <details class="more"><summary>詳しいきまり</summary><ul class="rules"><li>3日以上あいて戻った日は「おかえり」で、最初の1つに3歩のおまけ（2週間に1回）</li><li>1日最大6歩（おかえりの日は9歩）</li><li>真ん中の9歩てまえまで追いつくと止みます</li><li>生徒ごとに、先生が2週間だけ吹かせることもできます（せいと → おいかぜ）</li></ul></details></div></div>
+    <details class="more"><summary>詳しいきまり</summary><ul class="rules"><li>3日以上あいて戻った日は「おかえり」で、最初の1つに3歩のおまけ（2週間に1回）</li><li>1日最大6歩（おかえりの日は9歩）</li><li>真ん中の9歩てまえまで追いつくと止みます</li><li>生徒ごとに、先生が2週間だけ吹かせることもできます（せいと → おいかぜ）</li></ul></details></div>
+    <div class="card">${H2('piano', 'co', 'ピアノのおだい')}
+    <label class="toggle"><span>ポジション練習を入れる<small>生徒ごとに「あり・なし」を決めていない子は、この設定になります。なしのときは、ピアノは「いま練習している曲」だけでクリアです</small></span><input type="checkbox" id="cPos" ${SET.pos_default === false ? '' : 'checked'}></label>
+    <button type="button" class="linkBtn" id="cPosAll" style="margin-top:4px">いまの生徒全員を、この設定にそろえる</button></div></div>
     <div><div class="card">${H2('chat', 'le', 'LINE')}
     <label class="toggle"><span>LINEで予定・リマインド・お知らせを送る</span><input type="checkbox" id="cLine" ${SET.line_enabled ? 'checked' : ''}></label>
     <label class="toggle"><span>レッスンノートをLINEでも知らせる<small>ノートを送ると1家庭に1通（通数に数えます）</small></span><input type="checkbox" id="cNNote" ${SET.notify_note ? 'checked' : ''}></label>
@@ -6042,7 +6096,7 @@ async function viewSettings(m){
       <span class="muted" style="flex:1">「保存」でアプリに反映されます</span><button class="btn g" id="cSave">保存</button></div>
     ${ntCardHTML()}${roomsTeachersHTML(invites)}${calCardHTML()}${DEMO_MULTI ? `<div class="card"><button class="btn w" id="asStaff">${ti('eye', 18)}講師の画面を見てみる（見本）</button></div>` : ''}
     <div class="row" style="justify-content:center;margin-top:8px;gap:18px;flex-wrap:wrap"><button class="linkBtn" id="suShow">${ti('flag', 16)}「はじめの準備」をもう一度出す</button>${DEMO ? '' : `<button class="linkBtn" id="logoutBtn2">${ti('door', 16)}ログアウト</button>`}</div>
-    <div class="verTag">先生の画面 v2026.09.30-2</div>`;
+    <div class="verTag">先生の画面 v2026.09.30-3</div>`;
   m.innerHTML = h;
   $('suShow').addEventListener('click', () => { try{ localStorage.removeItem(SETUP_KEY()); }catch(e){} SETUP_FORCE = true; goTab('today'); });
   /* 保存の バーは なにか かえた ときだけ 出す（あいた すきまや 重なりを ださない） */
@@ -6088,12 +6142,31 @@ async function viewSettings(m){
     catch(e){ toast('しまえませんでした：' + e.message); $('kSave').disabled = false; }
   });
   $('cdAdd').addEventListener('click', () => { const v = $('cdIn').value; if(v && !dates.includes(v)){ dates.push(v); dates.sort(); redrawDates(); } });
+  /* ポジション練習：いまの 生徒 全員を そろえる（設定も いっしょに 保存） */
+  $('cPosAll').addEventListener('click', async () => {
+    const on = $('cPos').checked, act = STU.filter(x => x.active !== false);
+    if(!confirm(`いま通っている${act.length}人のポジション練習を、全員「${on ? 'あり' : 'なし'}」にします。よろしいですか？`)) return;
+    const b = $('cPosAll'); b.disabled = true;
+    try{
+      await DB.updSettings({ pos_default: on }); SET.pos_default = on;
+      let n = 0;
+      for(const st of act){
+        const od = JSON.parse(JSON.stringify(st.odai || [])), p = od.find(o => o && o.m);
+        if(!p) continue;   /* えらんで いない 子は 教室の きほんに したがう */
+        if(!!p.off === !on) continue;
+        if(on) delete p.off; else p.off = true;
+        await DB.updStudent(st.id, { odai: od }); st.odai = od; n++;
+      }
+      toast(`全員を「${on ? 'あり' : 'なし'}」にしました`);
+    }catch(e){ toast('そろえられませんでした：' + e.message); }
+    b.disabled = false;
+  });
   $('cSave').addEventListener('click', async () => {
     const row = { display_name: $('cName').value.trim() || (SCHOOL && SCHOOL.name) || 'ピアノ教室', line_oa_id: $('cOa').value.trim().replace(/^([^@])/, '@$1') || null, app_url: $('cUrl').value.trim() || null,
       makeup_deadline_days: +$('cDl').value, makeup_max_per_month: +$('cMax').value,
       class_goal: $('cGoal').value ? +$('cGoal').value : null, festival_name: $('cFest').value.trim() || 'おとの おまつり',
       line_enabled: $('cLine').checked, remind_days_before: +$('cRd').value, remind_hour: +$('cRh').value, closed_dates: dates,
-      notify_note: $('cNNote').checked, notify_attend: $('cNAtt').checked, oikaze: $('cWind').checked,
+      notify_note: $('cNNote').checked, notify_attend: $('cNAtt').checked, oikaze: $('cWind').checked, pos_default: $('cPos').checked,
       fee_on: $('cFee').checked, fee_default: $('cFeeA').value ? Math.round(+$('cFeeA').value) : null, fee_method: $('cFeeM').value, fee_thanks: $('cFeeT').checked,
       contact_hours: $('cCh').checked ? { from: timeVal('cChF') || '09:00', to: timeVal('cChT') || '20:00', note: $('cChN').value.trim() || null } : null };
     $('cSave').disabled = true;
