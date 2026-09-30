@@ -1325,7 +1325,7 @@ details.adv summary{font-size:12.5px;font-weight:900;color:var(--ink2);cursor:po
     <div id="rsMsg" class="authMsg" role="status"></div>
   </div>
   <div class="legal"><a href="terms.html" target="_blank">利用規約</a>・<a href="privacy.html" target="_blank">プライバシーポリシー</a>・<a href="tokushoho.html" target="_blank">特定商取引法に基づく表記</a></div>
-  <div class="legal verTag">v2026.09.30-15</div>
+  <div class="legal verTag">v2026.09.30-16</div>
 </div>
 
 <!-- 本体 -->
@@ -5453,7 +5453,7 @@ function openInvite(s0){
   showOv('stuOv');
 }
 /* スタートの レベルの めやす（こどもアプリの リズム50だん・おんぷ7だん） */
-const RHY_STAGES = [[1, 'はく'], [3, 'たん・たーん'], [5, 'りょうての はじめ'], [11, 'ぜんおんぷ・うん'], [18, 'たた'], [24, 'うん・た'], [29, 'ふてん'], [35, '3びょうし'], [41, 'たかたか'], [46, 'シンコペーション']];
+const RHY_STAGES = [[1, 'はく'], [3, 'たん・たーん'], [5, 'ぜんおんぷ・うん'], [9, 'たた'], [12, 'うん・た'], [14, 'ふてん'], [17, '3びょうし'], [20, 'りょうての はじめ'], [42, 'たかたか'], [46, 'シンコペーション']];   /* 1〜19 かたて、20〜 りょうて（ひだりは はく） */
 const rhyStage = n => { const st = RHY_STAGES.find(x => x[0] === n); return st ? '（' + st[1] + '〜）' : ''; };
 const NOTE_STAGES = ['ドレミ', 'ソまで', '高いドまで', '色なし', '横読み はじめ（4拍子）', '横読み 2分音符', '横読み 3拍子', '真ん中のドから下', 'ヘ音記号', '低いドまで', '横読み ヘ音', '大譜表',
   '横読み 8分音符', '横読み 休符', 'ト音 高いほう', 'ヘ音 低いほう', '横読み ヘ音 3拍子', '横読み 大譜表', '横読み 全音符', '横読み ヘ音 広く', '横読み 4・3拍子まぜ',
@@ -6756,7 +6756,7 @@ async function viewSettings(m){
       <span class="muted" style="flex:1">「保存」でアプリに反映されます</span><button class="btn g" id="cSave">保存</button></div>
     ${ntCardHTML()}${roomsTeachersHTML(invites)}${calCardHTML()}${DEMO_MULTI ? `<div class="card"><button class="btn w" id="asStaff">${ti('eye', 18)}講師の画面を見てみる（見本）</button></div>` : ''}
     <div class="row" style="justify-content:center;margin-top:8px;gap:18px;flex-wrap:wrap"><button class="linkBtn" id="suShow">${ti('flag', 16)}「はじめの準備」をもう一度出す</button>${DEMO ? '' : `<button class="linkBtn" id="logoutBtn2">${ti('door', 16)}ログアウト</button>`}</div>
-    <div class="verTag">先生の画面 v2026.09.30-15</div>`;
+    <div class="verTag">先生の画面 v2026.09.30-16</div>`;
   m.innerHTML = h;
   $('suShow').addEventListener('click', () => { try{ localStorage.removeItem(SETUP_KEY()); }catch(e){} SETUP_FORCE = true; goTab('today'); });
   /* 保存の バーは なにか かえた ときだけ 出す（あいた すきまや 重なりを ださない） */
