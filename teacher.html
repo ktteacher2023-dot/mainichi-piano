@@ -1259,6 +1259,58 @@ details.adv summary{font-size:12.5px;font-weight:900;color:var(--ink2);cursor:po
   .btn.kbT::after{content:'Enter';margin-left:8px;font-size:11px;font-weight:800;letter-spacing:.03em;line-height:1;padding:3px 6px 4px;border-radius:6px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.5);font-family:ui-monospace,Menlo,Consolas,monospace}
 }
 
+/* ---------- ニックネーム（子どもの 地図に 出る 名前） ---------- */
+.nickP{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);background:var(--paper2);border-radius:999px;padding:1px 9px 1px 5px;font-size:12px;line-height:1.6;white-space:nowrap;max-width:100%;vertical-align:1px}
+.nickP .nkL{font-size:10.5px;color:var(--mute);font-weight:700}
+.nickP b{font-weight:900;color:var(--ink);overflow:hidden;text-overflow:ellipsis}
+.nickP .ti{width:13px;height:13px}
+.nickP .nkFace{display:inline-flex;width:18px;height:18px;border-radius:50%;overflow:hidden;background:var(--paper3);align-items:center;justify-content:center}
+.nickP .nkFace svg{display:block;margin-top:1px}
+.nickP.big{font-size:13px;padding:2px 10px 2px 4px}
+.nickP.big .nkFace{width:22px;height:22px}
+
+/* ---------- 記録：教室ぜんたい／ひとりずつ ---------- */
+.repSeg{margin:2px 0 8px}
+.pvStat{grid-template-columns:repeat(3,1fr)}
+.pvTools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0 8px}
+.pvTools .i{flex:1 1 180px;min-width:0;min-height:40px}
+.pvList2{display:flex;flex-direction:column;gap:6px}
+.pvRow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;border:1.5px solid var(--line);border-radius:16px;padding:9px 11px;background:var(--paper2)}
+.pvRow.quiet{border-color:#EBC8BC;background:#FDF4F0}
+.pvMain{min-width:0;display:flex;flex-direction:column;gap:4px}
+.pvMain .nm{font-weight:900;font-size:15px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;line-height:1.4}
+.pvChips{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12px;color:var(--ink2)}
+.pvChips span{display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
+.pvChips .ti{width:14px;height:14px}
+.pvChips .none{color:var(--mute)}
+.pvNum{display:flex;flex-direction:column;align-items:flex-end;gap:3px;text-align:right}
+.pvNum b{font-size:22px;font-weight:900;font-variant-numeric:tabular-nums;line-height:1.1}
+.pvNum b small{font-size:12px;color:var(--mute);margin-left:1px}
+.pvNum .last{font-size:11px;color:var(--mute);white-space:nowrap}
+.pvRow.quiet .pvNum .last{color:var(--coral-d)}
+.dots.d28 i{width:4px;height:13px;border-radius:2px}
+.dots.d28{gap:1px}
+@media (max-width:560px){
+  .pvRow{grid-template-columns:auto minmax(0,1fr)}
+  .pvNum{grid-column:1 / -1;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:flex-start;gap:8px;padding-left:48px}
+  .pvNum b{font-size:18px}
+  .pvStat .k{white-space:normal}
+}
+
+/* ---------- 予定の 確認 ---------- */
+.confLink{font-size:12px;padding:0;color:var(--sky-d)}
+.cfHead{display:flex;align-items:baseline;gap:8px;margin:16px 2px 6px}
+.cfHead b{font-size:14px;font-weight:900}
+.cfHead small{font-size:12px;color:var(--mute)}
+.cfHead.wait b{color:var(--coral-d)}
+.cfHead.conf b{color:var(--leaf-d)}
+.cfList{display:flex;flex-direction:column;gap:6px}
+.cfRow{display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:14px;padding:8px 10px;background:var(--paper2)}
+.cfRow .nm{font-weight:900;font-size:14px}
+.cfRow .sub{font-size:12px;color:var(--mute);display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.cfRow .sub .ti{width:14px;height:14px}
+.cfRow .grow{flex:1;min-width:0}
+
 </style>
 </head>
 <body>
@@ -1325,7 +1377,7 @@ details.adv summary{font-size:12.5px;font-weight:900;color:var(--ink2);cursor:po
     <div id="rsMsg" class="authMsg" role="status"></div>
   </div>
   <div class="legal"><a href="terms.html" target="_blank">利用規約</a>・<a href="privacy.html" target="_blank">プライバシーポリシー</a>・<a href="tokushoho.html" target="_blank">特定商取引法に基づく表記</a></div>
-  <div class="legal verTag">v2026.09.30-16</div>
+  <div class="legal verTag">v2026.09.30-19</div>
 </div>
 
 <!-- 本体 -->
@@ -1360,6 +1412,10 @@ details.adv summary{font-size:12.5px;font-weight:900;color:var(--ink2);cursor:po
 <!-- 月の よていを 家庭に とどける -->
 <div class="ov" id="sendOv"><div class="sheet wide" id="sendSheet"></div></div>
 <div class="ov" id="repOv"><div class="sheet wide" id="repSheet"></div></div>
+<!-- 練習のようす（ひとりずつ） -->
+<div class="ov" id="pracOv"><div class="sheet wide" id="pracSheet"></div></div>
+<!-- 予定を 確認した 家庭 -->
+<div class="ov" id="confOv"><div class="sheet" id="confSheet"></div></div>
 <!-- 月謝 -->
 <div class="ov" id="feeOv"><div class="sheet wide" id="feeSheet"></div></div>
 <!-- 家庭への 案内カード（QR） -->
@@ -1465,6 +1521,12 @@ function avatarDot(s, sm){
   /* 先生が 登録した 写真（先生の 画面だけ）。なければ 子どもがつくった主人公 */
   if(s && typeof s.photo === 'string' && /^data:image\/(jpeg|png|webp);base64,/.test(s.photo)) return `<span class="av ph${sm ? ' sm' : ''}" style="--hc:${c.l}"><img src="${s.photo}" alt="" loading="lazy" decoding="async"></span>`;
   return `<span class="av${sm ? ' sm' : ''}" style="--hc:${c.l}">${heroSVG(av, z, '', '-34 -92 68 68')}</span>`;
+}
+/* ニックネーム：子どもの 地図・広場に 出る 名前。だれの ことか わかるように「地図では」を つけて、たびびとの かおも ならべる */
+function nickPill(s, big){
+  const n = s && String(s.nickname || '').trim(); if(!n || n === String(s.display_name || '').trim()) return '';
+  const hasPh = typeof s.photo === 'string' && /^data:image/.test(s.photo);
+  return `<span class="nickP${big ? ' big' : ''}" title="${s.map_opt_out ? '子どもがアプリでつかう名前（この子は地図に出していません）' : '子どもの地図・広場に出る名前'}">${hasPh || big ? `<span class="nkFace">${heroSVG((s.avatar) || {}, big ? 22 : 18, '', '-34 -92 68 68')}</span>` : ti('pin', 13)}<span class="nkL">${s.map_opt_out ? 'ニックネーム' : '地図では'}</span><b>${esc(n)}</b></span>`;
 }
 /* 写真を まるく きりぬく（ドラッグで いち、スライダーで おおきさ）→ 192px の JPEG */
 function photoCrop(file){
@@ -3617,6 +3679,10 @@ const Demo = (() => {
   S[9].mode = 'adult'; S[6].mode = 'junior';
   [[0, 25, '左手の和音がそろってきた'], [1, 15, null], [3, 30, 'メヌエットの中間部をゆっくり'], [5, 20, null]].forEach(([ago, min, memo]) => logs.push({ student_id: 's9', day: addDays(dayStr(), -ago), kind: 'practice', steps: 0, ref: 's' + ago, detail: { min, memo } }));
   for(let i = 0; i < 21; i++){ const d = addDays(dayStr(), -i); S.forEach((s, j) => { if((i * 7 + j * 3) % 5 < 3 && j !== 7) logs.push({ student_id: s.id, day: d, kind: 'odai', steps: 2, ref: 'o' }); if((i + j) % 3 === 0) logs.push({ student_id: s.id, day: d, kind: 'parent_ok', steps: 1 }); }); }
+  /* リズム・おんぷ（レベルつき） */
+  for(let i = 0; i < 21; i++){ const d = addDays(dayStr(), -i); S.forEach((s, j) => { if(j === 7 || (j === 10 && i < 9)) return;
+    if((i * 5 + j * 2) % 4 < 2) logs.push({ student_id: s.id, day: d, kind: 'rhythm', steps: 0, ref: '', detail: { lv: Math.max(1, 3 + j * 3 - Math.floor(i / 5)), stars: 2 } });
+    if((i * 3 + j) % 5 < 2) logs.push({ student_id: s.id, day: d, kind: 'note', steps: 0, ref: '', detail: { lv: Math.max(1, 2 + j * 2 - Math.floor(i / 6)), stars: 3 } }); }); }
   /* 宿題の「できた」 */
   S.forEach((s, j) => (s.homework || []).forEach((h, k) => { for(let i = 0; i < 18; i++){ if((i * 5 + j * 3 + k * 2) % 7 < (h.f === 'd' ? 5 : 2)) logs.push({ student_id: s.id, day: addDays(dayStr(), -i), kind: 'hw', steps: 0, ref: h.id, detail: h.ok && i % 2 ? { ok: 1 } : null }); } }));
   /* きろくの 見本：もっと まえの 5週間（はじめは 少なめ） */
@@ -4058,13 +4124,14 @@ async function viewToday(m){
   quiet.slice(0, 10).forEach(s => { const o = P[s.id];
     h += `<div class="it">${avatarDot(s)}<div class="grow"><div class="nm" style="font-size:14px">${esc(nameOf(s))}</div><div class="sub">最後の記録：${o && o.last ? mdOf(o.last) : 'まだ'}</div></div><button class="btn sm w" data-open="${s.id}">${ti('chat', 18)}ひとこと</button></div>`; });
   if(!quiet.length) h += emptyRow('sparkle', 'みんな続いています');
-  h += `</div><div class="note">責める言葉より「このまえの ○○、上手だったね」の一言が、いちばん戻ってきやすくなります。</div></div>`;
+  h += `</div><div class="note">責める言葉より「このまえの ○○、上手だったね」の一言が、いちばん戻ってきやすくなります。</div><button type="button" class="linkBtn" id="pracToday" style="margin-top:8px">${ti('graph', 16)}ひとりずつの練習のようすを見る</button></div>`;
   h += '</div></div>';
   m.innerHTML = h;
   m.querySelectorAll('[data-done]').forEach(b => b.addEventListener('click', () => { const l = today.find(x => x.id === b.dataset.done); openNote(l, null, true); }));
   m.querySelectorAll('[data-note]').forEach(b => b.addEventListener('click', () => { const l = today.find(x => x.id === b.dataset.note); openNote(l, noteOf(l), false); }));
   $('kioskBtn').addEventListener('click', () => openKiosk(today, att));
   $('repBtn').addEventListener('click', () => openReport());
+  $('pracToday').addEventListener('click', () => openPractice());
   const fb = $('feeBtn'); if(fb) fb.addEventListener('click', () => openFees());
   m.querySelectorAll('[data-fee]').forEach(b => b.addEventListener('click', () => openFees()));
   wireSetup(m);
@@ -4189,8 +4256,9 @@ function reportChart(weeks, W = 640){
 }
 async function openReport(){
   const sh = $('repSheet'), today = dayStr();
-  const head = `<h3>${ti('graph', 26)}まいにちピアノの記録</h3>`;
+  const head = `<h3>${ti('graph', 26)}まいにちピアノの記録</h3>${pracSeg('all')}`;
   sh.innerHTML = head + '<div class="muted">よみこみ中…</div>';
+  sh.onclick = e => { const b = e.target.closest('[data-rgo]'); if(b && b.dataset.rgo === 'one'){ $('repOv').classList.remove('show'); openPractice(); } };
   showOv('repOv');
   let first = null; try{ first = await DB.firstLogDay(); }catch(e){}
   const from = first ? weekStart([first, addDays(today, -7 * 11)].sort().pop()) : null;
@@ -4259,6 +4327,101 @@ async function openReport(){
     R.weeks.forEach(x => lines.push(`${mdOf(x.w)}〜${x.part ? '（とちゅう）' : ''}  ${r1(x.d)}日  ${x.act}/${x.n}人`));
     copyText(lines.join('\n'));
   });
+}
+
+/* =========================================================
+   練習のようす（ひとりずつ）：だれが どのくらい 練習しているか
+   ・この1週間／4週間 で 練習した日・おだい・れんしゅうの 分・リズムと おんぷの レベル・「きいたよ」
+   ・ニックネーム（子どもの 地図に 出る 名前）も ならべて、だれの ことか わかるように
+   ========================================================= */
+const PRAC_VIEW = { sort: 'many', span: 7, q: '' };
+try{ const v = JSON.parse(localStorage.getItem('mp_prac_view') || 'null'); if(v){ if(['many', 'few', 'last', 'kana'].includes(v.sort)) PRAC_VIEW.sort = v.sort; if(v.span === 28) PRAC_VIEW.span = 28; } }catch(e){}
+function pracSeg(on){ return `<div class="seg sm repSeg" role="tablist"><button type="button" data-rgo="all" class="${on === 'all' ? 'on' : ''}">${ti('graph', 16)}教室ぜんたい</button><button type="button" data-rgo="one" class="${on === 'one' ? 'on' : ''}">${ti('students', 16)}ひとりずつ</button></div>`; }
+function pracCalc(logs, stus, today){
+  const by = {}, f7 = addDays(today, -6), f28 = addDays(today, -27);
+  const blank = () => ({ days: new Set(), odai: 0, min: 0, ok: 0, hw: 0 });
+  stus.forEach(s => { by[s.id] = { s, w: { 7: blank(), 28: blank() }, last: null, rh: null, nt: null, pi: null }; });
+  (logs || []).forEach(l => { const o = by[l.student_id]; if(!o || !l.day || l.day < f28 || l.day > today || l.kind === 'bonus') return;
+    const dt = l.detail || {}, spans = l.day >= f7 ? [7, 28] : [28];
+    if(l.kind === 'parent_ok'){ spans.forEach(k => o.w[k].ok++); return; }
+    spans.forEach(k => { const w = o.w[k]; w.days.add(l.day);
+      if(l.kind === 'odai') w.odai++;
+      if(l.kind === 'practice') w.min += Math.min(+dt.min || 0, 180);
+      if(l.kind === 'hw') w.hw++; });
+    if(!o.last || l.day > o.last) o.last = l.day;
+    /* レベル：いちばん あたらしい 日の もの（おなじ日なら 高い ほう） */
+    const lv = +dt.lv, up = key => { if(lv > 0 && (!o[key] || l.day > o[key].day || (l.day === o[key].day && lv > o[key].lv))) o[key] = { lv, day: l.day }; };
+    if(l.kind === 'rhythm') up('rh');
+    else if(l.kind === 'note' && l.ref !== 'michi' && dt.mode !== 'michi') up('nt');
+    else if(l.kind === 'piano') up('pi'); });
+  return by;
+}
+const minTxt = m => m >= 60 ? Math.floor(m / 60) + '時間' + (m % 60 ? m % 60 + '分' : '') : m + '分';
+function agoTxt(d, today){ if(!d) return ''; const n = Math.round((new Date(today + 'T00:00:00') - new Date(d + 'T00:00:00')) / 864e5); return n <= 0 ? 'きょう' : n === 1 ? 'きのう' : n + '日前'; }
+function pracDots(set, n, today){ let h = `<span class="dots${n > 7 ? ' d28' : ''}">`; for(let i = n - 1; i >= 0; i--){ const d = addDays(today, -i); h += `<i class="${set.has(d) ? 'on' : ''}${i === 0 ? ' t' : ''}" title="${mdOf(d)}"></i>`; } return h + '</span>'; }
+async function openPractice(){
+  const sh = $('pracSheet'), today = dayStr();
+  const head = `<h3>${ti('graph', 26)}まいにちピアノの記録</h3>${pracSeg('one')}`;
+  sh.innerHTML = head + '<div class="muted">よみこみ中…</div>';
+  sh.onclick = e => { const b = e.target.closest('[data-rgo]'); if(b && b.dataset.rgo === 'all'){ $('pracOv').classList.remove('show'); openReport(); } };
+  showOv('pracOv');
+  const logs = await DB.logs(addDays(today, -27)).catch(() => []);
+  const stus = STUV().filter(s => s.active !== false), B = pracCalc(logs, stus, today);
+  const save = () => { try{ localStorage.setItem('mp_prac_view', JSON.stringify({ sort: PRAC_VIEW.sort, span: PRAC_VIEW.span })); }catch(e){} };
+  const draw = () => {
+    const N = PRAC_VIEW.span, W = o => o.w[N];
+    const cmpKana = (a, b) => stuKanaCmp(a.s, b.s);
+    const score = o => W(o).days.size * 1000 + W(o).odai * 10 + Math.min(W(o).min, 999) / 100;
+    const list = Object.values(B).sort((a, b) => PRAC_VIEW.sort === 'kana' ? cmpKana(a, b)
+      : PRAC_VIEW.sort === 'many' ? (score(b) - score(a) || cmpKana(a, b))
+      : PRAC_VIEW.sort === 'few' ? (score(a) - score(b) || (a.last || '').localeCompare(b.last || '') || cmpKana(a, b))
+      : ((a.last || '').localeCompare(b.last || '') || cmpKana(a, b)));
+    const act = list.filter(o => W(o).days.size), sumD = list.reduce((a, o) => a + W(o).days.size, 0);
+    const quietN = list.filter(o => !o.last || o.last < addDays(today, -6)).length;
+    let h = head + `<div class="muted">${N === 7 ? 'この1週間' : 'この4週間'}（${mdOf(addDays(today, -(N - 1)))}〜${mdOf(today)}）・通っている子 ${list.length}人${roomOn() ? `・${esc(roomById(ROOM_SEL).name)}` : ''}</div>`;
+    h += `<div class="stat repStat pvStat">
+      <div><span class="k">${ti('sprout', 18)}練習した子</span><b>${act.length}<small> / ${list.length}人</small></b></div>
+      <div><span class="k">${ti('piano', 18)}1人あたり</span><b>${list.length ? r1(sumD / list.length) : '0.0'}<small>日</small></b></div>
+      <div><span class="k">${ti('moon', 18)}1週間 記録なし</span><b>${quietN}<small>人</small></b></div></div>`;
+    h += `<div class="pvTools"><div class="seg sm" id="pvSpan">${[[7, '1週間'], [28, '4週間']].map(([k, l]) => `<button type="button" data-sp="${k}" class="${N === k ? 'on' : ''}">${l}</button>`).join('')}</div>
+      <div class="seg sm" id="pvSort">${[['many', '多い順'], ['few', '少ない順'], ['last', '最後が古い順'], ['kana', '50音順']].map(([k, l]) => `<button type="button" data-so="${k}" class="${PRAC_VIEW.sort === k ? 'on' : ''}">${l}</button>`).join('')}</div>
+      ${list.length > 6 ? `<input class="i" id="pvFind" placeholder="名前・ニックネームで探す" autocomplete="off" value="${esc(PRAC_VIEW.q)}">` : ''}</div>`;
+    h += '<div class="pvList2" id="pvList">';
+    list.forEach(o => { const s = o.s, w = W(o), quiet = !o.last || o.last < addDays(today, -6);
+      const chips = [];
+      if(w.odai) chips.push(`${ti('note', 14)}おだい ${w.odai}回`);
+      if(w.min) chips.push(`${ti('clock', 14)}れんしゅう ${minTxt(w.min)}`);
+      if(o.rh) chips.push(`${ti('steps', 14)}リズム Lv${o.rh.lv}`);
+      if(o.nt) chips.push(`${ti('write', 14)}おんぷ Lv${o.nt.lv}`);
+      if(o.pi && s.show_keys) chips.push(`${ti('cherry', 14)}けんばん Lv${o.pi.lv}`);
+      if(w.hw) chips.push(`${ti('hw', 14)}宿題 ${w.hw}回`);
+      if(w.ok) chips.push(`${ti('hanamaru', 14)}「きいたよ」${w.ok}回`);
+      h += `<div class="pvRow${quiet ? ' quiet' : ''}" data-sn="${esc(toHira((nameOf(s) + (s.nickname || '') + kanaOf(s)).replace(/\s/g, '')))}">${avatarDot(s)}
+        <div class="pvMain"><div class="nm">${s.kana ? `<ruby>${esc(nameOf(s))}<rt>${esc(s.kana)}</rt></ruby>` : esc(nameOf(s))}${nickPill(s)}</div>
+          <div class="pvChips">${chips.length ? chips.map(c => `<span>${c}</span>`).join('') : `<span class="none">${o.last ? 'この期間の記録はありません' : (N === 7 ? 'この4週間、記録がありません' : '記録がありません')}</span>`}</div></div>
+        <div class="pvNum"><b>${w.days.size}<small>日</small></b>${pracDots(w.days, N, today)}<span class="last">${o.last ? '最後 ' + agoTxt(o.last, today) : 'まだ'}</span>
+          ${quiet ? `<button type="button" class="btn sm w" data-pvmsg="${s.id}">${ti('chat', 16)}ひとこと</button>` : ''}</div></div>`; });
+    if(!list.length) h += emptyRow('students', 'まだ生徒がいません');
+    h += `<div class="muted hide" id="pvNone" style="padding:14px 4px">あてはまる子がいません</div></div>`;
+    h += `<div class="note">「練習した日」は、ピアノのおだい・リズム・おんぷ・けんばん・練習ノート・宿題のどれかをした日です。リズムとおんぷのレベルは、いちばん最近あそんだレベルです。「きいたよ」は、おうちのかたが となりで聞いて押した回数です。「地図では」は、子どもの地図や広場に出る名前（ニックネーム）です。</div>`;
+    h += `<div class="foot"><button class="btn w" id="pvClose">閉じる</button><button class="btn w" id="pvCsv">${ti('down', 18)}CSVで保存</button></div>`;
+    sh.innerHTML = h;
+    const find = () => { const q = toHira((($('pvFind') || {}).value || '').replace(/\s/g, '')); PRAC_VIEW.q = ($('pvFind') || {}).value || ''; let n = 0;
+      sh.querySelectorAll('.pvRow').forEach(r => { const hd = !!q && !r.dataset.sn.includes(q); r.classList.toggle('hide', hd); if(!hd) n++; });
+      $('pvNone').classList.toggle('hide', !!n || !q); };
+    if($('pvFind')){ $('pvFind').addEventListener('input', find); find(); }
+    sh.querySelectorAll('[data-sp]').forEach(b => b.addEventListener('click', () => { PRAC_VIEW.span = +b.dataset.sp; save(); draw(); }));
+    sh.querySelectorAll('[data-so]').forEach(b => b.addEventListener('click', () => { PRAC_VIEW.sort = b.dataset.so; save(); draw(); }));
+    sh.querySelectorAll('[data-pvmsg]').forEach(b => b.addEventListener('click', () => { $('pracOv').classList.remove('show'); openThread(b.dataset.pvmsg); }));
+    $('pvClose').addEventListener('click', () => $('pracOv').classList.remove('show'));
+    $('pvCsv').addEventListener('click', () => {
+      const rows = [['名前', 'ふりがな', 'ニックネーム', '練習した日（1週間）', '練習した日（4週間）', 'おだい（4週間）', 'れんしゅうの分（4週間）', 'リズムのレベル', 'おんぷのレベル', '宿題（4週間）', '「きいたよ」（4週間）', '最後の練習']];
+      stuSorted(list.map(o => o.s), 'kana').forEach(s => { const o = B[s.id], w = o.w[28];
+        rows.push([s.display_name || '', s.kana || '', s.nickname || '', o.w[7].days.size, w.days.size, w.odai, w.min, o.rh ? o.rh.lv : '', o.nt ? o.nt.lv : '', w.hw, w.ok, o.last || '']); });
+      downloadCSV('練習のようす', `renshu_${today}.csv`, rows);
+    });
+  };
+  draw();
 }
 
 /* =========================================================
@@ -5025,8 +5188,8 @@ async function viewStudents(m){
     return `${ti('wind', 18)}おいかぜ`; };
   let h = pgHead('生徒', `${act.length}人${off.length ? '・お休み中 ' + off.length + '人' : ''}`, `<button class="btn w" id="bulkStu">${ti('list', 18)}まとめて登録</button><button class="btn" id="addStu">${ti('plus', 18)}生徒を追加</button>`);
   h += '<div class="card">' + H2('students', 'co', '通っている子', act.length + '人')
-    + `<div class="stuTopTools"><button class="btn sm w" id="kanaStu">${ti('pencil', 18)}ふりがなを入れる${noKana ? `<span class="nb">${noKana}</span>` : ''}</button><button class="btn sm w" id="cardStu">${ti('qr', 18)}案内カードを印刷</button><button class="btn sm w" id="csvStu">${ti('down', 18)}名簿をCSVで保存</button></div>`
-    + (act.length > 6 ? `<div class="stuTools"><input class="i" id="stuFind" placeholder="名前・ふりがなで探す" autocomplete="off"><div class="seg sm" id="stuFil"><button type="button" class="on" data-f="">ぜんぶ</button><button type="button" data-f="od">おだい未設定</button><button type="button" data-f="q">練習が止まっている</button></div></div>` : '')
+    + `<div class="stuTopTools"><button class="btn sm s" id="pracStu">${ti('graph', 18)}練習のようす</button><button class="btn sm w" id="kanaStu">${ti('pencil', 18)}ふりがなを入れる${noKana ? `<span class="nb">${noKana}</span>` : ''}</button><button class="btn sm w" id="cardStu">${ti('qr', 18)}案内カードを印刷</button><button class="btn sm w" id="csvStu">${ti('down', 18)}名簿をCSVで保存</button></div>`
+    + (act.length > 6 ? `<div class="stuTools"><input class="i" id="stuFind" placeholder="名前・ふりがな・ニックネームで探す" autocomplete="off"><div class="seg sm" id="stuFil"><button type="button" class="on" data-f="">ぜんぶ</button><button type="button" data-f="od">おだい未設定</button><button type="button" data-f="q">練習が止まっている</button></div></div>` : '')
     + `<div class="stuSortRow"><div class="seg sm" id="stuSort">${[['kana', '50音順'], ['wd', '曜日・時間順'], ['reg', '入会順']].map(([k, l]) => `<button type="button" data-s="${k}" class="${STU_VIEW.sort === k ? 'on' : ''}">${l}</button>`).join('')}</div>`
     + (STU_VIEW.sort === 'kana' && act.length > 6 ? `<div class="stuJump" id="stuJump">${GOJU.map(([g]) => g).concat(noKana ? ['未'] : []).filter(g => act.some(s => (gojuOf(s) || '未') === g)).map(g => `<button type="button" data-j="${g}">${g === '未' ? 'ふりがな未入力' : g}</button>`).join('')}</div>` : '') + '</div>'
     + '<div class="list" id="stuList">';
@@ -5038,7 +5201,7 @@ async function viewStudents(m){
     const k2 = o ? [...o.days].filter(d => d >= addDays(dayStr(), -13)).length : 0;
     const quiet = !o || !o.last || o.last < addDays(dayStr(), -4);
     return `<div class="it stu" data-g="${esc(grpOf(s))}" data-sn="${esc((nameOf(s) + ' ' + (s.nickname || '') + ' ' + kanaOf(s)).replace(/\s/g, ''))}" data-fl="${hasPiece(s) ? '' : 'od '}${quiet ? 'q' : ''}">${avatarDot(s)}<div class="grow">
-      <div class="nm">${s.kana ? `<ruby>${esc(nameOf(s))}<rt>${esc(s.kana)}</rt></ruby>` : esc(nameOf(s))}${s.nickname ? `<small>${esc(s.nickname)}</small>` : ''}${s.mode === 'adult' ? '<span class="pill modeP">おとな</span>' : s.mode === 'junior' ? '<span class="pill modeP">ジュニア</span>' : ''}${roomOn() ? '' : roomPill(s.room_id)}${s.teacher_id && TEACHERS.length > 1 && TEACHERS.find(t => t.id === s.teacher_id) ? `<span class="pill reg">${esc(TEACHERS.find(t => t.id === s.teacher_id).display_name.split(/\s+/)[0])} 先生</span>` : ''}</div>
+      <div class="nm">${s.kana ? `<ruby>${esc(nameOf(s))}<rt>${esc(s.kana)}</rt></ruby>` : esc(nameOf(s))}${nickPill(s)}${s.mode === 'adult' ? '<span class="pill modeP">おとな</span>' : s.mode === 'junior' ? '<span class="pill modeP">ジュニア</span>' : ''}${roomOn() ? '' : roomPill(s.room_id)}${s.teacher_id && TEACHERS.length > 1 && TEACHERS.find(t => t.id === s.teacher_id) ? `<span class="pill reg">${esc(TEACHERS.find(t => t.id === s.teacher_id).display_name.split(/\s+/)[0])} 先生</span>` : ''}</div>
       <div class="meta"><span>${ti('clock', 15)}${reg}・月${s.lessons_per_month || 3}回${feeOn() && isOwner() && (+s.fee_amount > 0 || +(SET && SET.fee_default) > 0) ? `・<span class="feeTag${+s.fee_amount > 0 ? '' : ' def'}">${feeYen(+s.fee_amount > 0 ? +s.fee_amount : +SET.fee_default)}</span>` : ''}</span></div>${s.active !== false ? `<div class="meta">${nextChip(nextOf(s.id, les))}</div>` : ''}
       <div class="meta"><span>${dots14(o)}2週で ${k2}日${o && o.min ? `・${o.min >= 60 ? Math.floor(o.min / 60) + '時間' + (o.min % 60 ? o.min % 60 + '分' : '') : o.min + '分'}` : ''}</span>${s.repertoire && s.repertoire.length ? `<span>${ti('record', 15)}ごうかく ${s.repertoire.length}曲</span>` : ''}${s.map_opt_out ? '<span>地図に出さない</span>' : ''}</div>
       ${o && o.memo ? `<div class="meta"><span class="pmemo">${ti('pencil', 14)}${esc(o.memo.t)}<small>${esc(mdOf(o.memo.day))}</small></span></div>` : ''}
@@ -5061,6 +5224,7 @@ async function viewStudents(m){
   $('bulkStu').addEventListener('click', guard(openBulk));
   $('cardStu').addEventListener('click', () => openCards());
   $('csvStu').addEventListener('click', () => exportRoster());
+  $('pracStu').addEventListener('click', () => openPractice());
   if(PAUSED()){ ['addStu', 'bulkStu'].forEach(id => { const b = $(id); b.classList.add('locked'); const i = b.querySelector('.ti'); if(i) i.outerHTML = ti('lock', 18); }); }
   /* 絞りこみ（ぜんぶ・おだい未設定・練習が止まっている）と 名前の検索は、編集して 画面が かきなおされても そのまま */
   const sf = () => { const q = toHira(($('stuFind') ? $('stuFind').value : '').replace(/\s/g, '')), f = (m.querySelector('#stuFil .on') || {}).dataset ? m.querySelector('#stuFil .on').dataset.f : '';
@@ -6046,6 +6210,15 @@ function timeVal(id){ const b = $(id), h = b.querySelector('[data-p="h"]').value
 const shortName = s => s ? (s.display_name ? String(s.display_name).trim().replace(/[\s　]+/g, '') : (s.nickname || '')).slice(0, 8) : '';
 /* スマホの 小さな しるし：名前の 頭2文字（空白が あれば 下の名前の 頭。きょうだいで かぶらないように） */
 const initName = s => { if(!s) return ''; const n = String(s.display_name || s.nickname || '').trim(), sp = n.split(/[\s　]+/); return (sp.length > 1 ? sp[sp.length - 1] : n).slice(0, 2); };
+/* 家庭が「確認しました」を 押すと updated_at も かわる。それは 先生の「変更」では ないので、LINEを 送りなおす 対象に しない */
+const lesChg = (l, sa) => !!(l && sa && l.updated_at && l.updated_at > sa && !(l.confirmed_at && Math.abs(Date.parse(l.updated_at) - Date.parse(l.confirmed_at)) < 3000));
+/* その月の 予定を 家庭が 確認したか：conf（ぜんぶ）・part（あとから 足した／動かした 分が まだ）・wait（まだ）・unpub（まだ 公開していない） */
+function confState(id, mine){
+  const rel = mine.filter(l => l.student_id === id && (l.status === 'scheduled' || l.status === 'done'));
+  const pub = rel.filter(l => l.published); if(!pub.length) return { st: 'unpub', at: null };
+  const c = pub.filter(l => l.confirmed_at), at = c.map(l => l.confirmed_at).sort().pop() || null;
+  return { st: c.length === pub.length ? 'conf' : c.length ? 'part' : 'wait', at };
+}
 async function viewSched(m){
   const y = schedMonth.getFullYear(), mo = schedMonth.getMonth();
   const [from, to] = monthRange(y, mo);
@@ -6054,7 +6227,6 @@ async function viewSched(m){
   const mine = les.filter(l => l.kind !== 'open');
   const open = les.filter(l => l.kind === 'open' && !l.student_id);
   const unpub = mine.filter(l => !l.published).length;
-  const confirmedStu = new Set(mine.filter(l => l.confirmed_at).map(l => l.student_id));
   const withLes = new Set(mine.map(l => l.student_id));
   const closed = new Set((SET && SET.closed_dates) || []);
   const line = !!(SET && SET.line_enabled);
@@ -6063,7 +6235,10 @@ async function viewSched(m){
   const linkedStu = new Set((gs || []).filter(g => g.notify !== false).map(g => g.student_id));
   const sentAt = {}; (sends || []).forEach(x => { sentAt[x.student_id] = x.sent_at; });
   const fam = [...withLes].filter(id => mine.some(l => l.student_id === id && l.status === 'scheduled'));
-  const changed = fam.filter(id => sentAt[id] && mine.some(l => l.student_id === id && l.updated_at && l.updated_at > sentAt[id]));
+  const changed = fam.filter(id => sentAt[id] && mine.some(l => l.student_id === id && lesChg(l, sentAt[id])));
+  const CONF = {}; withLes.forEach(id => { if(id) CONF[id] = confState(id, mine); });
+  const famPub = [...withLes].filter(id => id && CONF[id].st !== 'unpub'), nConf = famPub.filter(id => CONF[id].st === 'conf').length;
+  const confBtn = famPub.length ? `<button type="button" class="linkBtn confLink" id="confBtn">確認 ${nConf}/${famPub.length}家庭</button>` : '';
   const notSent = fam.filter(id => !sentAt[id] && linkedStu.has(id)), noLine = fam.filter(id => !linkedStu.has(id));
   const st1 = mine.length ? 'done' : 'now', st3 = fam.length && !notSent.length && !changed.length && !unpub ? 'done' : mine.length ? 'now' : '';
   let h = pgHead('予定', '月ごとのレッスンと空き枠', `<button class="btn w" id="addLes">${ti('plus', 18)}レッスン</button><button class="btn w" id="addOpen">${ti('plus', 18)}空き枠</button>`);
@@ -6071,7 +6246,7 @@ async function viewSched(m){
     <div class="plan">
       <div class="pl ${st1}"><span class="no">${st1 === 'done' ? ti('check', 18) : '1'}</span><div class="tx"><b>つくる</b><small>${mine.length ? `<span class="nw">レッスン ${mine.filter(l => l.status === 'scheduled').length}件</span>・<span class="nw">空き枠 ${open.length}件</span>` : 'いつもの曜日から下書きをつくる'}</small></div><button class="btn sm ${st1 === 'done' ? 'w' : 's'}" id="genBtn">${ti('wand', 18)}${st1 === 'done' ? 'つくりなおす' : 'つくる'}</button></div>
       <div class="pl ${mine.length && st3 !== 'done' ? 'now' : mine.length ? 'done' : ''}"><span class="no">${mine.length && st3 === 'done' ? ti('check', 18) : '2'}</span><div class="tx"><b>直す</b><small>${matchMedia('(pointer:coarse)').matches ? '日をタップすると、移動・追加・削除・教室のお休み' : '予定をドラッグしてほかの日へ。日をダブルクリックすると、その日にレッスンを入れられます'}</small></div></div>
-      <div class="pl ${st3}"><span class="no">${st3 === 'done' ? ti('check', 18) : '3'}</span><div class="tx"><b>届ける</b><small>${fam.length && !line ? `<span class="nw">公開 ${fam.filter(id => !mine.some(l => l.student_id === id && !l.published)).length}/${fam.length}家庭</span>・<span class="nw">確認 ${[...confirmedStu].filter(id => fam.includes(id)).length}</span>` : fam.length ? `<span class="nw">送った ${fam.length - notSent.length - noLine.length}/${fam.length - noLine.length}家庭</span>${changed.length ? `・<em class="nw">変更あり ${changed.length}</em>` : ''}${noLine.length ? `・<span class="nw">LINE未登録 ${noLine.length}</span>` : ''}・<span class="nw">確認 ${[...confirmedStu].filter(id => fam.includes(id)).length}</span>` : line ? '家庭ごとに 1通ずつ LINEで' : '保護者のアプリに公開'}</small></div><button class="btn sm g" id="sendBtn" ${fam.length ? '' : 'disabled'}>${ti('send', 18)}届ける</button></div>
+      <div class="pl ${st3}"><span class="no">${st3 === 'done' ? ti('check', 18) : '3'}</span><div class="tx"><b>届ける</b><small>${fam.length && !line ? `<span class="nw">公開 ${fam.filter(id => !mine.some(l => l.student_id === id && !l.published)).length}/${fam.length}家庭</span>${confBtn ? '・' + confBtn : ''}` : fam.length ? `<span class="nw">送った ${fam.length - notSent.length - noLine.length}/${fam.length - noLine.length}家庭</span>${changed.length ? `・<em class="nw">変更あり ${changed.length}</em>` : ''}${noLine.length ? `・<span class="nw">LINE未登録 ${noLine.length}</span>` : ''}${confBtn ? '・' + confBtn : ''}` : line ? '家庭ごとに 1通ずつ LINEで' : '保護者のアプリに公開'}</small></div><button class="btn sm g" id="sendBtn" ${fam.length ? '' : 'disabled'}>${ti('send', 18)}届ける</button></div>
     </div>${unpub && mine.length ? `<div class="unpubNote">${ti('eye', 18)}<span>${mo + 1}月の予定は、まだ保護者に見えていません（点線の予定）。直し終わったら「届ける」で公開します。</span></div>` : ''}</div>`;
   const byDay = {};
   les.forEach(l => { const d = localDay(l.starts_at); (byDay[d] = byDay[d] || []).push(l); });
@@ -6170,6 +6345,7 @@ async function viewSched(m){
   const pz = f => () => { if(PAUSED()){ toast(PAUSED_MSG, 4200); return; } f(); };
   $('genBtn').addEventListener('click', pz(() => generateMonth(y, mo, les)));
   $('sendBtn').addEventListener('click', pz(() => openSendSheet(y, mo, les, linkedStu, sentAt)));
+  if($('confBtn')) $('confBtn').addEventListener('click', () => openConfirmList(y, mo, famPub, CONF, line, linkedStu));
   /* お休みモード：たす・つくる・とどける に かぎの しるし */
   if(PAUSED()) ['addLes', 'addOpen', 'genBtn', 'sendBtn'].forEach(id => { const b = $(id); if(!b) return; b.classList.add('locked'); const i = b.querySelector('.ti'); if(i) i.outerHTML = ti('lock', 18); });
   const cdb = $('closeDay'); if(cdb) cdb.addEventListener('click', async () => {
@@ -6215,7 +6391,7 @@ function wireCalDrag(m, les){
     const t = new Date(yy, mm - 1, dd, t0.getHours(), t0.getMinutes());
     const clash = les.find(v => v.id !== d.l.id && v.student_id && v.student_id === d.l.student_id && localDay(v.starts_at) === d.over.dataset.day && v.status === 'scheduled');
     if(clash && !confirm('この日にはすでにこの子のレッスンがあります。移動しますか？')) return;
-    try{ await DB.updLesson(d.l.id, { starts_at: t.toISOString() }); schedSel = d.over.dataset.day;
+    try{ await DB.updLesson(d.l.id, Object.assign({ starts_at: t.toISOString() }, d.l.confirmed_at ? { confirmed_at: null } : {})); schedSel = d.over.dataset.day;
       toast(`${mm}/${dd} に移動しました${d.l.published && d.l.kind !== 'open' ? '。「届ける」で保護者に知らせてください' : ''}`, 3200); render(); }
     catch(e){ toast('うごかせませんでした：' + e.message); }
   };
@@ -6239,13 +6415,30 @@ function lineCardHTML(school, m, parts){
 function lineText(school, m, parts, url){
   return `【${school}】\n${m}月のレッスンの予定です。\n\n${parts.map(p => `${p.name}さん\n${p.days.map(l => '・' + md(l.starts_at) + hm(l.starts_at) + (l.kind === 'makeup' ? '（振替）' : l.kind === 'extra' ? '（追加）' : '')).join('\n')}`).join('\n\n')}\n\nお休みや振替は、アプリの「おうちのひと」からできます。\n${url || ''}`;
 }
+/* 予定を 確認した 家庭／まだの 家庭（「届ける」の「確認 ◯/◯家庭」から） */
+function openConfirmList(y, mo, ids, CONF, line, linkedStu){
+  const sh = $('confSheet'), when = at => { const d = new Date(at); return `${d.getMonth() + 1}/${d.getDate()} ${hm(at)}`; };
+  const grp = { wait: [], part: [], conf: [] };
+  stuSorted(ids.map(stuById).filter(Boolean), 'kana').forEach(s => { const c = CONF[s.id]; if(grp[c.st]) grp[c.st].push(s); });
+  const row = (s, c) => `<div class="cfRow">${avatarDot(s, 1)}<div class="grow"><div class="nm">${esc(nameOf(s))}</div><div class="sub">${c.st === 'conf' ? `${ti('check', 14)}${when(c.at)} に確認` : c.st === 'part' ? `${when(c.at)} に確認。そのあと足した・動かした予定は まだ` : (line && linkedStu && !linkedStu.has(s.id) ? 'LINE未登録・アプリでも まだ見ていません' : 'まだ見ていません')}</div></div>${c.st === 'conf' ? '<span class="pill ok">✓ 確認ずみ</span>' : `<button type="button" class="btn sm w" data-cfmsg="${s.id}">${ti('chat', 16)}ひとこと</button>`}</div>`;
+  const sec = (k, t, cls) => grp[k].length ? `<div class="cfHead ${cls}"><b>${t}</b><small>${grp[k].length}家庭</small></div><div class="cfList">${grp[k].map(s => row(s, CONF[s.id])).join('')}</div>` : '';
+  sh.innerHTML = `<h3>${ti('check', 24)}${mo + 1}月の予定の確認</h3>
+    <div class="muted">保護者がアプリの「予定」で「確認しました」を押すと、ここに ✓ がつきます。先生が日や時間を動かした予定は、もう一度確認してもらう扱いになります。</div>
+    ${sec('wait', 'まだ確認していない', 'wait')}${sec('part', '一部まだ（あとで変わった予定）', 'part')}${sec('conf', '確認した', 'conf')}
+    ${!grp.wait.length && !grp.part.length ? '<div class="note">公開した家庭は、みんな確認しています。</div>' : ''}
+    <div class="foot"><button class="btn w" id="cfClose">閉じる</button>${grp.wait.length + grp.part.length ? `<button class="btn w" id="cfCopy">${ti('copy', 18)}まだの家庭の名前をコピー</button>` : ''}</div>`;
+  $('cfClose').addEventListener('click', () => $('confOv').classList.remove('show'));
+  const cp = $('cfCopy'); if(cp) cp.addEventListener('click', () => copyText(grp.wait.concat(grp.part).map(s => nameOf(s)).join('\n')));
+  sh.querySelectorAll('[data-cfmsg]').forEach(b => b.addEventListener('click', () => { $('confOv').classList.remove('show'); openThread(b.dataset.cfmsg); }));
+  showOv('confOv');
+}
 async function openSendSheet(y, mo, les, linkedStu, sentAt){
   const month = y + '-' + pad(mo + 1), school = (SET && SET.display_name) || (SCHOOL && SCHOOL.name) || '', line = !!(SET && SET.line_enabled);
   const byStu = {};
   les.filter(l => l.kind !== 'open' && l.student_id && l.status === 'scheduled').forEach(l => { (byStu[l.student_id] = byStu[l.student_id] || []).push(l); });
   Object.values(byStu).forEach(a => a.sort((p, q) => p.starts_at.localeCompare(q.starts_at)));
   const ids = STU.filter(s => byStu[s.id]).map(s => s.id);
-  const stateOf = id => { const sa = sentAt[id]; if(!linkedStu.has(id)) return 'noline'; if(!sa) return 'new'; if(byStu[id].some(l => l.updated_at && l.updated_at > sa)) return 'changed'; return 'sent'; };
+  const stateOf = id => { const sa = sentAt[id]; if(!linkedStu.has(id)) return 'noline'; if(!sa) return 'new'; if(byStu[id].some(l => lesChg(l, sa))) return 'changed'; return 'sent'; };
   const sel = new Set(ids.filter(id => ['new', 'changed'].includes(stateOf(id))));
   let open = null, quota = null;
   const sh = $('sendSheet');
@@ -6280,7 +6473,7 @@ async function openSendSheet(y, mo, les, linkedStu, sentAt){
         const pill = { noline: '<span class="pill off">LINE未登録</span>', new: '<span class="pill pub">まだ送っていない</span>', changed: '<span class="pill ab">変更あり</span>', sent: `<span class="pill ok">送信ずみ ${md(sentAt[id])}</span>` }[st];
         return `<div class="sr${sel.has(id) ? ' on' : ''}${st === 'noline' ? ' nl' : ''}" data-id="${id}">
           <label class="ck">${st === 'noline' ? '' : `<input type="checkbox" ${sel.has(id) ? 'checked' : ''} data-ck="${id}">`}</label>${avatarDot(s, 1)}
-          <div class="grow"><div class="nm">${esc(nameOf(s))} ${pill}</div><div class="dts">${days.map(l => `<span${l.updated_at && sentAt[id] && l.updated_at > sentAt[id] ? ' class="chg"' : ''}>${md(l.starts_at).replace(/（.）/, '')} ${hm(l.starts_at)}</span>`).join('')}</div></div>
+          <div class="grow"><div class="nm">${esc(nameOf(s))} ${pill}</div><div class="dts">${days.map(l => `<span${lesChg(l, sentAt[id]) ? ' class="chg"' : ''}>${md(l.starts_at).replace(/（.）/, '')} ${hm(l.starts_at)}</span>`).join('')}</div></div>
           <button class="btn sm w ico" data-pv="${id}" aria-label="みる">${ti(open === id ? 'chevL' : 'eye', 18)}</button></div>
           ${open === id ? `<div class="pv">${lineCardHTML(school, mo + 1, [{ name: nameOf(s), days }])}${st === 'noline' ? `<div class="muted" style="margin-top:8px">この家庭はLINEとまだつながっていません。文面をコピーして、ほかの方法で送れます。</div><button class="btn sm w" data-cp="${id}">${ti('copy', 16)}文面をコピー</button>` : ''}</div>` : ''}`; }).join('')}</div>
       <div class="foot wrap"><button class="btn w" id="sdCancel">閉じる</button><button class="btn w" id="sdPub">LINEは送らずアプリに公開</button><button class="btn g" id="sdGo" ${n && line ? '' : 'disabled'}>${ti('send', 18)}${line ? `えらんだ ${n}家庭に送る` : 'LINEは「設定」でオン'}</button></div>`;
@@ -6392,7 +6585,11 @@ function openLesson(l, kind, day, time, minutes){
     $('lSave').disabled = true;
     try{
       if(isNew){ Object.assign(row, { school_id: SCHOOL.id, kind: row.kind || 'open', status: row.status || 'scheduled', published: l.kind === 'open' ? true : $('lPub').checked }); if(l.kind === 'open') row.student_id = null; await DB.addLessons([row]); }
-      else await DB.updLesson(l.id, row);
+      else {
+        /* 日や時間・生徒を かえたら、家庭には もう一度 確認して もらう */
+        if(l.confirmed_at && (Date.parse(row.starts_at) !== Date.parse(l.starts_at) || (row.student_id && row.student_id !== l.student_id))) row.confirmed_at = null;
+        await DB.updLesson(l.id, row);
+      }
       $('lesOv').classList.remove('show'); toast('保存しました'); render();
     }catch(e){ toast('保存できませんでした：' + e.message); $('lSave').disabled = false; }
   });
@@ -6756,7 +6953,7 @@ async function viewSettings(m){
       <span class="muted" style="flex:1">「保存」でアプリに反映されます</span><button class="btn g" id="cSave">保存</button></div>
     ${ntCardHTML()}${roomsTeachersHTML(invites)}${calCardHTML()}${DEMO_MULTI ? `<div class="card"><button class="btn w" id="asStaff">${ti('eye', 18)}講師の画面を見てみる（見本）</button></div>` : ''}
     <div class="row" style="justify-content:center;margin-top:8px;gap:18px;flex-wrap:wrap"><button class="linkBtn" id="suShow">${ti('flag', 16)}「はじめの準備」をもう一度出す</button>${DEMO ? '' : `<button class="linkBtn" id="logoutBtn2">${ti('door', 16)}ログアウト</button>`}</div>
-    <div class="verTag">先生の画面 v2026.09.30-16</div>`;
+    <div class="verTag">先生の画面 v2026.09.30-19</div>`;
   m.innerHTML = h;
   $('suShow').addEventListener('click', () => { try{ localStorage.removeItem(SETUP_KEY()); }catch(e){} SETUP_FORCE = true; goTab('today'); });
   /* 保存の バーは なにか かえた ときだけ 出す（あいた すきまや 重なりを ださない） */
