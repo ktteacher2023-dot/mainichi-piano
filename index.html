@@ -2750,6 +2750,85 @@ ruby rt{font-weight:700;color:#6E5B50}
 .kzHandSw button.on small{color:#E9DCC8}
 .kzHandTip{flex-basis:100%;text-align:center;font-size:11.5px;font-weight:900;color:#9C7520}
 
+
+/* ===== 2026-10：まちの なかまは とまらない・かくれんぼ・もっと ひく・きょうの リズム／おんぷ ===== */
+/* たっている ときも いきを している（なかま・ぼうけんの なかま） */
+.tWalker:not(.walk):not(.land):not(.dance) .fbd{animation:fIdle 2.6s ease-in-out infinite;animation-delay:var(--br,0s);transform-box:view-box;transform-origin:50% 95%}
+.tWalker:not(.walk):not(.dance) .monBody{animation:fIdle 2.4s ease-in-out infinite;animation-delay:var(--br,0s);transform-box:view-box;transform-origin:50% 95%}
+.tWalker.walk.nofeet .monBody{animation:fHop .38s ease-in-out infinite;transform-box:view-box;transform-origin:50% 95%}
+@keyframes fIdle{0%,100%{transform:scale(1,1)}50%{transform:scale(1.03,.965)}}
+
+/* かくれんぼ */
+#townHS{position:absolute;right:10px;top:54px;pointer-events:auto;display:flex;align-items:center;gap:4px;background:#EAF3DE;border:2px solid var(--ink);border-radius:999px;
+  padding:3px 12px 3px 6px;font-family:inherit;font-weight:900;font-size:13px;color:var(--ink);box-shadow:0 2px 0 var(--ink);cursor:pointer;z-index:5}
+#townFeet ~ #townHS{top:98px}
+#townHS:active{transform:translateY(2px);box-shadow:0 0 0 var(--ink)}
+#townHS.fresh{animation:hsHey 3.2s ease-in-out infinite}
+@keyframes hsHey{0%,72%,100%{transform:rotate(0)}77%{transform:rotate(-6deg)}83%{transform:rotate(5deg)}89%{transform:rotate(-3deg)}95%{transform:rotate(2deg)}}
+#town.hs #townRank,#town.hs #townMedal,#town.hs #townFeet,#town.hs .tLost,#town.hs .tBalloon,#town.hs #townRpg{visibility:hidden}
+/* かくれている あいだ：ほんものの なかまは みえなくして、まちの え の なかの うつし（.hsHide）を つかう */
+.tWalker.hsHid{visibility:hidden;pointer-events:none}
+.tWalker.hsHid *{visibility:hidden!important}
+#townSvg .hsHide{cursor:pointer}
+.tWalker.hsOut{z-index:4}
+#hsCount{position:absolute;left:0;right:0;top:calc(64px + var(--safe-t));bottom:0;z-index:40;display:flex;align-items:center;justify-content:center;
+  background:rgba(251,244,230,.93);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);transition:opacity .45s}
+#hsCount.out{opacity:0}
+#hsCount.hide{display:none}
+#hsCount .hsCard{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;padding:0 16px}
+#hsCount .hsMe svg{display:block;overflow:visible}
+#hsCount .hsHand{transform-box:view-box;transform-origin:0 -55px;transition:transform .5s}
+#hsCount.ask .hsHand{transform:translateY(5px)}
+#hsCount .hsNum{height:100px;display:flex;align-items:center;justify-content:center}
+#hsCount .hsNum b{font-family:'MPKana','Mochiy Pop One','Zen Maru Gothic',sans-serif;font-size:88px;line-height:1;color:var(--c);display:inline-block;transform:rotate(var(--r));
+  -webkit-text-stroke:3px var(--ink);paint-order:stroke fill;animation:hsNumIn .42s cubic-bezier(.3,1.6,.5,1)}
+@keyframes hsNumIn{0%{transform:scale(.3) rotate(var(--r))}100%{transform:scale(1) rotate(var(--r))}}
+#hsCount .hsTx{font-size:clamp(22px,6.4vw,28px);font-weight:900;min-height:1.6em;line-height:1.5}
+#hsCount .hsSub{font-size:14px;font-weight:900;color:var(--ink2)}
+#hsCount .hsYes{font-family:'MPKana','Mochiy Pop One','Zen Maru Gothic',sans-serif;color:var(--coral-d);font-size:1.2em}
+#hsBar{position:absolute;left:12px;right:12px;top:calc(72px + var(--safe-t));z-index:25;max-width:540px;margin:0 auto;background:var(--card);border:2.5px solid var(--ink);
+  border-radius:18px;box-shadow:0 4px 0 var(--ink);padding:6px 10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+#hsBar.hide{display:none}
+#hsBar .hsFaces{display:flex;gap:2px;flex:0 0 auto}
+.hsF{position:relative;display:inline-flex}
+.hsF svg{display:block}
+.hsF:not(.on) svg{filter:brightness(0) opacity(.2)}
+.hsF:not(.on)::after{content:'?';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px;color:var(--ink2);padding-top:4px}
+.hsF.on{animation:hsFIn .45s cubic-bezier(.3,1.6,.5,1)}
+@keyframes hsFIn{0%{transform:scale(.4)}100%{transform:scale(1)}}
+#hsBar .hsMsg{flex:1;min-width:0;font-weight:900;font-size:15px;line-height:1.5}
+#hsBar .hsMsg b{color:var(--coral-d);font-size:1.2em}
+#hsBar .hsMsg.miss{color:var(--ink2);font-size:14px}
+#hsBar .hsBtns{display:flex;gap:8px;width:100%}
+#hsBar .hsBtns .btn3d{flex:1;min-height:48px;font-size:16px;padding:8px 10px}
+
+/* もっと ひく（おうちのひとと） */
+.odMore{margin:12px 0 4px;padding:12px 12px 14px;border-radius:20px;background:#FFF7E3;border:2.5px solid var(--ink);box-shadow:0 3px 0 var(--ink)}
+.odMore h4{display:flex;align-items:center;gap:6px;font-size:17px;font-weight:900}
+.odMore .omDots{margin-left:auto;display:inline-flex;gap:5px}
+.odMore .omDots i{width:14px;height:14px;border-radius:50%;border:2px solid var(--ink);background:#fff}
+.odMore .omDots i.on{background:var(--sun)}
+.odMore p{font-size:13.5px;line-height:1.75;color:var(--ink2);margin:4px 0 2px;word-break:auto-phrase}
+.odMore.done{background:#EEF7E6}
+.omBtn{display:flex;align-items:center;gap:10px;width:100%;border:2px solid var(--ink);background:var(--card);border-radius:16px;padding:7px 12px 7px 8px;margin-top:8px;
+  box-shadow:0 3px 0 var(--ink);font:inherit;color:var(--ink);cursor:pointer;text-align:left;min-height:56px}
+.omBtn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.omBtn .ic{display:flex;flex:0 0 auto}
+.omBtn .t{flex:1;min-width:0;font-weight:900;font-size:16px}
+.omBtn .n{font-size:13px;color:var(--ink2);font-weight:900;flex:0 0 auto}
+.omBtn .go{color:var(--coral-d);font-weight:900;flex:0 0 auto}
+.omTag{display:inline-block;margin-left:6px;font-size:12px;font-weight:900;background:#FFF1CF;border:2px solid var(--ink);border-radius:999px;padding:0 8px;vertical-align:middle;white-space:nowrap}
+#omAsk{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:58px;font-size:17px}
+
+/* きょうの リズム・おんぷ（ためて 1ぽ） */
+.resStep.goal{display:block;background:#FFF7E3;border-radius:16px;padding:7px 12px 8px;width:min(100%,320px);margin-left:auto;margin-right:auto}
+.resStep.goal .dgTop{display:flex;align-items:center;gap:6px;justify-content:center;font-size:14px}
+.resStep.goal .dgN{font-variant-numeric:tabular-nums;color:var(--coral-d);font-size:16px}
+.resStep.goal .dgBar{display:block;height:13px;border:2px solid var(--ink);border-radius:999px;background:#fff;overflow:hidden;margin:5px 0 4px}
+.resStep.goal .dgBar i{display:block;height:100%;width:0;background:repeating-linear-gradient(-45deg,#E3B143 0 6px,#EDC664 6px 12px);transition:width .9s cubic-bezier(.3,1,.5,1)}
+.resStep.goal .dgTx{display:block;font-size:13px;text-align:center;line-height:1.6}
+.resStep.goal .dgTx b{color:var(--coral-d)}
+.dgLine{display:inline-flex;align-items:center;gap:4px;margin-top:8px;font-size:13px;font-weight:900;background:#FFF7E3;border:2px solid var(--ink);border-radius:999px;padding:1px 10px;line-height:1.7;color:var(--ink)}
 </style>
 </head>
 <body>
@@ -3283,7 +3362,7 @@ ruby rt{font-weight:700;color:#6E5B50}
    ・同じ地図に 教室みんなの主人公（ニックネーム・順位なし）
    ・おうちのひと：予定・振替・おしらせ・れんらくちょう
    ========================================================= */
-const APP_VER = 'v2026.09.30-19';   /* なおしたら かならず あげる（アップした ものが あたらしいか、おうちのかた→設定の いちばん したで たしかめられる） */
+const APP_VER = 'v2026.10.05-1';   /* なおしたら かならず あげる（アップした ものが あたらしいか、おうちのかた→設定の いちばん したで たしかめられる） */
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -3890,6 +3969,37 @@ function dailyState(ds = todayStr()){
   return { done, n, left: DAILY3.filter(k => !done[k]), st, stepped: DAILY3.every(k => st[k]) };
 }
 /* その日に なにか ピアノに むかったか（しゅうの おてがみ・たね） */
+
+/* もっと ひく（2026-10）：その日の おだいが できた あと、おうちのひとに きいてもらいながら もういちど ひくと +1ぽ。1日 MORE_MAX かいまで（サーバーと おなじ） */
+const MORE_MAX = 3;
+function moreDone(ds = todayStr()){ const L = S.log[ds] || {}; return L.more && typeof L.more === 'object' ? Object.keys(L.more).length : 0; }
+/* きょうの リズム・おんぷ（2026-10）：1かいで おわらないように、その日に「ただしく できた かず」を ためて 1ぽ。
+   かぞえるのは じかんでは なく できた かず（リズム＝ぴったり＋いいね、おんぷ＝よめた おんぷ・みちで つないだ かず） */
+const DAY_GOAL = { rhythm: 40, note: 30 };
+const GOAL_NAME = { rhythm: 'リズム', note: 'おんぷ' };
+function goalGot(part, ds = todayStr()){ const L = S.log[ds] || {}; return ((L.gp || {})[part]) | 0; }
+function goalAdd(part, n){
+  const L = dayLog(); L.gp = L.gp || {}; L.gpN = L.gpN || {};
+  L.gp[part] = (L.gp[part] | 0) + Math.max(0, n | 0); L.gpN[part] = (L.gpN[part] | 0) + 1;
+  saveState(); return L.gp[part];
+}
+/* けっかの ところ：きょうの ぶんが どこまで たまったか（まえの かずから のびる） */
+function goalBadge(el, part, before){
+  const g = DAY_GOAL[part], got = Math.min(goalGot(part), g), was = Math.min(before | 0, g), left = g - got;
+  const how = part === 'rhythm' ? 'ぴったりと いいねを' : 'よめた おんぷ';
+  el.classList.remove('wind'); el.classList.add('goal');
+  el.innerHTML = `<span class="dgTop">${ICON(part === 'rhythm' ? 'drum' : 'note', 20)}<b>きょうの ${GOAL_NAME[part]}</b><span class="dgN">${got} / ${g}</span></span>`
+    + `<span class="dgBar"><i style="width:${Math.round(was / g * 100)}%"></i></span>`
+    + `<span class="dgTx">${how} あと <b>${left}こ</b>で +${dayMul()}${po(dayMul())}</span>`;
+  el.classList.remove('hide');
+  requestAnimationFrame(() => requestAnimationFrame(() => { const i = el.querySelector('.dgBar i'); if(i) i.style.width = Math.round(got / g * 100) + '%'; }));
+  const panel = el.closest('.panel'); if(panel){ const old = panel.querySelector('.dayNext'); if(old) old.remove(); }
+}
+/* はじめる まえの ひとこと */
+function goalLine(part){
+  if((S.log[todayStr()] || {})[part]) return '';
+  return `<span class="dgLine">${ICON(part === 'rhythm' ? 'drum' : 'note', 16)}きょうの ${GOAL_NAME[part]} <b>${Math.min(goalGot(part), DAY_GOAL[part])} / ${DAY_GOAL[part]}</b></span>`;
+}
 function practicedOn(ds){ const L = S.log[ds]; return !!L && !!(Object.keys(L.odai || {}).length || L.rhythm || L.note || L.piano || L.practice); }
 function doneToday(kind, ref){
   const L = S.log[todayStr()]; if(!L) return false;
@@ -6898,9 +7008,10 @@ async function award(kind, ref = '', detail = null){
   lastAward = { add: 0, why: '' };
   if(kind === 'odai'){ if(L.odai[ref]) return 0; }
   else if(kind === 'practice'){ L.pmin = (L.pmin || 0) + ((detail && detail.min) | 0); }
+  else if(kind === 'more'){ L.more = L.more && typeof L.more === 'object' ? L.more : {}; if(L.more[ref] || Object.keys(L.more).length >= MORE_MAX || !dailyState(day).done.piano) return 0; }
   else if(L[kind]) return 0;
   const firstToday = !practicedOn(day) && kind !== 'parent_ok';
-  if(kind === 'odai') L.odai[ref] = detail || true; else if(kind === 'practice') L.practice = true; else L[kind] = detail || true;
+  if(kind === 'odai') L.odai[ref] = detail || true; else if(kind === 'practice') L.practice = true; else if(kind === 'more') L.more[ref] = detail || true; else L[kind] = detail || true;
   /* 1つ できるごとに すすむ（ピアノは おだい ぜんぶ・ジュニア/おとなは 10分の れんしゅうでも）。おいかぜの 日は 2ほ */
   L.st = L.st || {};
   const ds = dailyState(day);
@@ -6916,6 +7027,8 @@ async function award(kind, ref = '', detail = null){
     if(lg) add += 1;
     L.st[part] = add; L.steps = (L.steps || 0) + add; S.steps += add;
   }
+  /* もっと ひく：おうちのひとが きいて くれた ぶん +1ぽ（おいかぜの 日も 1ぽ） */
+  if(kind === 'more'){ add = 1; why = 'day'; L.steps = (L.steps || 0) + 1; S.steps += 1; }
   /* たね：その日 はじめて ピアノに むかった とき・おうちのひとの「きいたよ」 */
   if(firstToday){ S.seeds = (S.seeds || 0) + 1; setTimeout(() => toast('ピアノに むかった ごほうびに はなの たねを 1つ もらったよ'), 1200); }
   if(kind === 'parent_ok'){ S.seeds = (S.seeds || 0) + 1; setTimeout(() => toast('おうちのひとが きいてくれた! はなの たねを 1つ もらったよ'), 1400); }
@@ -7086,6 +7199,9 @@ function renderDock(){
   setQ('rhythm', ds.done.rhythm, plus);
   setQ('note', ds.done.note, plus);
   setQ('keys', doneToday('piano'), '');
+  /* リズム・おんぷの とちゅう：たまった かず／ピアノの あとの「もっと」 */
+  ['rhythm', 'note'].forEach(k => { if(!ds.done[k] && goalGot(k) > 0) $('b-' + k).textContent = Math.min(goalGot(k), DAY_GOAL[k]) + '/' + DAY_GOAL[k]; });
+  if(ds.done.piano && od.length && moreDone() < MORE_MAX && !(typeof isStudio === 'function' && isStudio())) $('b-piano').textContent = 'もっと ' + moreDone() + '/' + MORE_MAX;
   ['piano', 'rhythm', 'note', 'keys'].forEach(k => $('b-' + k).classList.toggle('hide', !$('b-' + k).textContent));
   /* けんばんは はじめての子（先生か おうちの ひとが オンに した とき）だけ */
   const kOn = keysOn();
@@ -7164,7 +7280,7 @@ async function refreshFromServer(){
         if(Array.isArray(h.me.today) && !DEMO){
           const L = dayLog();
           const PART = { p: 'piano', r: 'rhythm', n: 'note' };
-          h.me.today.forEach(x => { if(x.kind === 'odai') L.odai[x.ref] = L.odai[x.ref] || true; else if(x.kind === 'bonus' && PART[x.ref]){ L.st = L.st || {}; L.st[PART[x.ref]] = L.st[PART[x.ref]] || 1; } else if(x.kind === 'bonus' && x.ref === 'okaeri'){ L.okaeri = true; L.okaeriDone = true; } else if(x.kind && x.kind !== 'bonus') L[x.kind] = L[x.kind] || true; });
+          h.me.today.forEach(x => { if(x.kind === 'odai') L.odai[x.ref] = L.odai[x.ref] || true; else if(x.kind === 'bonus' && PART[x.ref]){ L.st = L.st || {}; L.st[PART[x.ref]] = L.st[PART[x.ref]] || 1; } else if(x.kind === 'bonus' && x.ref === 'okaeri'){ L.okaeri = true; L.okaeriDone = true; } else if(x.kind === 'more'){ L.more = L.more && typeof L.more === 'object' ? L.more : {}; L.more[x.ref] = L.more[x.ref] || true; } else if(x.kind && x.kind !== 'bonus') L[x.kind] = L[x.kind] || true; });
           if(typeof h.me.today_steps === 'number') L.steps = Math.max(L.steps || 0, h.me.today_steps);
         }
         if(h.me.nickname && !S.hero.name) S.hero.name = h.me.nickname;
@@ -7341,6 +7457,7 @@ $('q-keys').addEventListener('click', () => { ensureAudio(); popSfx(); openKeys(
 /* 結果の 画面に「+1ぽ」を 出す */
 /* けっかの 画面：+1ぽ か、あと なにを すれば すすむか */
 function showStepBadge(el, add){
+  el.classList.remove('goal');
   const ds = dailyState(), why = lastAward.why;
   el.classList.toggle('wind', why === 'okaeri' || why === 'wind');
   /* ひかりの +1ぽは 2ぎょうめに わけて だす（1ぎょうめは じぶんの ぶんだけ。add の なかみ・かずは かえない） */
@@ -8413,6 +8530,7 @@ function townRequestWaiting(){ const q = todayReq(); return !!q && townState().r
 /* ---------- 画面 ---------- */
 let townEditing = false, townSel = null, townCat = 'しぜん', townTimer = 0, townMoveIdx = -1, townJustPlaced = null;
 function openTown(){
+  hsReset();
   leaveVisit();
   townState();
   const neu = collectEventItems();
@@ -8536,6 +8654,7 @@ function freeTileNear(x, y, used){
   return null;
 }
 function placeResidents(){
+  if(HS.on) hsReset();
   const layer = $('townLayer'); layer.innerHTML = '';
   const k = $('townSvg').clientWidth / TOWN.W || 1;
   const q = todayReq(), done = townState().req[todayStr()] === 'done';
@@ -8580,24 +8699,318 @@ function placeResidents(){
   /* ぼうけんの なかまも おうちに あそびに くる */
   if(!TOWN_VIEW && typeof rpgTownMates === 'function') rpgTownMates(layer, put, hx);
   townExtras(layer);
+  hsBtn();
 }
-/* なかまは ときどき、あいている となりの タイルへ おさんぽ */
+/* なかまは いつも どこかで うごいている（2026-10・こどもの こえ「うごかない ときが あって さみしい」）
+   ・いえの まわり 2マスの なかを、まいかい ちがう ところへ おさんぽ
+   ・ときどき ベンチや ブランコで あそぶ／ほかの なかまに あいに いく
+   ・あるかない ときも、ぴょんと はねたり・きょろきょろ したり・ゆらゆら したり（たっている ときも いきを している：CSS の fIdle） */
+function tileAround(hx, hy, R, used, cur){
+  const busy = new Set(townState().items.map(i => i.x + ',' + i.y).concat([...used]));
+  const c = [];
+  for(let dy = -R; dy <= R + 1; dy++) for(let dx = -R; dx <= R; dx++){
+    const x = hx + dx, y = hy + dy;
+    if(x < 0 || y < 0 || x >= TOWN.C || y >= TOWN.R || busy.has(x + ',' + y)) continue;
+    if(cur && x === cur[0] && y === cur[1]) continue;
+    c.push([x, y]);
+  }
+  return c.length ? c[(Math.random() * c.length) | 0] : null;
+}
+function fidget(el){
+  const sv = el.querySelector('svg'); if(!sv || !sv.animate) return;
+  const r = Math.random();
+  if(r < .38) sv.animate([{ transform: 'translateY(0)' }, { transform: 'translateY(-10px)', offset: .3 }, { transform: 'translateY(0)', offset: .62 }, { transform: 'translateY(-4px)', offset: .8 }, { transform: 'translateY(0)' }], { duration: 640, easing: 'ease-out' });
+  else if(r < .72){ el.classList.toggle('flip'); setTimeout(() => { if(!el.classList.contains('walk')) el.classList.toggle('flip'); }, 900 + Math.random() * 700); }
+  else if(r < .86) emote(el, ['note', 'heart', 'sparkle'][(Math.random() * 3) | 0], 1800);
+  else sv.animate([{ transform: 'rotate(0)' }, { transform: 'rotate(-9deg)' }, { transform: 'rotate(8deg)' }, { transform: 'rotate(-4deg)' }, { transform: 'rotate(0)' }], { duration: 900, easing: 'ease-in-out' });
+}
+/* なかまに あいに いく：となりに ならんで、むかいあって ひとおどり */
+function wanderMeet(el, els, used){
+  const now = Date.now();
+  const others = els.filter(b => b !== el && !((b._busy || 0) > now) && !b.classList.contains('walk'));
+  if(!others.length) return false;
+  const b = others[(Math.random() * others.length) | 0];
+  const bx = +b.dataset.tx, by = +b.dataset.ty;
+  const busy = new Set(townState().items.map(i => i.x + ',' + i.y).concat([...used]));
+  const side = Math.random() < .5 ? -1 : 1;
+  const t = [[bx + side, by], [bx - side, by], [bx, by + 1]].find(([x, y]) => x >= 0 && x < TOWN.C && y >= 0 && y < TOWN.R && !busy.has(x + ',' + y));
+  if(!t) return false;
+  used.delete(el.dataset.tx + ',' + el.dataset.ty); used.add(t[0] + ',' + t[1]);
+  el._busy = b._busy = now + 5000;
+  const ms = moveWalker(el, t[0], t[1]);
+  setTimeout(() => {
+    if(curScreen !== 'town' || HS.on || !el.isConnected) return;
+    if(t[0] !== bx){ const left = t[0] < bx; el.classList.toggle('flip', !left); b.classList.toggle('flip', left); }
+    const ic = ['heart', 'note', 'sparkle'][(Math.random() * 3) | 0];
+    emote(el, ic, 2000); setTimeout(() => emote(b, ic, 2000), 350);
+    [el, b].forEach(w => { w.classList.add('dance'); setTimeout(() => w.classList.remove('dance'), 1500); });
+  }, ms + 200);
+  return true;
+}
 function wander(){
+  if(HS.on) return;
   const k = $('townSvg').clientWidth / TOWN.W || 1;
-  const els = [...document.querySelectorAll('#townLayer .tWalker')];
-  const used = new Set(els.map(e => e.dataset.tx + ',' + e.dataset.ty));
+  const all = [...document.querySelectorAll('#townLayer .tWalker')];
+  const els = all.filter(e => e.dataset.id !== 'me' && e.style.display !== 'none');
+  const used = new Set(all.map(e => e.dataset.tx + ',' + e.dataset.ty));
+  const now = Date.now();
+  let met = false;
   els.forEach(el => {
-    if(el.dataset.id === 'me' || el.style.display === 'none' || Math.random() < .5) return;
-    if(!townEditing && Math.random() < .35 && wanderPlay(el)) return;   /* ときどき ベンチや ブランコで あそぶ */
-    const hx = +el.dataset.hx, hy = +el.dataset.hy;
-    used.delete(el.dataset.tx + ',' + el.dataset.ty);
-    const t = freeTileNear(hx, hy + (Math.random() < .5 ? 0 : 1), used) || [+el.dataset.tx, +el.dataset.ty];
+    if(el.classList.contains('walk')) return;
+    if((el._busy || 0) > now){ if(Math.random() < .5) fidget(el); return; }   /* あそんでいる あいだも すこし うごく */
+    const r = Math.random();
+    if(r < .24){ fidget(el); return; }
+    if(!townEditing && !met && r < .36 && els.length > 1 && (met = wanderMeet(el, els, used))) return;
+    if(!townEditing && r < .5 && wanderPlay(el)){ el._busy = now + 5000; return; }   /* ベンチや ブランコで あそぶ */
+    const cur = [+el.dataset.tx, +el.dataset.ty];
+    used.delete(cur[0] + ',' + cur[1]);
+    const t = tileAround(+el.dataset.hx, +el.dataset.hy, 2, used, cur);
+    if(!t){ used.add(cur[0] + ',' + cur[1]); fidget(el); return; }
     used.add(t[0] + ',' + t[1]);
     el.dataset.tx = t[0]; el.dataset.ty = t[1];
     const [x, y] = tileXY(t[0], t[1]);
-    stepTo(el, x * k, y * k, { speed: 40 });
+    stepTo(el, x * k, y * k, { speed: 38 });
   });
 }
+
+/* =========================================================
+   なかまと かくれんぼ（2026-10・こどもの こえ「もっと かくれんぼ したりして あそんでほしい」）
+   ・「かくれんぼ」→ たびびとが めを かくして 10 かぞえる（その あいだ まちは みえない）
+   ・なかまは いえや きの うしろに かくれる。ときどき ちらっと からだを だす。なかなか みつからないと、かくれた ものが ゆれる
+   ・かくれている ところを タッチすると「みつかっちゃった!」。ぜんいん みつけたら みんなで おどる
+   ・ごほうびは つけない（あそぶ こと そのものが たのしい ように）
+   ========================================================= */
+const HS_NS = 'http://www.w3.org/2000/svg';
+const HS = { on: false, phase: '', list: [], found: 0, timers: [], last: 0, miss: 0 };
+const HS_FOUND = ['みつかっちゃった!', 'えへへ、みつかった!', 'よく わかったね!', 'あれれ、もう みつかった!', 'さがすの じょうずだね!', 'どきどき したよ〜!'];
+const HS_COUNT = ['いーち', 'にーい', 'さーん', 'しーい', 'ごーお', 'ろーく', 'しーち', 'はーち', 'きゅーう', 'じゅう!'];
+const hsMix = a => { a = a.slice(); for(let i = a.length - 1; i > 0; i--){ const j = (Math.random() * (i + 1)) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
+function hsLater(fn, ms){ const t = setTimeout(() => { if(HS.on && curScreen === 'town') fn(); }, ms); HS.timers.push(t); return t; }
+function hsReset(){
+  HS.timers.forEach(clearTimeout); HS.timers = [];
+  HS.on = false; HS.phase = ''; HS.list = []; HS.found = 0;
+  const t = $('town'); if(t) t.classList.remove('hs');
+  document.querySelectorAll('#townSvg .hsHide').forEach(g => g.remove());
+  document.querySelectorAll('#townLayer .tWalker.hsHid,#townLayer .tWalker.hsOut,#townLayer .tWalker.hsWatch').forEach(e => e.classList.remove('hsHid', 'hsOut', 'hsWatch'));
+  ['hsBar', 'hsCount'].forEach(id => { const e = $(id); if(e) e.classList.add('hide'); });
+}
+function hsWalkers(){ return [...document.querySelectorAll('#townLayer .tWalker')].filter(e => e.dataset.id !== 'me' && e.dataset.id !== 'host' && e.style.display !== 'none'); }
+/* しげみから めが のぞいている しるし */
+function hsIcon(s = 24){
+  return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><g stroke="${INK}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M2.6 19.4 C1.2 15.6 3.6 12.6 6.2 13.4 C6.2 9.2 11 7.6 13 10.8 C15.2 8.2 19.8 9.8 19.2 13.4 C22.2 13.8 22.8 17.6 21.4 19.4Z" fill="#8DBB6A"/>
+    <path d="M6.4 16.8 q1.4 -1 2.6 .2 M17.6 17.2 q-1.2 -1.1 -2.5 0" fill="none" stroke="#5E8F4E" stroke-width="1.1"/>
+    <circle cx="10" cy="14.4" r="1.9" fill="#FFFBF2"/><circle cx="14.4" cy="14.4" r="1.9" fill="#FFFBF2"/>
+    <circle cx="10.5" cy="14.7" r=".8" fill="${INK}" stroke="none"/><circle cx="14.9" cy="14.7" r=".8" fill="${INK}" stroke="none"/></g></svg>`;
+}
+function hsBtn(){
+  const layer = $('townLayer'); if(!layer) return;
+  const old = $('townHS'); if(old) old.remove();
+  if(TOWN_VIEW || townEditing || HS.on || !hsWalkers().length) return;
+  const b = document.createElement('button'); b.id = 'townHS'; b.type = 'button';
+  b.innerHTML = hsIcon(24) + '<span>かくれんぼ</span>';
+  b.classList.toggle('fresh', S.hsDay !== todayStr());
+  b.addEventListener('click', e => { e.stopPropagation(); ensureAudio(); popSfx(); hsStart(); });
+  layer.appendChild(b);
+}
+/* かくれる ばしょ：うしろが すけない もの（さく・ベンチ・ブランコ・ほそい ぼうは のぞく）。き は はっぱの なかに、ひくい ものは みみが でる */
+const HS_SEE = new Set(['flower', 'fence', 'bench', 'swing', 'balloon', 'lamp', 'signpost', 'lantern', 'mailbox', 'birdhouse', 'harp', 'qbells', 'koinobori', 'sasa', 'tsukimi', 'hikari', 'fireworks', 'pond', 'rock', 'stage', 'bandstand', 'songbird', 'goldrec']);
+const HS_AT = { tree: .36, onputree: .36, sakura: .36, xmastree: .48, pine: .5, bush: .58, mushroom: .55, pumpkin: .55 };
+function hsSpots(){
+  const out = [];
+  document.querySelectorAll('#townSvg .tObj').forEach(g => {
+    const k = g.dataset.k; if(!k || HS_SEE.has(k)) return;
+    const a = g.querySelector('.tArt'); if(!a) return;
+    const r = a.getBoundingClientRect(); if(r.width < 36 || r.height < 34) return;
+    out.push({ g, k, x: +g.dataset.x, y: +g.dataset.y, area: r.width * r.height, big: r.height >= 56 && r.width >= 50 });
+  });
+  return out;
+}
+function hsStart(){
+  if(HS.on || curScreen !== 'town' || TOWN_VIEW || townEditing) return;
+  const ws = hsWalkers(); if(!ws.length) return;
+  const spots = hsSpots();
+  if(!spots.length){ townSay(null, 'かくれる ばしょが ないみたい。「つくる」で きや いえを おいてね'); return; }
+  const n = Math.min(3, ws.length, spots.length);
+  const big = spots.filter(s => s.big);
+  const pool = big.length >= n ? hsMix(big) : spots.sort((a, b) => b.area - a.area);
+  const mixed = hsMix(ws), hiders = mixed.slice(0, n), watch = mixed.slice(n);
+  HS.on = true; HS.phase = 'count'; HS.found = 0; HS.miss = 0; HS.list = [];
+  S.hsDay = todayStr(); saveState();
+  $('townTalk').classList.add('hide');
+  $('town').classList.add('hs');
+  const b = $('townHS'); if(b) b.remove();
+  hsCountShow();
+  hsLater(() => { hsHideAll(hiders, pool.slice(0, n)); hsWatchers(watch); }, 450);
+}
+/* たびびとが りょうてで めを かくす（て を めの まえに うごかす） */
+function hsHeroEyes(size){
+  const av = avatarMe(), c = HERO_COLORS[Math.max(0, Math.min(HERO_COLORS.length - 1, av.c | 0))];
+  let s = heroSVG(av, size);
+  s = s.replace(/<ellipse cx="-17" cy="-20" rx="4.2" ry="3.8"[^>]*\/><ellipse cx="17" cy="-20" rx="4.2" ry="3.8"[^>]*\/>/, '');
+  /* うでを あげて、ミトンの てで めを かくす（ゆびの すじ つき） */
+  const coat = HERO_COAT[av.p | 0] || P.cream;
+  const arm = (x0, y0, x1, y1) => `<path d="M${x0} ${y0} Q${(x0 + x1) / 2 + (x0 < 0 ? -3 : 3)} ${(y0 + y1) / 2} ${x1} ${y1}" stroke="${INK}" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M${x0} ${y0} Q${(x0 + x1) / 2 + (x0 < 0 ? -3 : 3)} ${(y0 + y1) / 2} ${x1} ${y1}" stroke="${coat}" stroke-width="4.6" fill="none" stroke-linecap="round"/>`;
+  const hand = (x, y, r, m) => `<g transform="translate(${x} ${y}) rotate(${r}) scale(${m} 1)"><path d="M-7 5.5 C-8.6 -1.5 -6 -9 0 -9.2 C6 -9.4 8.4 -3.6 7.4 2.6 C6.8 6.8 2 8.6 -1.8 8.2 C-4.4 8 -6.2 7.2 -7 5.5Z" fill="${c.l}" ${L(1.8)}/>`
+    + `<path d="M-2.4 -8.4 Q-1.4 -3 -2.2 2.4 M2 -8.8 Q3.2 -3.4 2.4 2.2" stroke="${INK}" stroke-width="1.1" fill="none" stroke-linecap="round" opacity=".5"/></g>`;
+  return s.replace(/<\/g><\/svg>$/, `<g class="hsHand">${arm(-15, -35, -12.5, -45)}${arm(15, -36, 11.5, -49)}${hand(-10.5, -52, 10, 1)}${hand(8.2, -56.5, -14, -1)}</g></g></svg>`);
+}
+function hsCountShow(){
+  let ov = $('hsCount');
+  if(!ov){ ov = document.createElement('div'); ov.id = 'hsCount'; $('town').appendChild(ov); }
+  ov.innerHTML = `<div class="hsCard"><div class="hsMe">${hsHeroEyes(118)}</div><div class="hsNum" id="hsNum"></div><div class="hsTx" id="hsTx">めを かくして 10 かぞえるよ</div><div class="hsSub">なかまは どこに かくれるかな?</div></div>`;
+  ov.classList.remove('hide', 'out');
+  say('めを かくして、10 かぞえるよ');
+  const scale = [60, 62, 64, 65, 67, 69, 71, 72, 74, 76], col = ['#E07A5F', '#E3B143', '#7FAE6D', '#6EA7C6', '#9A7FC1'];
+  const T0 = 1500, STEP = 520;
+  HS_COUNT.forEach((w, i) => hsLater(() => {
+    $('hsNum').innerHTML = `<b style="--c:${col[i % 5]};--r:${i % 2 ? 7 : -7}deg">${i + 1}</b>`;
+    $('hsTx').textContent = w; pKeyNote(scale[i], .5);
+  }, T0 + i * STEP));
+  const end = T0 + HS_COUNT.length * STEP;
+  hsLater(() => { $('hsNum').innerHTML = ''; $('hsTx').textContent = 'もういいかい?'; say('もういいかい?'); ov.classList.add('ask'); }, end + 250);
+  hsLater(() => { $('hsTx').innerHTML = '<span class="hsYes">もういいよー!</span>'; say('もういいよ!'); playSeq([79, 76, 0, 79, 76], .14, .4); }, end + 1600);
+  hsLater(() => { ov.classList.add('out'); hsSeek(); }, end + 2800);
+  hsLater(() => ov.classList.add('hide'), end + 3300);
+}
+/* かくれる：なかまの えを まちの え（SVG）の なかの、かくれる ものの すぐ まえに さしこむ
+   → ものが なかまの うえに かかれるので、うしろに いる ように みえる（よる・ゆうがたの いろも おなじ） */
+function hsHideAll(ws, spots){
+  const svg = $('townSvg'), sr = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal, k = sr.width / (vb && vb.width || TOWN.W);
+  ws.forEach((el, i) => {
+    const sp = spots[i], r = sp.g.querySelector('.tArt').getBoundingClientRect();
+    clearTimeout(el._wt); clearTimeout(el._lt); el.classList.remove('walk', 'land', 'dance', 'flip');
+    el.getAnimations().forEach(a => a.cancel()); el._busy = 0;
+    const eo = el.querySelector('.emo'); if(eo) eo.remove();
+    const fs = el.querySelector('svg'), fr = fs.getBoundingClientRect();
+    /* まちの ざひょう（viewBox）で、かくれる ものの まんなか（き は はっぱの なか） */
+    const cx = (r.left + r.width / 2 - sr.left) / k, cy = (r.top + r.height * (HS_AT[sp.k] || .62) - sr.top) / k;
+    const fw = fr.width / k, fh = fr.height / k, side = Math.random() < .5 ? -1 : 1;
+    const g = document.createElementNS(HS_NS, 'g');
+    g.setAttribute('class', 'hsHide'); g.setAttribute('transform', `translate(${f1(cx)} ${f1(cy)})`);
+    g.innerHTML = `<g class="hsPk"><g transform="scale(${side} 1)"><svg x="${f1(-fw / 2)}" y="${f1(-fh / 2)}" width="${f1(fw)}" height="${f1(fh)}" viewBox="${fs.getAttribute('viewBox')}" overflow="visible">${fs.innerHTML}</svg></g></g>`;
+    sp.g.before(g);
+    g.addEventListener('click', e => { e.stopPropagation(); const h = HS.list.find(x => x.hg === g); if(h && !h.found && HS.phase === 'seek') hsFound(h); });
+    /* ほんものの なかまは かくして、みつかった ときの ために その ばしょへ */
+    el.style.transition = 'none';
+    el.style.left = (cx * k) + 'px'; el.style.top = (cy * k + fr.height * .42) + 'px';
+    el.dataset.tx = sp.x; el.dataset.ty = sp.y;
+    el.classList.add('hsHid'); el.classList.toggle('flip', side < 0);
+    HS.list.push({ el, id: el.dataset.id, x: sp.x, y: sp.y, w: r.width / k, h: r.height / k, side, hg: g, g: sp.g, found: false });
+  });
+  requestAnimationFrame(() => ws.forEach(el => { el.style.transition = ''; }));
+}
+/* かくれない なかまは、たびびとの そばで いっしょに さがす（どれが かくれている なかまか まよわない ように） */
+function hsWatchers(ws){
+  const me = document.querySelector('#townLayer .tWalker[data-id="me"]'); if(!me) return;
+  const used = new Set([me.dataset.tx + ',' + me.dataset.ty].concat(HS.list.map(h => h.x + ',' + h.y)));
+  ws.forEach(el => {
+    clearTimeout(el._wt); clearTimeout(el._lt); el.classList.remove('walk', 'land', 'dance'); el._busy = 0;
+    const t = freeTileNear(+me.dataset.tx, +me.dataset.ty, used); if(!t) return;
+    used.add(t[0] + ',' + t[1]);
+    const k = $('townSvg').clientWidth / TOWN.W || 1, [x, y] = tileXY(t[0], t[1]);
+    el.dataset.tx = t[0]; el.dataset.ty = t[1]; stepTo(el, x * k, y * k, { instant: true });
+    el.classList.add('hsWatch');
+  });
+}
+function hsSeek(){
+  HS.phase = 'seek'; HS.last = Date.now();
+  hsBarShow();
+  say('みんな どこに かくれたかな? さがしてみよう');
+  const tick = () => {
+    if(HS.phase !== 'seek') return;
+    const rest = HS.list.filter(h => !h.found); if(!rest.length) return;
+    const idle = Date.now() - HS.last;
+    hsPeek(rest[(Math.random() * rest.length) | 0]);
+    if(idle > 12000) hsWiggle(rest[(Math.random() * rest.length) | 0]);
+    hsLater(tick, idle > 12000 ? 2300 : 3000 + Math.random() * 1800);
+  };
+  hsLater(tick, 1200);
+}
+/* ちらっ：よこから からだを はんぶん だして、また もどる */
+function hsPeek(h){
+  const pk = h.hg.querySelector('.hsPk'); if(!pk || !pk.animate) return;
+  const dx = h.side * Math.max(15, h.w / 2 + 1), dy = -Math.min(5, h.h * .07);
+  pk.animate([{ transform: 'translate(0px,0px)' }, { transform: `translate(${f1(dx)}px,${f1(dy)}px)`, offset: .3 }, { transform: `translate(${f1(dx)}px,${f1(dy)}px)`, offset: .72 }, { transform: 'translate(0px,0px)' }], { duration: 1500, easing: 'ease-in-out' });
+}
+function hsShake(a){ if(!a) return; a.classList.remove('shake'); void a.getBoundingClientRect(); a.classList.add('shake'); setTimeout(() => a.classList.remove('shake'), 520); }
+function hsWiggle(h){ hsShake(h.g.querySelector('.tArt')); pKeyNote(84, .22); }
+function hsTap(x, y){
+  HS.last = Date.now();
+  const h = HS.list.find(v => !v.found && v.x === x && v.y === y);
+  if(h){ hsFound(h); return; }
+  hsShake(document.querySelector(`#townSvg .tObj[data-x="${x}"][data-y="${y}"] .tArt`));
+  pKeyNote(55, .3);
+  HS.miss++;
+  hsMsg(HS.miss % 4 === 0 ? 'ちらっと みえる ところを よく みてね' : 'ここには いないみたい');
+}
+function hsFound(h){
+  h.found = true; HS.found++; HS.last = Date.now();
+  const el = h.el;
+  el.getAnimations().forEach(a => a.cancel());
+  h.hg.remove();
+  el.classList.remove('hsHid'); el.classList.add('hsOut');
+  /* かくれた ものの まえへ ぴょんと でてくる */
+  const used = new Set([...document.querySelectorAll('#townLayer .tWalker')].filter(e => e !== el && !e.classList.contains('hsHid')).map(e => e.dataset.tx + ',' + e.dataset.ty));
+  const t = freeTileNear(h.x, h.y, used) || [h.x, Math.min(TOWN.R - 1, h.y + 1)];
+  const ms = moveWalker(el, t[0], t[1]);
+  const sv = el.querySelector('svg'); if(sv && sv.animate) sv.animate([{ transform: 'translateY(0) scale(1)' }, { transform: 'translateY(-24px) scale(1.1)', offset: .4 }, { transform: 'translateY(0) scale(1)' }], { duration: 560, easing: 'cubic-bezier(.3,1.5,.6,1)' });
+  setTimeout(() => emote(el, 'sparkle', 2200), 200);
+  const f = FRIENDS.find(x => x.id === h.id);
+  if(f) setTimeout(() => playMotif(f), 250); else playSeq([76, 81], .12, .5);
+  townSay(h.id, HS_FOUND[(Math.random() * HS_FOUND.length) | 0]);
+  hsBarShow();
+  if(HS.found >= HS.list.length){ HS.phase = 'done'; hsLater(hsAll, 1700); }
+}
+function hsAll(){
+  fanfare(); confetti(22);
+  const me = document.querySelector('#townLayer .tWalker[data-id="me"]');
+  const tx = me ? +me.dataset.tx : 2, ty = me ? +me.dataset.ty : 2;
+  const used = new Set([...document.querySelectorAll('#townLayer .tWalker')].filter(e => !HS.list.some(h => h.el === e)).map(e => e.dataset.tx + ',' + e.dataset.ty));
+  HS.list.forEach(h => {
+    const t = freeTileNear(tx, ty, used); if(!t) return;
+    used.add(t[0] + ',' + t[1]);
+    const ms = moveWalker(h.el, t[0], t[1]);
+    setTimeout(() => { h.el.classList.add('dance'); emote(h.el, 'heart', 2400); }, ms + 120);
+  });
+  if(me){ me.classList.add('dance'); emote(me, 'heart', 2400); }
+  setTimeout(() => document.querySelectorAll('#townLayer .tWalker.dance').forEach(e => e.classList.remove('dance')), 5600);
+  townSay(HS.list[0].id, 'みんな みつかっちゃった! また かくれんぼ しようね');
+  hsBarShow(true);
+}
+function hsBarShow(done = false){
+  let bar = $('hsBar');
+  if(!bar){
+    bar = document.createElement('div'); bar.id = 'hsBar'; $('town').appendChild(bar);
+    bar.addEventListener('click', e => {
+      const b = e.target.closest('[data-hs]'); if(!b) return;
+      e.stopPropagation(); ensureAudio(); popSfx();
+      hsReset(); drawTown();
+      if(b.dataset.hs === 'again') setTimeout(hsStart, 120);
+    });
+  }
+  const face = h => `<span class="hsF${h.found ? ' on' : ''}">${typeof MON !== 'undefined' && MON[h.id] ? monSVG(h.id, 'joy', 36) : friendSVG(h.id, 36)}</span>`;
+  bar.innerHTML = `<div class="hsFaces">${HS.list.map(face).join('')}</div><div class="hsMsg" id="hsMsg">${done ? '<b>みんな みつけた!</b>' : `みつけた <b>${HS.found}</b> / ${HS.list.length}`}</div>`
+    + (done ? `<div class="hsBtns"><button type="button" class="btn3d" data-hs="again" style="--c:var(--leaf);--d:var(--leaf-d)">もういっかい</button><button type="button" class="btn3d white" data-hs="end">おしまい</button></div>`
+      : `<button type="button" class="pillBtn sm" data-hs="end">やめる</button>`);
+  bar.classList.remove('hide');
+}
+function hsMsg(t){
+  const m = $('hsMsg'); if(!m) return;
+  m.textContent = t; m.classList.add('miss');
+  clearTimeout(hsMsg._t); hsMsg._t = setTimeout(() => { if(HS.phase === 'seek') hsBarShow(); }, 1500);
+}
+/* かくれんぼの あいだは、なかまを タッチ ＝「みつけた!」（はなしかけない） */
+$('townLayer').addEventListener('click', e => {
+  if(!HS.on) return;
+  const w = e.target.closest('.tWalker'); if(!w) return;
+  e.stopPropagation(); e.preventDefault();
+  if(HS.phase !== 'seek') return;
+  const h = HS.list.find(x => x.el === w);
+  if(h && !h.found) hsFound(h);
+  else if(w.dataset.id === 'me') townSay('me', 'みんな どこかな?');
+}, true);
+
 function townSay(id, line){
   const who = id === 'me' ? { svg: heroSVG(avatarMe(), 56), n: S.hero.name || 'たびびと' } : id === 'host' && TOWN_VIEW ? { svg: heroSVG(TOWN_VIEW.avatar, 56), n: TOWN_VIEW.nick }
     : id && typeof MON !== 'undefined' && MON[id] ? { svg: monSVG(id, 'joy', 56), n: MON[id].n }
@@ -8622,8 +9035,15 @@ function talkTo(id){
   }
   /* きょうの クイズ（1にん 1にち 1もん） */
   if(typeof residentQuiz === 'function' && residentQuiz(id)) return;
+  const f = FRIENDS.find(x => x.id === id);
+  /* きょう まだ かくれんぼ して いない ときは、ときどき なかまから さそう */
+  if(!TOWN_VIEW && S.hsDay !== todayStr() && $('townHS') && Math.random() < .35){
+    townSay(id, 'ねえねえ、いっしょに かくれんぼ しない? みぎうえの「かくれんぼ」を おしてね');
+    const b = $('townHS'); b.classList.remove('fresh'); void b.offsetWidth; b.classList.add('fresh');
+    if(f) setTimeout(() => playMotif(f), 300); return;
+  }
   townSay(id, friendLine(id));
-  const f = FRIENDS.find(x => x.id === id); if(f) setTimeout(() => playMotif(f), 300);
+  if(f) setTimeout(() => playMotif(f), 300);
 }
 
 /* ---------- つくる ---------- */
@@ -8649,6 +9069,7 @@ function trayRender(){
   $('trayHint').textContent = townSel === 'move' ? 'うごかしたい ばしょを タッチ（もういちど タッチで やめる）' : townSel ? 'おきたい ばしょを タッチ' : 'おきたい ものを えらんでね（にわの ものを タッチすると うごかせるよ）';
 }
 function townTap(x, y){
+  if(HS.on){ if(HS.phase === 'seek') hsTap(x, y); return; }
   const T = townState();
   const at = T.items.findIndex(i => i.x === x && i.y === y);
   if(!townEditing){
@@ -8692,6 +9113,7 @@ function townTap(x, y){
   townRankCheck();
 }
 $('townEdit').addEventListener('click', () => {
+  hsReset();
   townEditing = !townEditing; townSel = null; townMoveIdx = -1;
   $('town').classList.toggle('editing', townEditing);
   $('townTray').classList.toggle('hide', !townEditing);
@@ -8701,7 +9123,7 @@ $('townEdit').addEventListener('click', () => {
   drawTown();
 });
 $('townBack').addEventListener('click', () => {
-  clearInterval(townTimer);
+  clearInterval(townTimer); hsReset();
   const from = TOWN_VIEW && TOWN_VIEW.from; leaveVisit();
   if(from === 'plaza') openPlaza(true); else goHome();
 });
@@ -9804,7 +10226,7 @@ function lostReturn(id){
    ・おうちのひとが「きいたよ」→ かけざんに こたえて → 1ほ（1日1かい。子どもだけでは おせない）
    ・マイクは おまけ：おとが きこえると 主人公が よろこぶ（はんていは しない）
    ========================================================= */
-let odaiCur = null, repsDone = 0;
+let odaiCur = null, repsDone = 0, MORE_ON = false;
 const REP_DOTS = 20;   /* これより おおいと ○を ならべず、かぞえる ボタンに */
 const repCount = o => Math.max(1, Math.min(99, Math.round(+(o && o.n) || 3)));
 
@@ -9821,6 +10243,7 @@ function openOdai(){
   });
   /* 2つとも できたら、ちずへ もどる ボタンを 大きく */
   if(list.every(o => doneToday('odai', o.id))) h += `<div class="odClear"><b>${ICON('check', 26)}ピアノは クリア!</b><button class="btn3d" id="odListMap" style="--c:var(--coral);--d:var(--coral-d)">ちずへ もどる ▶</button></div>`;
+  if(list.length && list.every(o => doneToday('odai', o.id))) h += moreBlock(list);
   /* きょうの 3つ（ピアノの あとに リズム・おんぷへ すぐ いける） */
   const ds = dailyState(), IC = { piano: 'piano', rhythm: 'drum', note: 'note' }, NM = { piano: 'ピアノ', rhythm: 'リズム', note: 'おんぷ' };
   h += `<div class="odToday"><h4>きょうの 3つ <small>1つ できるごとに 1ぽ</small></h4><div class="odT3">${DAILY3.map(k => `<button type="button" class="odT${ds.done[k] ? ' on' : ''}${k === 'piano' ? ' here' : ''}" data-k="${k}">${ICON(IC[k], 30)}<b>${NM[k]}</b><small>${ds.done[k] ? 'できた!' : k === 'piano' ? 'いま ここ' : 'やってみる ▶'}</small></button>`).join('')}</div></div>`;
@@ -9833,6 +10256,7 @@ function openOdai(){
     ensureAudio(); popSfx(); k === 'rhythm' ? openRhythm() : openNoteChoose();
   }));
   const lm = $('odListMap'); if(lm) lm.addEventListener('click', () => { popSfx(); goHome(); });
+  $('odaiList').querySelectorAll('.omBtn').forEach(b => b.addEventListener('click', () => { ensureAudio(); popSfx(); startOdai(list.find(o => String(o.id) === b.dataset.id), true); }));
   $('odaiList').querySelectorAll('.odaiCard').forEach(b => b.addEventListener('click', () => {
     ensureAudio(); popSfx();
     startOdai(list.find(o => String(o.id) === b.dataset.id));
@@ -9841,8 +10265,8 @@ function openOdai(){
   if(list.length === 1 && !doneToday('odai', list[0].id)) say('ピアノの おだい。' + list[0].t);
   else say('どの おだいに する?');
 }
-function startOdai(o){
-  odaiCur = o; repsDone = 0; $('odaiPlay').scrollTop = 0;
+function startOdai(o, more = false){
+  odaiCur = o; repsDone = 0; MORE_ON = !!more; $('odaiPlay').scrollTop = 0;
   $('odaiList').classList.add('hide'); $('odaiPlay').classList.remove('hide');
   $('odTitle').innerHTML = '<span style="display:inline-flex;vertical-align:middle;margin-right:6px">' + odaiMark(o.i || 'piano', 38) + '</span>' + esc(o.t);
   $('odHow').textContent = (o.h || 'ピアノで ひいてみよう') + '　×' + (o.n || 3);
@@ -9851,14 +10275,15 @@ function startOdai(o){
   $('odMat').classList.toggle('hide', !kz);
   if(kz) kzRender($('odMat'), o.m); else { kzStop(); $('odMat').innerHTML = ''; $('odaiScene').innerHTML = pianoSceneSVG(avatarMe()); }
   const n = repCount(o);
-  const already = doneToday('odai', o.id);
+  const already = !MORE_ON && doneToday('odai', o.id);
   const count = n > REP_DOTS;
   $('repRow').className = count ? 'count' : n > 10 ? 'many' : '';
   $('repRow').innerHTML = count
     ? `<button class="rep repBig${already ? ' on' : ''}" data-i="0"><b id="repNum">${already ? n : 0}</b><small>/ ${n}かい</small></button><div class="repBar"><i id="repFill" style="width:${already ? 100 : 0}%"></i></div>`
     : Array.from({ length: n }, (_, i) => `<button class="rep${already ? ' on' : ''}" data-i="${i}">${i + 1}</button>`).join('');
   repsDone = already ? n : 0;
-  $('repHint').innerHTML = already ? 'きょうの この おだいは クリアずみ! もっと ひいても いいよ' : (kz ? kzRepHint(o.m) : count ? 'ピアノで <b>1かい ひけたら</b> ボタンを タッチ!' : 'ピアノで <b>1かい ひけたら</b> ○を タッチ!');
+  if(MORE_ON) $('odTitle').insertAdjacentHTML('beforeend', '<span class="omTag">もっと ひく</span>');
+  $('repHint').innerHTML = MORE_ON ? 'おうちの ひとに きいてもらいながら ひこう。<b>1かい ひけたら</b> ○を タッチ!' : already ? 'きょうの この おだいは クリアずみ! もっと ひいても いいよ' : (kz ? kzRepHint(o.m) : count ? 'ピアノで <b>1かい ひけたら</b> ボタンを タッチ!' : 'ピアノで <b>1かい ひけたら</b> ○を タッチ!');
   $('repRow').querySelectorAll('.rep').forEach(b => b.addEventListener('click', () => count ? tapCount(b, n) : tapRep(b, n)));
   refreshOkBox();
   odShowNext(already);
@@ -9914,6 +10339,7 @@ async function tapCount(b, n){
   await repFinish(n);
 }
 async function repFinish(n){
+  if(MORE_ON) return moreFinish(n);
   say('できた! ' + odaiCur.t + '、クリア!');
   fanfare(); confetti(24);
   const add = await award('odai', odaiCur.id, { reps: n, t: odaiCur.t });
@@ -9935,11 +10361,59 @@ function sceneCheer(){
   setTimeout(() => el.remove(), 1250);
 }
 
+
+/* ---------- もっと ひく（2026-10・こどもの こえ「もっと すすみたい」） ----------
+   ・その日の おだいが ぜんぶ できた あと、おうちのひとに きいてもらいながら もういちど ひく
+   ・○の かずは おだいと おなじ（先生が きめた かず）。ひけたら おうちのひとが かけざんで かくにん → +1ぽ
+   ・1日 MORE_MAX かいまで（サーバーでも おなじ） */
+function moreBlock(list){
+  if(typeof isStudio === 'function' && isStudio()) return '';
+  const m = moreDone(), left = MORE_MAX - m;
+  const dots = `<span class="omDots">${Array.from({ length: MORE_MAX }, (_, i) => `<i class="${i < m ? 'on' : ''}"></i>`).join('')}</span>`;
+  if(left <= 0) return `<div class="odMore done"><h4>${ICON('family', 26)}もっと ひく ${dots}</h4><p>きょうは たくさん ひいたね! あしたも まってるよ</p></div>`;
+  return `<div class="odMore"><h4>${ICON('family', 26)}もっと ひく ${dots}</h4>
+    <p>おうちの ひとに きいてもらいながら もういちど ひくと、もう 1${po(1)} すすめるよ<span class="nw">（1にち ${MORE_MAX}かいまで）</span></p>
+    ${list.map(o => `<button type="button" class="omBtn" data-id="${esc(o.id)}"><span class="ic">${odaiMark(o.i || 'piano', 34)}</span><span class="t">${esc(o.t)}</span><span class="n">×${repCount(o)}</span><span class="go">▶</span></button>`).join('')}</div>`;
+}
+async function moreFinish(n){
+  fanfare(); confetti(16);
+  if(moreDone() >= MORE_MAX){ $('repHint').innerHTML = 'きょうは たくさん ひいたね! あしたも まってるよ'; moreNext(); return; }
+  say('できた! おうちの ひとに きいて もらったかな?');
+  $('repHint').innerHTML = `できた! となりで きいていた おうちの ひとに <b>「きいたよ」</b>を おしてもらおう`;
+  const box = $('odNext');
+  box.innerHTML = `<button class="btn3d" id="omAsk" style="--c:var(--sun);--d:#B8862A;color:var(--ink)">${ICON('family', 24)}おうちの ひとの「きいたよ」</button>`;
+  box.classList.remove('hide');
+  $('omAsk').addEventListener('click', () => { ensureAudio(); popSfx(); moreAsk(n); });
+  setTimeout(() => box.scrollIntoView({ block: 'nearest', behavior: 'smooth' }), 300);
+}
+function moreAsk(n){
+  const o = odaiCur; if(!o) return;
+  askGate(async () => {
+    const add = await award('more', String(moreDone() + 1), { odai: o.id, t: o.t, reps: n });
+    fanfare(); confetti(add > 0 ? 24 : 12);
+    say(add > 0 ? 'きいてもらえたね! もう 1' + po(1) + ' すすめるよ' : 'きいてもらえたね!');
+    $('repHint').innerHTML = add > 0 ? `もっと ひけた! <b>+${add}${po(add)}</b> すすめるよ<span class="nw">（きょう ${moreDone()} / ${MORE_MAX}）</span>` : 'きいてもらえたね! ありがとう';
+    moreNext();
+  }, null, { always: true, title: '「もっと ひいたよ」の かくにん', sub: `となりで ${n}かい きいてくださった おうちのかたが お答えください` });
+}
+/* もっと ひいた あと：ちずへ／もういちど */
+function moreNext(){
+  const box = $('odNext'); if(!box) return;
+  const can = moreDone() < MORE_MAX;
+  box.innerHTML = can
+    ? `<button class="btn3d white" id="odToMap">ちずへ</button><button class="btn3d" id="omAgain" style="--c:var(--coral);--d:var(--coral-d)">もういちど ひく ▶</button>`
+    : `<button class="btn3d" id="odToMap" style="--c:var(--coral);--d:var(--coral-d)">ちずへ もどる ▶</button>`;
+  box.classList.remove('hide');
+  $('odToMap').addEventListener('click', () => { stopMic(); kzStop(); popSfx(); goHome(); });
+  const ag = $('omAgain'); if(ag) ag.addEventListener('click', () => { ensureAudio(); popSfx(); openOdai(); });
+  setTimeout(() => box.scrollIntoView({ block: 'nearest', behavior: 'smooth' }), 300);
+}
+
 /* ---------- おうちのひとの「きいたよ」 ---------- */
 function refreshOkBox(){
   const any = odaiList().some(o => doneToday('odai', o.id));
   const done = doneToday('parent_ok');
-  $('okBox').classList.toggle('show', any || done);
+  $('okBox').classList.toggle('show', (any || done) && !MORE_ON);
   $('holdBtn').classList.toggle('done', done);
   $('holdTxt').innerHTML = ICON('heart', 22) + (done ? 'きいてもらったよ! ありがとう' : 'きいたよ！');
 }
@@ -9965,7 +10439,7 @@ $('odaiMap').addEventListener('click', () => { stopMic(); kzStop(); popSfx(); go
 $('odMetro').addEventListener('click', () => { ensureAudio(); popSfx(); stopMic(); openKMetro('odai'); });
 $('odaiBack').addEventListener('click', () => {
   stopMic(); kzStop();
-  if(!$('odaiPlay').classList.contains('hide') && odaiList().length > 1){ openOdai(); return; }
+  if(!$('odaiPlay').classList.contains('hide') && (odaiList().length > 1 || MORE_ON)){ openOdai(); return; }
   goHome();
 });
 
@@ -10237,7 +10711,7 @@ function setupLevel(){
   let extra = '';
   if(rSlowOn(L.lv)) extra += '<div class="slowTag">' + TURTLE_SVG + 'ゆっくり テンポで ちょうせん（' + bpmOf(L) + '）</div>';
   if(L.lv <= rec - 3) extra += '<button class="recJump" type="button" id="recJump">おすすめの レベル' + rec + ' へ ▶</button>';
-  $('introMsg').insertAdjacentHTML('beforeend', extra);
+  $('introMsg').insertAdjacentHTML('beforeend', extra + (goalLine('rhythm') ? '<br>' + goalLine('rhythm') : ''));
   const rj = $('recJump'); if(rj) rj.addEventListener('click', e => { e.stopPropagation(); curLv = rec; stopAll(); setupLevel(); });
   setTimeout(resize, 80);
 }
@@ -10916,14 +11390,19 @@ async function showResult(){
   $('retryBtn').classList.toggle('hide', !!ad.down);
   if(ad.down) title = 'ひとつ まえで ふくしゅう しよう';
   /* ⭐⭐⭐ まで あと すこしの ときは「もういっかい」を 主役に */
-  const aim = frontier && stars < UNLOCK_STARS && !ad.down;
+  /* きょうの リズムが まだ たまって いない ときは「もういっかい」を 主役に（ちずへ は よわく） */
+  const rOpen = !(S.log[todayStr()] || {}).rhythm && goalGot('rhythm') + perfectN + goodN < DAY_GOAL.rhythm;
+  const aim = (frontier && stars < UNLOCK_STARS && !ad.down) || (rOpen && !ad.down && !(curLv < S.rhythmLv && curLv < LEVELS.length));
   $('retryBtn').classList.toggle('white', !aim); $('nextBtn').classList.toggle('white', aim);
   $('retryBtn').style.cssText = aim ? '--c:var(--rose);--d:#C4506F' : '';
   $('nextBtn').style.cssText = aim ? '' : '--c:var(--rose);--d:#C4506F';
   $('resultTitle').textContent = title;
   $('rResult').classList.remove('hide'); $('rhythm').classList.add('res'); $('rResult').scrollTop = 0;
   say(title);
-  const add = await award('rhythm', '', Object.assign({ lv: curLv, stars, combo: maxCombo, gyu: longOK },
+  /* きょうの リズム：ぴったり・いいねを ためて、DAY_GOAL.rhythm こで 1ぽ（1かいで おわらない） */
+  const rWas = !!(S.log[todayStr()] || {}).rhythm, rBefore = goalGot('rhythm'), rGot = rWas ? 0 : goalAdd('rhythm', perfectN + goodN);
+  if(!rWas && rGot < DAY_GOAL.rhythm){ goalBadge($('resultStep'), 'rhythm', rBefore); return; }
+  const add = await award('rhythm', '', Object.assign({ lv: curLv, stars, combo: maxCombo, gyu: longOK }, rWas ? {} : { good: rGot, plays: (dayLog().gpN || {}).rhythm || 1 },
     ad.skipped.length ? { skip: ad.skipped.length } : {}, wasSlow ? { slow: 1 } : {}, ad.down ? { down: ad.down } : {}));
   showStepBadge($('resultStep'), add);
   if(add > 0) confetti(18);
@@ -11627,7 +12106,7 @@ function setupNote(){
   /* みだしは こどもの ことばで。ちょうの なまえ（ト長調 など）は ちいさく そえる */
   setHead($('nTitle'), 'おんぷ', L.name, L.formal ? '<small>（' + esc(L.formal) + '）</small>' : '');
   $('nIntroMsg').textContent = L.hint; say(L.hint);
-  $('nIntroSub').textContent = L.sub || '';
+  $('nIntroSub').textContent = L.sub || ''; if(goalLine('note')) $('nIntroSub').insertAdjacentHTML('beforeend', '<br>' + goalLine('note'));
   $('nPanelArt').innerHTML = '<div style="display:flex;gap:6px;justify-content:center">' + (L.layout.startsWith('grand') ? ICON('house', 40) + ICON('piano', 48) + ICON('house', 40) : friendSVG('pipi', 64) + ICON('note', 48)) + '</div>';
   $('nPanel').classList.remove('hide');
   $('nResult').classList.add('hide');
@@ -11847,12 +12326,16 @@ async function noteResult(){
   $('nRetryBtn').classList.toggle('hide', down);
   nDownTo = down ? S.noteLv : 0;
   /* ⭐⭐⭐ まで あと すこしの ときは「もういっかい」を 主役に */
-  const aim = frontier && stars < 3 && !down;
+  const nOpen = !(S.log[todayStr()] || {}).note && goalGot('note') + T < DAY_GOAL.note;
+  const aim = (frontier && stars < 3 && !down) || (nOpen && !down && !(nCurLv < S.noteLv && nCurLv < NLEVELS.length));
   $('nRetryBtn').classList.toggle('white', !aim); $('nRetryBtn').classList.toggle('sky', aim);
   $('nNextBtn').classList.toggle('white', aim); $('nNextBtn').classList.toggle('sky', !aim);
   $('nResult').classList.remove('hide');
   say(title);
-  const add = await award('note', '', Object.assign({ lv: nCurLv, stars, first_ok: nFirstOk }, down ? { down: S.noteLv } : {}));
+  /* きょうの おんぷ：よめた おんぷを ためて、DAY_GOAL.note こで 1ぽ */
+  const nWas = !!(S.log[todayStr()] || {}).note, nBefore = goalGot('note'), nGot = nWas ? 0 : goalAdd('note', T);
+  if(!nWas && nGot < DAY_GOAL.note){ goalBadge($('nResultStep'), 'note', nBefore); return; }
+  const add = await award('note', '', Object.assign({ lv: nCurLv, stars, first_ok: nFirstOk }, nWas ? {} : { good: nGot, plays: (dayLog().gpN || {}).note || 1 }, down ? { down: S.noteLv } : {}));
   showStepBadge($('nResultStep'), add);
   if(add > 0) confetti(18);
 }
@@ -12408,7 +12891,7 @@ function setupMichi(){
   const L = MLEVELS[mLv - 1];
   setHead($('mTitle'), 'おとの みち', L.name, mClef === 'b' ? '<small>（ヘおん）</small>' : '');
   $('mIntroMsg').textContent = L.hint;
-  $('mIntroSub').textContent = L.sub;
+  $('mIntroSub').textContent = L.sub; if(goalLine('note')) $('mIntroSub').insertAdjacentHTML('beforeend', '<br>' + goalLine('note'));
   $('mPanelArt').innerHTML = mIntroArt(L);
   $('mPanel').classList.remove('hide'); $('mResult').classList.add('hide');
   $('mFeedback').textContent = ''; $('mFeedback').className = '';
@@ -12627,12 +13110,15 @@ async function mResult(){
     (frontier && stars < 3 ? '<div class="goal3"><b>' + starsHTML(3, 15) + ' で つぎの レベルが ひらくよ</b><br>'
       + (need3 > 0 ? 'いっかいで せいかいを あと ' + need3 + 'こ!' : 'もう いっかい やってみよう') + '</div>' : '');
   $('mNextBtn').textContent = (mLv < m.lv[mClef] && mLv < MLEVELS.length) ? 'つぎのレベルへ ▶' : 'ちずへ ▶';
-  const aim = frontier && stars < 3;
+  const mOpen = !(S.log[todayStr()] || {}).note && goalGot('note') + mItems < DAY_GOAL.note;
+  const aim = (frontier && stars < 3) || (mOpen && !(mLv < m.lv[mClef] && mLv < MLEVELS.length));
   $('mRetryBtn').classList.toggle('white', !aim); $('mRetryBtn').classList.toggle('sky', aim);
   $('mNextBtn').classList.toggle('white', aim); $('mNextBtn').classList.toggle('sky', !aim);
   $('mResult').classList.remove('hide');
   $('mAns').innerHTML = '';
   say(title); fanfare();
+  const mWas = !!(S.log[todayStr()] || {}).note, mBefore = goalGot('note'), mGot = mWas ? 0 : goalAdd('note', mItems);
+  if(!mWas && mGot < DAY_GOAL.note){ goalBadge($('mResultStep'), 'note', mBefore); return; }
   const add = await award('note', 'michi', { mode: 'michi', lv: mLv, clef: mClef, stars, first_ok: mFirst, items: mItems });
   showStepBadge($('mResultStep'), add);
   if(add > 0) confetti(18);

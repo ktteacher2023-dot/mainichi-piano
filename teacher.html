@@ -1377,7 +1377,7 @@ details.adv summary{font-size:12.5px;font-weight:900;color:var(--ink2);cursor:po
     <div id="rsMsg" class="authMsg" role="status"></div>
   </div>
   <div class="legal"><a href="terms.html" target="_blank">利用規約</a>・<a href="privacy.html" target="_blank">プライバシーポリシー</a>・<a href="tokushoho.html" target="_blank">特定商取引法に基づく表記</a></div>
-  <div class="legal verTag">v2026.09.30-19</div>
+  <div class="legal verTag">v2026.10.05-1</div>
 </div>
 
 <!-- 本体 -->
@@ -4339,7 +4339,7 @@ try{ const v = JSON.parse(localStorage.getItem('mp_prac_view') || 'null'); if(v)
 function pracSeg(on){ return `<div class="seg sm repSeg" role="tablist"><button type="button" data-rgo="all" class="${on === 'all' ? 'on' : ''}">${ti('graph', 16)}教室ぜんたい</button><button type="button" data-rgo="one" class="${on === 'one' ? 'on' : ''}">${ti('students', 16)}ひとりずつ</button></div>`; }
 function pracCalc(logs, stus, today){
   const by = {}, f7 = addDays(today, -6), f28 = addDays(today, -27);
-  const blank = () => ({ days: new Set(), odai: 0, min: 0, ok: 0, hw: 0 });
+  const blank = () => ({ days: new Set(), odai: 0, min: 0, ok: 0, hw: 0, more: 0 });
   stus.forEach(s => { by[s.id] = { s, w: { 7: blank(), 28: blank() }, last: null, rh: null, nt: null, pi: null }; });
   (logs || []).forEach(l => { const o = by[l.student_id]; if(!o || !l.day || l.day < f28 || l.day > today || l.kind === 'bonus') return;
     const dt = l.detail || {}, spans = l.day >= f7 ? [7, 28] : [28];
@@ -4347,7 +4347,8 @@ function pracCalc(logs, stus, today){
     spans.forEach(k => { const w = o.w[k]; w.days.add(l.day);
       if(l.kind === 'odai') w.odai++;
       if(l.kind === 'practice') w.min += Math.min(+dt.min || 0, 180);
-      if(l.kind === 'hw') w.hw++; });
+      if(l.kind === 'hw') w.hw++;
+      if(l.kind === 'more') w.more++; });
     if(!o.last || l.day > o.last) o.last = l.day;
     /* レベル：いちばん あたらしい 日の もの（おなじ日なら 高い ほう） */
     const lv = +dt.lv, up = key => { if(lv > 0 && (!o[key] || l.day > o[key].day || (l.day === o[key].day && lv > o[key].lv))) o[key] = { lv, day: l.day }; };
@@ -4396,6 +4397,7 @@ async function openPractice(){
       if(o.pi && s.show_keys) chips.push(`${ti('cherry', 14)}けんばん Lv${o.pi.lv}`);
       if(w.hw) chips.push(`${ti('hw', 14)}宿題 ${w.hw}回`);
       if(w.ok) chips.push(`${ti('hanamaru', 14)}「きいたよ」${w.ok}回`);
+      if(w.more) chips.push(`${ti('piano', 14)}もっと ひいた ${w.more}回`);   /* おだいの あと、保護者の 確認つきで もう一度 ひいた 回数（2026-10） */
       h += `<div class="pvRow${quiet ? ' quiet' : ''}" data-sn="${esc(toHira((nameOf(s) + (s.nickname || '') + kanaOf(s)).replace(/\s/g, '')))}">${avatarDot(s)}
         <div class="pvMain"><div class="nm">${s.kana ? `<ruby>${esc(nameOf(s))}<rt>${esc(s.kana)}</rt></ruby>` : esc(nameOf(s))}${nickPill(s)}</div>
           <div class="pvChips">${chips.length ? chips.map(c => `<span>${c}</span>`).join('') : `<span class="none">${o.last ? 'この期間の記録はありません' : (N === 7 ? 'この4週間、記録がありません' : '記録がありません')}</span>`}</div></div>
@@ -6953,7 +6955,7 @@ async function viewSettings(m){
       <span class="muted" style="flex:1">「保存」でアプリに反映されます</span><button class="btn g" id="cSave">保存</button></div>
     ${ntCardHTML()}${roomsTeachersHTML(invites)}${calCardHTML()}${DEMO_MULTI ? `<div class="card"><button class="btn w" id="asStaff">${ti('eye', 18)}講師の画面を見てみる（見本）</button></div>` : ''}
     <div class="row" style="justify-content:center;margin-top:8px;gap:18px;flex-wrap:wrap"><button class="linkBtn" id="suShow">${ti('flag', 16)}「はじめの準備」をもう一度出す</button>${DEMO ? '' : `<button class="linkBtn" id="logoutBtn2">${ti('door', 16)}ログアウト</button>`}</div>
-    <div class="verTag">先生の画面 v2026.09.30-19</div>`;
+    <div class="verTag">先生の画面 v2026.10.05-1</div>`;
   m.innerHTML = h;
   $('suShow').addEventListener('click', () => { try{ localStorage.removeItem(SETUP_KEY()); }catch(e){} SETUP_FORCE = true; goTab('today'); });
   /* 保存の バーは なにか かえた ときだけ 出す（あいた すきまや 重なりを ださない） */
