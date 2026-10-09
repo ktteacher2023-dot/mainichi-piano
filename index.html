@@ -762,9 +762,10 @@ textarea.fInput{min-height:84px;resize:vertical}
    ごうかくの レコード（おいわい・タワー・ろくおん）
    ========================================================= */
 .sideBtn .dot.cnt{background:var(--sun);color:var(--ink)}
-#recOv{background:radial-gradient(ellipse at 50% 38%,#5A3F4E 0%,#2B2031 70%);z-index:120;padding:12px}
+#recOv{background:radial-gradient(ellipse at 50% 38%,#5A3F4E 0%,#2B2031 70%);z-index:120;padding:12px;overflow-y:auto;align-items:flex-start}
+#recOv .rcWrap{margin:auto}
 #recOv .rcWrap{width:min(420px,100%);display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
-#rcArt{width:min(360px,88vw,46dvh)}
+#rcArt{width:min(360px,88vw,40dvh)}
 #rcArt > svg{width:100%;height:auto;display:block;overflow:visible}
 .rcBig{display:flex;gap:.02em;align-items:flex-end;justify-content:center;font-family:'MPKana','Mochiy Pop One','Zen Maru Gothic',sans-serif;
   font-size:clamp(46px,14vw,70px);line-height:1;margin-bottom:4px}
@@ -780,9 +781,11 @@ textarea.fInput{min-height:84px;resize:vertical}
 #rcSub span{display:block}
 #recOv .rcBtns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:8px}
 #recOv .rcNth,#rcNth,#rcTitle,#rcSub,#recOv .rcBtns{opacity:0}
-#recOv.on #rcNth,#recOv.on #rcTitle,#recOv.on #rcSub{animation:rcUp .5s ease-out 1.7s both}
-#recOv.on .rcBtns{animation:rcUp .5s ease-out 2.4s both}
-@keyframes rcUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+#recOv.on #rcNth,#recOv.on #rcTitle,#recOv.on #rcSub{animation:recUpIn .5s ease-out 1.2s both}
+#recOv.on .rcBtns{animation:recUpIn .45s ease-out 1.4s both}
+/* 2026-10-09：名前を かえた（あとの「rcUp」に うわがきされて、ごうかくの 字と ボタンが ずっと みえなかった） */
+@keyframes recUpIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){ #recOv #rcNth,#recOv #rcTitle,#recOv #rcSub,#recOv .rcBtns,#recOv .rcBig span{opacity:1 !important} }
 #recOv .rcSleeve{transition:transform 1.1s cubic-bezier(.55,-.25,.45,1) .9s,opacity .5s ease 1.7s}
 #recOv.on .rcSleeve{transform:translateY(460px) rotate(10deg);opacity:0}
 #recOv .rcArm{transform-box:fill-box;transform-origin:100% 0;transform:rotate(-30deg);transition:transform .9s ease-in-out 1.9s}
@@ -2763,6 +2766,15 @@ ruby rt{font-weight:700;color:#6E5B50}
   padding:3px 12px 3px 6px;font-family:inherit;font-weight:900;font-size:13px;color:var(--ink);box-shadow:0 2px 0 var(--ink);cursor:pointer;z-index:5}
 #townFeet ~ #townHS{top:98px}
 #townHS:active{transform:translateY(2px);box-shadow:0 0 0 var(--ink)}
+#townHide{position:absolute;right:10px;top:98px;pointer-events:auto;display:flex;align-items:center;gap:4px;background:#FBEFC9;border:2px solid var(--ink);border-radius:999px;
+  padding:3px 12px 3px 6px;font-family:inherit;font-weight:900;font-size:13px;color:var(--ink);box-shadow:0 2px 0 var(--ink);cursor:pointer;z-index:5}
+#townHide:active{transform:translateY(2px);box-shadow:0 0 0 var(--ink)}
+#townHide.on{background:#FFFBF2}
+#town.hiding #townSvg .tObj{cursor:pointer}
+.hidePeek{transform-box:fill-box;transform-origin:50% 100%;animation:hidePeek 2.8s ease-in-out infinite}
+@keyframes hidePeek{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-3px) rotate(6deg)}}
+.hideDrop{transform-box:fill-box;transform-origin:50% 50%;animation:hideDrop .9s cubic-bezier(.5,-.3,.6,1) both}
+@keyframes hideDrop{0%{transform:translateY(-20px) scale(1.2);opacity:0}30%{opacity:1}100%{transform:translateY(56px) scale(.5);opacity:0}}
 #townHS.fresh{animation:hsHey 3.2s ease-in-out infinite}
 @keyframes hsHey{0%,72%,100%{transform:rotate(0)}77%{transform:rotate(-6deg)}83%{transform:rotate(5deg)}89%{transform:rotate(-3deg)}95%{transform:rotate(2deg)}}
 #town.hs #townRank,#town.hs #townMedal,#town.hs #townFeet,#town.hs .tLost,#town.hs .tBalloon,#town.hs #townRpg{visibility:hidden}
@@ -3362,7 +3374,7 @@ ruby rt{font-weight:700;color:#6E5B50}
    ・同じ地図に 教室みんなの主人公（ニックネーム・順位なし）
    ・おうちのひと：予定・振替・おしらせ・れんらくちょう
    ========================================================= */
-const APP_VER = 'v2026.10.05-1';   /* なおしたら かならず あげる（アップした ものが あたらしいか、おうちのかた→設定の いちばん したで たしかめられる） */
+const APP_VER = 'v2026.10.09-1';   /* なおしたら かならず あげる（アップした ものが あたらしいか、おうちのかた→設定の いちばん したで たしかめられる） */
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -8530,6 +8542,7 @@ function townRequestWaiting(){ const q = todayReq(); return !!q && townState().r
 /* ---------- 画面 ---------- */
 let townEditing = false, townSel = null, townCat = 'しぜん', townTimer = 0, townMoveIdx = -1, townJustPlaced = null;
 function openTown(){
+  HIDE.on = false;
   hsReset();
   leaveVisit();
   townState();
@@ -8700,6 +8713,7 @@ function placeResidents(){
   if(!TOWN_VIEW && typeof rpgTownMates === 'function') rpgTownMates(layer, put, hx);
   townExtras(layer);
   hsBtn();
+  hideBtn();
 }
 /* なかまは いつも どこかで うごいている（2026-10・こどもの こえ「うごかない ときが あって さみしい」）
    ・いえの まわり 2マスの なかを、まいかい ちがう ところへ おさんぽ
@@ -8813,6 +8827,76 @@ function hsBtn(){
   b.addEventListener('click', e => { e.stopPropagation(); ensureAudio(); popSfx(); hsStart(); });
   layer.appendChild(b);
 }
+/* =========================================================
+   きんの おんぷを じぶんで かくす（2026-10-09 けいてぃ「ほかの子が あそびに きた ときに みつけられるように、じぶんで かくせるように」）
+   ・じぶんの おうちで「おんぷを かくす」→ にわの ものを タッチ → その うしろに かくれる
+   ・S.town.hide = { x, y, k, d }。town は SYNC_KEYS なので、ともだちが あそびに きた ときの mp2_town に そのまま とどく
+   ・ものを うごかすと いっしょに うごく。しまったら、これまでの「1日 1つ どこかに」に もどる
+   ・じぶんの おうちでは、かくした ところに ちいさく きんの おんぷが のぞいている（わすれないように）
+   ========================================================= */
+const HIDE = { on: false };
+function hideSpot(T){
+  const h = T && T.hide; if(!h || !Array.isArray(T.items)) return null;
+  const it = T.items.find(i => i.x === h.x && i.y === h.y);
+  return it && it.k === h.k && it.k !== 'myhouse' ? it : null;
+}
+const goldNoteIc = (w = 22) => `<svg width="${w}" height="${Math.round(w * 1.15)}" viewBox="-9 -31 22 38" aria-hidden="true">${noteSVG(0, 0, 8, 'e', '#E3B143', { stem: 3.3, line: 1.5 })}</svg>`;
+function hideBtn(){
+  const layer = $('townLayer'); if(!layer) return;
+  const old = $('townHide'); if(old) old.remove();
+  if(TOWN_VIEW || townEditing || HS.on) return;
+  const T = townState(); if(!T.items.some(i => i.k !== 'myhouse')) return;
+  const b = document.createElement('button'); b.id = 'townHide'; b.type = 'button';
+  b.innerHTML = goldNoteIc(18) + `<span>${HIDE.on ? 'やめる' : hideSpot(T) ? 'かくしなおす' : 'おんぷを かくす'}</span>`;
+  b.classList.toggle('on', HIDE.on);
+  b.addEventListener('click', e => { e.stopPropagation(); ensureAudio(); popSfx(); HIDE.on ? hideEnd() : hideBegin(); });
+  layer.appendChild(b);
+  hidePos();
+  if(!layer._hideObs){ layer._hideObs = new MutationObserver(() => { if($('townHide')) hidePos(); }); layer._hideObs.observe(layer, { childList: true }); }
+}
+function hidePos(tries = 0){
+  const b = $('townHide'); if(!b) return;
+  /* まだ がめんに でていない（openTown の さいしょ）ときは、でてから はかる */
+  if(!b.offsetParent){ if(tries < 40) requestAnimationFrame(() => hidePos(tries + 1)); return; }
+  /* みぎうえの ボタン・バッジの いちばん したに。ひだりの「はらっぱ」の カードに かさなる ときは、その したへ */
+  let top = 54;
+  ['townMedal', 'townFeet', 'townHS'].forEach(id => { const e = $(id); if(e && e.offsetParent) top = Math.max(top, e.offsetTop + e.offsetHeight + 8); });
+  b.style.top = top + 'px';
+  const rk = $('townRank');
+  if(rk && rk.offsetParent){ const a = rk.getBoundingClientRect(), c = b.getBoundingClientRect(); if(a.right > c.left - 4 && a.bottom > c.top && a.top < c.bottom) b.style.top = (rk.offsetTop + rk.offsetHeight + 8) + 'px'; }
+}
+function hideBegin(){
+  if(curScreen !== 'town' || TOWN_VIEW || townEditing || HS.on) return;
+  HIDE.on = true; hideBtn(); $('town').classList.add('hiding');
+  townSay('me', 'きんの おんぷを どこに かくそうかな? にわの ものを タッチしてね');
+}
+function hideEnd(){ HIDE.on = false; $('town').classList.remove('hiding'); hideBtn(); }
+function hideTap(x, y){
+  const T = townState(), it = T.items.find(i => i.x === x && i.y === y);
+  if(!it){ townSay('me', 'ものの うしろに かくそう。きや はな、いえを タッチしてね'); return; }
+  if(it.k === 'myhouse'){ townSay('me', 'じぶんの いえの なかは、ともだちが はいれないよ。ほかの ものに しよう'); return; }
+  T.hide = { x, y, k: it.k, d: todayStr() };
+  saveState();
+  hideEnd();
+  const [cx, cy] = tileXY(x, y);
+  animArt(it, 'shake');
+  tfx(`<g transform="translate(${cx} ${cy - 70})"><g class="hideDrop">${noteSVG(0, 0, 9, 'e', '#E3B143', { stem: 3.4, line: 1.4 })}</g></g>`, 1100);
+  setTimeout(() => { hideMark(); fxSpark(cx, cy - 40, 5); pKeyNote(79, .35); }, 650);
+  townSay('me', 'ここに かくしたよ! あそびに きた ともだちが みつけられるかな?');
+}
+/* じぶんの おうちだけ：かくした ところに ちいさく のぞく */
+function hideMark(){
+  const svg = $('townSvg'); if(!svg) return;
+  const old = svg.querySelector('#tHideMark'); if(old) old.remove();
+  if(TOWN_VIEW) return;
+  const it = hideSpot(townState()); if(!it) return;
+  const [cx, cy] = tileXY(it.x, it.y);
+  const g = document.createElementNS(SVGNS, 'g'); g.id = 'tHideMark'; g.setAttribute('pointer-events', 'none');
+  g.innerHTML = `<g transform="translate(${cx + 17} ${cy - 16})"><g class="hidePeek">${noteSVG(0, 0, 6, 'e', '#E3B143', { stem: 3.1, line: 1.2 })}</g></g>`;
+  const fx = $('tFx'); if(fx && fx.parentNode === svg) svg.insertBefore(g, fx); else svg.appendChild(g);
+}
+const _drawTownBase = drawTown;
+drawTown = function(){ _drawTownBase.apply(this, arguments); try{ hideMark(); }catch(e){} };
 /* かくれる ばしょ：うしろが すけない もの（さく・ベンチ・ブランコ・ほそい ぼうは のぞく）。き は はっぱの なかに、ひくい ものは みみが でる */
 const HS_SEE = new Set(['flower', 'fence', 'bench', 'swing', 'balloon', 'lamp', 'signpost', 'lantern', 'mailbox', 'birdhouse', 'harp', 'qbells', 'koinobori', 'sasa', 'tsukimi', 'hikari', 'fireworks', 'pond', 'rock', 'stage', 'bandstand', 'songbird', 'goldrec']);
 const HS_AT = { tree: .36, onputree: .36, sakura: .36, xmastree: .48, pine: .5, bush: .58, mushroom: .55, pumpkin: .55 };
@@ -8827,6 +8911,7 @@ function hsSpots(){
   return out;
 }
 function hsStart(){
+  if(HIDE.on){ HIDE.on = false; $('town').classList.remove('hiding'); }
   if(HS.on || curScreen !== 'town' || TOWN_VIEW || townEditing) return;
   const ws = hsWalkers(); if(!ws.length) return;
   const spots = hsSpots();
@@ -9069,6 +9154,7 @@ function trayRender(){
   $('trayHint').textContent = townSel === 'move' ? 'うごかしたい ばしょを タッチ（もういちど タッチで やめる）' : townSel ? 'おきたい ばしょを タッチ' : 'おきたい ものを えらんでね（にわの ものを タッチすると うごかせるよ）';
 }
 function townTap(x, y){
+  if(HIDE.on){ hideTap(x, y); return; }
   if(HS.on){ if(HS.phase === 'seek') hsTap(x, y); return; }
   const T = townState();
   const at = T.items.findIndex(i => i.x === x && i.y === y);
@@ -9085,6 +9171,7 @@ function townTap(x, y){
     if(at >= 0 && at !== townMoveIdx){ townMoveIdx = at; popSfx(); drawTown(); trayRender(); return; }
     if(at === townMoveIdx){ townSel = null; townMoveIdx = -1; drawTown(); trayRender(); return; }
     const it = T.items[townMoveIdx]; if(!it){ townSel = null; return; }
+    if(T.hide && T.hide.x === it.x && T.hide.y === it.y){ T.hide.x = x; T.hide.y = y; }
     it.x = x; it.y = y; townSel = null; townMoveIdx = -1; townJustPlaced = { x, y };
     saveState(); pKeyNote(76, .5); drawTown(); townJustPlaced = null; trayRender(); townPlacedReact(it);
     return;
@@ -9113,7 +9200,7 @@ function townTap(x, y){
   townRankCheck();
 }
 $('townEdit').addEventListener('click', () => {
-  hsReset();
+  hsReset(); HIDE.on = false; $('town').classList.remove('hiding');
   townEditing = !townEditing; townSel = null; townMoveIdx = -1;
   $('town').classList.toggle('editing', townEditing);
   $('townTray').classList.toggle('hide', !townEditing);
@@ -9123,7 +9210,7 @@ $('townEdit').addEventListener('click', () => {
   drawTown();
 });
 $('townBack').addEventListener('click', () => {
-  clearInterval(townTimer); hsReset();
+  clearInterval(townTimer); hsReset(); HIDE.on = false; $('town').classList.remove('hiding');
   const from = TOWN_VIEW && TOWN_VIEW.from; leaveVisit();
   if(from === 'plaza') openPlaza(true); else goHome();
 });
@@ -9152,7 +9239,7 @@ async function openVisit(pid, from = 'plaza'){
   if(!d || !d.town || !Array.isArray(d.town.items) || !d.town.items.length){ toast('いまは あそびに いけないみたい。また こんど!'); return; }
   clearInterval(townTimer);
   const key = todayStr() + ':' + pid;
-  TOWN_VIEW = { pid, nick: d.nick || 'ともだち', avatar: d.avatar || {}, state: { items: d.town.items.filter(i => i && typeof i.k === 'string'), got: {}, req: {}, song: d.town.song && Array.isArray(d.town.song.n) ? d.town.song : null }, from, found: !!(S.found || {})[key], miss: 0 };
+  TOWN_VIEW = { pid, nick: d.nick || 'ともだち', avatar: d.avatar || {}, state: { items: d.town.items.filter(i => i && typeof i.k === 'string'), got: {}, req: {}, song: d.town.song && Array.isArray(d.town.song.n) ? d.town.song : null, hide: d.town.hide && typeof d.town.hide === 'object' ? { x: +d.town.hide.x, y: +d.town.hide.y, k: String(d.town.hide.k || '') } : null }, from, found: !!(S.found || {})[key], miss: 0 };
   townEditing = false; townSel = null;
   const t = $('town');
   t.classList.remove('editing'); t.classList.add('visiting'); $('townTray').classList.add('hide'); $('townTalk').classList.add('hide'); $('townEdit').classList.add('hide');
@@ -9167,7 +9254,7 @@ async function openVisit(pid, from = 'plaza'){
   let gotSeed = 0; if(first){ S.visitDay = todayStr(); gotSeed = seedSocial(); saveState(); }
   /* オルゴールが ある まちでは あとで こえを かける */
   if(TOWN_VIEW.state.song && TOWN_VIEW.state.items.some(i => i.k === 'musicbox')){ const v = TOWN_VIEW; setTimeout(() => { if(TOWN_VIEW === v && curScreen === 'town') townSay('host', 'オルゴールに わたしの つくった きょくを いれたんだ。さわって きいてみて!'); }, 7200); }
-  setTimeout(() => townSay('host', (gotSeed ? 'きてくれて ありがとう! おみやげに はなの たねを どうぞ。' : first ? 'きてくれて ありがとう! ' : 'また きてくれたんだ! ') + (TOWN_VIEW && !TOWN_VIEW.found ? 'にわの どこかに きんの おんぷが かくれてるよ。さがしてみて!' : '')), 600);
+  setTimeout(() => townSay('host', (gotSeed ? 'きてくれて ありがとう! おみやげに はなの たねを どうぞ。' : first ? 'きてくれて ありがとう! ' : 'また きてくれたんだ! ') + (TOWN_VIEW && !TOWN_VIEW.found ? (hideSpot(TOWN_VIEW.state) ? 'きんの おんぷを、わたしが かくしたよ。どこか わかるかな?' : 'にわの どこかに きんの おんぷが かくれてるよ。さがしてみて!') : '')), 600);
 }
 window.addEventListener('resize', () => { if(curScreen === 'town') placeResidents(); });
 
@@ -9284,11 +9371,12 @@ async function checkNewRecords(){
   const fresh = list.filter(x => !R.seen.includes(recId(x)));
   if(!fresh.length) return;
   recBusy = true;
+  /* 2026-10-09：さきに「みた」に しておく（とちゅうで とじても、つぎに ひらいた とき また ながれないように） */
+  fresh.forEach(x => R.seen.push(recId(x))); saveState();
   const before = list.length - fresh.length;
   for(let k = 0; k < fresh.length; k++){
     const x = fresh[k];
     if(k < 3) await recCeremony(x, before + k + 1, fresh.length - k - 1);
-    R.seen.push(recId(x)); saveState();
   }
   for(let n = before + 1; n <= list.length; n++){
     const m = recMilestone(n);
@@ -9297,6 +9385,7 @@ async function checkNewRecords(){
   recBusy = false;
   renderSideBadges();
 }
+const REC_AUTO_MS = 8000, REC_TAP_MS = 1500;
 function recCeremony(x, nth, more){
   return new Promise(res => {
     const col = recColor(x, nth - 1), got = Math.max(1, friendsJoined());
@@ -9333,9 +9422,13 @@ function recCeremony(x, nth, more){
     setTimeout(() => { fanfare(); confetti(40); }, 900);
     setTimeout(() => { recJingle(x); }, 2300);
     say('ごうかく! ' + x.t + '。' + nth + 'まいめの レコードだよ!');
-    const done = rec => { ov.classList.remove('show', 'on'); $('rcKeep').onclick = $('rcRec').onclick = null; res(); if(rec) setTimeout(() => openRecSheet(recId(x)), 300); };
-    $('rcKeep').onclick = () => { popSfx(); done(false); };
-    $('rcRec').onclick = () => { popSfx(); done(true); };
+    /* 2026-10-09：ずっと のこらないように。ボタンが でたら どこを タッチしても とじる・8びょうで じどうで タワーへ */
+    const t0 = Date.now(); let fin = false, auto = 0;
+    const done = rec => { if(fin) return; fin = true; clearTimeout(auto); ov.onclick = null; ov.classList.remove('show', 'on'); $('rcKeep').onclick = $('rcRec').onclick = null; res(); if(rec) setTimeout(() => openRecSheet(recId(x)), 300); };
+    $('rcKeep').onclick = e => { e.stopPropagation(); popSfx(); done(false); };
+    $('rcRec').onclick = e => { e.stopPropagation(); popSfx(); done(true); };
+    ov.onclick = () => { if(Date.now() - t0 >= REC_TAP_MS) done(false); };
+    auto = setTimeout(() => done(false), REC_AUTO_MS);
   });
 }
 /* レコードの おと：きょくめいから きまる、みじかい オリジナルの ふし */
@@ -9354,7 +9447,7 @@ function recMilestoneShow(m){
     $('rwText').textContent = m.t;
     $('rewardOv').classList.add('show');
     fanfare(); confetti(30); say(m.t);
-    await waitClose('rwClose');
+    await Promise.race([waitClose('rwClose'), new Promise(r => setTimeout(r, 7000))]);
     $('rewardOv').classList.remove('show');
     res();
   });
@@ -9908,6 +10001,8 @@ function flowerTune(m){
 /* ともだちの まちの「かくれ おんぷ」：1日 1つ、どれかの ものの かげに */
 function hiddenItem(){
   if(!TOWN_VIEW) return null;
+  /* その子が じぶんで かくした ばしょ（2026-10-09）。なければ これまでどおり 1日 1つ */
+  const own = hideSpot(TOWN_VIEW.state); if(own) return own;
   const c = TOWN_VIEW.state.items.filter(i => i.k !== 'myhouse');
   return c.length ? c[dayHash(todayStr() + TOWN_VIEW.pid) % c.length] : null;
 }
