@@ -5177,7 +5177,7 @@ async function viewStudents(m){
   const HWSINCE = hwSinceMap(pastLes), HWLOG = {}; (hwLogs || []).forEach(l => { (HWLOG[l.student_id] = HWLOG[l.student_id] || []).push(l); });
   const hwLine = s => { const L = (s.homework || []).filter(h => h && h.t); if(!L.length) return '';
     return `<div class="meta"><button type="button" class="hwLink" data-hwq="${s.id}">${ti('hw', 15)}<span>宿題 ${L.map(h => `${esc(h.t)} <b>${hwStatText(h, hwStatOf(h, HWLOG[s.id], HWSINCE[s.id]))}</b>`).join('・')}</span></button></div>`; };
-  const LINKED = new Set((gs || []).map(g => g.student_id));
+  const LINKED = new Set((gs || []).map(g => g.student_id)); window.MP_LINKED = LINKED;
   const WIND = {}; (winds || []).forEach(x => { WIND[x.id] = x.wind || {}; });
   const act = stuSorted(STUV().filter(s => s.active !== false), STU_VIEW.sort);
   const off = stuSorted(STUV().filter(s => s.active === false), STU_VIEW.sort === 'reg' ? 'reg' : 'kana');
@@ -5687,6 +5687,8 @@ function odaiEditor(list, stu){
       <div class="subLab">ひとこと</div>
       <div class="hintRow">${ODAI_HINTS.map(h => `<button type="button" class="chip hint${(o.h || '') === h ? ' on' : ''}" data-h="${esc(h)}">${esc(h)}</button>`).join('')}</div>
       <input class="i oH" maxlength="30" value="${esc(o.h || '')}" placeholder="自分で書く（子どもが読めるよう、ひらがながおすすめ）">
+      <div class="subLab">楽譜 <small>MusicXML（.musicxml・.xml・.mxl）を入れると、子どもの画面で楽譜を見て・聞けます</small></div>
+      <div class="sxRow">${sxRowHTML(o.id, o)}</div>
       ${icons}</div>`;
     }
     const kk = k || 'five', vv = v || 'C', cc = m && (m.c === 'b' || m.c === 'lr') ? m.c : 't';
@@ -5720,13 +5722,50 @@ function kzKeyChips(k, v, all){
   return groups.map(g => `<div class="keyGrp"><span>${g.label}</span>${g.keys.map(x => `<button type="button" class="chip key${x === v ? ' on' : ''}" data-v="${x}">${kzChipLab(k, x)}<small>${kzChipSub(k, x)}</small></button>`).join('')}</div>`).join('');
 }
 function kzOf(box){ const k = box.dataset.k; return k ? kzMeta(k, box.dataset.v, box.dataset.c) : null; }
+/* がくふ（MusicXML）：おだい①に つける。データは o.sx（小さく した MusicXML）・o.sn（ファイル名）・o.sm（小節数） */
+const SX_CACHE = {};
+function sxRowHTML(id, o){
+  if(o && o.sx) SX_CACHE[id] = { sx: o.sx, sn: o.sn || '', sm: o.sm || 0 };
+  const c = SX_CACHE[id];
+  if(c && c.sx) return `<div class="sxOn">${ti('note', 20)}<span class="grow"><b>${esc(c.sn || '楽譜')}</b><small>${c.sm ? c.sm + '小節' : ''}</small></span><button type="button" class="btn sm w sxView">${ti('eye', 16)}見る・聞く</button><button type="button" class="linkBtn sxRm">はずす</button></div>`;
+  return `<label class="btn sm w sxAdd">${ti('plus', 16)}MusicXMLを選ぶ<input type="file" class="sxFile" accept=".musicxml,.xml,.mxl,application/vnd.recordare.musicxml+xml,application/vnd.recordare.musicxml" hidden></label>
+    <div class="sxNote">市販の教本・楽譜の曲を打ち込んで入れるときは、著作権に気をつけてください（著作権の切れた曲・自作や自分の編曲・出版社の許可がある曲がおすすめです）。</div>`;
+}
+function wireScoreBox(box){
+  const row = box.querySelector('.sxRow'); if(!row) return;
+  const id = box.dataset.id;
+  const redraw = () => { row.innerHTML = sxRowHTML(id); wire(); };
+  const wire = () => {
+    const f = row.querySelector('.sxFile');
+    if(f) f.addEventListener('change', async () => {
+      const file = f.files && f.files[0]; if(!file) return;
+      try{
+        const xml = await MPS.readFile(file), inf = MPS.info(xml);
+        if(!inf){ toast('MusicXMLとして読めませんでした。MuseScoreなどで「MusicXML」で書き出したファイルを選んでください', 5000); return; }
+        const sx = await MPS.encode(xml);
+        if(sx.d.length > 350000){ toast('楽譜が大きすぎます（2〜3ページくらいまでにしてください）', 5000); return; }
+        SX_CACHE[id] = { sx, sn: file.name.replace(/\.(musicxml|xml|mxl)$/i, ''), sm: inf.measures };
+        const tIn = box.querySelector('.oT'); if(tIn && !tIn.value.trim() && inf.title) tIn.value = inf.title.slice(0, 24);
+        toast('楽譜を入れました。「保存」で子どものアプリに届きます');
+        redraw();
+      }catch(e){ toast('楽譜を読めませんでした', 4000); }
+    });
+    const v = row.querySelector('.sxView');
+    if(v) v.addEventListener('click', () => { const host = document.createElement('div'); document.body.appendChild(host); const c = SX_CACHE[id]; MPS.mount(host, c.sx, { title: (box.querySelector('.oT') || {}).value || c.sn, big: true, onClose: () => host.remove() }); });
+    const rm = row.querySelector('.sxRm');
+    if(rm) rm.addEventListener('click', () => { delete SX_CACHE[id]; redraw(); });
+  };
+  wire();
+}
 function odaiFromBox(b){
   const on = b.querySelector('[data-ic].on'), meta = kzOf(b);
   const o = { id: b.dataset.id, t: b.querySelector('.oT').value.trim(), h: b.querySelector('.oH').value.trim(), n: repN(b.dataset.n), i: on ? on.dataset.ic : (b.dataset.origI || 'piano') };
   if(meta){ o.m = meta.m; if(!o.t) o.t = meta.t; if(b.classList.contains('off')) o.off = true; }
+  else { const c = SX_CACHE[o.id]; if(c && c.sx){ o.sx = c.sx; o.sn = c.sn; o.sm = c.sm; } }
   return o;
 }
 function wireOdaiBox(box){
+  wireScoreBox(box);
   const prev = box.querySelector('.kzPrev');
   const pickIcon = id => { const b = box.querySelector(`[data-ic="${id}"]`); if(!b) return; box.querySelectorAll('[data-ic]').forEach(x => x.classList.remove('on')); b.classList.add('on'); const sm = box.querySelector('.icPick summary'); if(sm) sm.innerHTML = `しるし ${odaiMark(id, 22)}<span>かえる</span>`; };
   box.querySelectorAll('[data-ic]').forEach(b => b.addEventListener('click', () => pickIcon(b.dataset.ic)));
@@ -5988,6 +6027,7 @@ function openStudent(s, opt = {}){
   const sh = $('stuSheet');
   const draw = () => {
     sh.innerHTML = `<h3>${isNew ? ti('plus', 22) + '生徒を追加' : esc(nameOf(s))}</h3>
+      ${!isNew && s.invite_code ? `<div class="invTop"><div class="grow"><small>招待コード</small><b class="code">${esc(s.invite_code)}</b>${window.MP_LINKED ? `<span class="st ${MP_LINKED.has(s.id) ? 'ok' : ''}">${MP_LINKED.has(s.id) ? '保護者とつながっています' : 'まだ つながっていません'}</span>` : ''}</div><div class="btns"><button type="button" class="btn sm w" onclick="copyText('${esc(s.invite_code)}')">${ti('copy', 16)}コードをコピー</button><button type="button" class="btn sm s" onclick="openInvite(stuById('${esc(s.id)}'))">${ti('invite', 16)}案内を送る</button></div></div>` : ''}
       <div class="photoRow">${avatarDot(Object.assign({}, s, { photo }))}<div class="grow"><b>先生の画面のアイコン</b><small>${photo ? '写真を使っています' : '子どもがつくった主人公'}。写真は先生の画面だけに出ます（ほかの家庭や地図には出ません）。保護者の了解をとってから登録してください。</small>
         <div class="row" style="gap:6px;margin-top:6px"><label class="btn sm w">${ti('plus', 16)}写真を選ぶ<input type="file" id="sPhoto" accept="image/*" hidden></label>${photo ? `<button type="button" class="linkBtn" id="sPhotoRm">写真を外す</button>` : ''}</div></div></div>
       <div class="grid3"><div><label class="f">名前（先生だけに見えます）</label><input class="i" id="sDisp" value="${esc(s.display_name || '')}" placeholder="例：山田 はな"></div>
@@ -7070,6 +7110,268 @@ if(new URLSearchParams(location.search).has('paid')){
   try{ history.replaceState(null, '', location.pathname); }catch(e){}
   setTimeout(() => toast('お申し込みありがとうございます。ご契約の表示が変わるまで、少しかかることがあります', 5200), 900);
 }
+</script>
+<style>.invTop{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--mustardBg);border:2px dashed #E0C06A;border-radius:16px;padding:10px 14px;margin:4px 0 14px}
+.invTop .grow{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;flex:1;min-width:200px}
+.invTop small{font-weight:900;color:var(--ink2);font-size:12px}
+.invTop .code{font-size:28px;font-weight:900;letter-spacing:.14em;font-variant-numeric:tabular-nums}
+.invTop .st{font-size:12px;font-weight:800;color:var(--ink2)}.invTop .st.ok{color:#2E8B57}
+.invTop .btns{display:flex;gap:6px;flex-wrap:wrap}
+.sxOn{display:flex;gap:8px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px 10px}
+.sxOn .grow{flex:1;display:flex;flex-direction:column}.sxOn small{color:var(--ink2);font-size:11.5px}
+.sxNote{font-size:11.5px;color:var(--ink2);margin-top:6px;line-height:1.6}</style>
+<script>
+/* ===== がくふ（MusicXML）を みる・きく：MPS（2026-10-13）
+   先生が入れた MusicXML を、子どもの おだいの 画面に 楽譜で 出す。
+   ・楽譜の 絵は OpenSheetMusicDisplay（同じ フォルダの osmd-2.1.2.min.js。なければ jsDelivr）
+   ・きく：いま ながれている 音を 色で 光らせる（みぎて＝あか・ひだりて＝あお）
+   ・はやさ（ゆっくり／ふつう）・て（りょうて／みぎて／ひだりて）・はじめから
+   ・データは odai の sx = { f: 'gz' | 'raw', d: 文字 }（gzip＋base64。小さく して students.odai に 入れる） */
+const MPS = (() => {
+  const OSMD_LOCAL = 'osmd-2.1.2.min.js';
+  const OSMD_CDN = 'https://cdn.jsdelivr.net/npm/opensheetmusicdisplay@2.1.2/build/opensheetmusicdisplay.min.js';
+  const COL = { r: '#E2705A', l: '#3D8BD4' };
+  let loading = null;
+  function addScript(src){
+    return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.async = true; s.onload = res; s.onerror = () => { s.remove(); rej(new Error('load ' + src)); }; document.head.appendChild(s); });
+  }
+  function loadLib(){
+    if(window.opensheetmusicdisplay) return Promise.resolve();
+    if(!loading) loading = addScript(OSMD_LOCAL).catch(() => addScript(OSMD_CDN)).catch(e => { loading = null; throw e; });
+    return loading;
+  }
+  /* ---------- 小さく する（先生の 画面で 入れる とき） ---------- */
+  function minify(xml){
+    return String(xml)
+      .replace(/<\?xml[^>]*\?>/, '').replace(/<!DOCTYPE[^>]*>/i, '')
+      .replace(/<!--[\s\S]*?-->/g, '')
+      .replace(/<(credit|defaults|identification|print|appearance|music-font|word-font|lyric-font)\b[\s\S]*?<\/\1>/g, '')
+      .replace(/<print\b[^>]*\/>/g, '')
+      .replace(/\s+(default-x|default-y|relative-x|relative-y|width|color|font-family|font-size)="[^"]*"/g, '')
+      .replace(/>\s+</g, '><').trim();
+  }
+  const b64 = u8 => { let s = ''; for(let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); };
+  const unb64 = s => { const b = atob(s), u = new Uint8Array(b.length); for(let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; };
+  async function encode(xml){
+    const x = minify(xml);
+    if(typeof CompressionStream === 'function'){
+      const buf = await new Response(new Blob([x]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer();
+      return { f: 'gz', d: b64(new Uint8Array(buf)) };
+    }
+    return { f: 'raw', d: x };
+  }
+  async function decode(sx){
+    if(!sx) return '';
+    if(typeof sx === 'string') return sx;
+    if(sx.f === 'raw') return sx.d;
+    if(typeof DecompressionStream !== 'function') throw new Error('nodecomp');
+    return await new Response(new Blob([unb64(sx.d)]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
+  }
+  /* .mxl（zip）は JSZip で ひらく */
+  async function readFile(file){
+    const name = file.name || '';
+    if(/\.mxl$/i.test(name)){
+      if(!window.JSZip) await addScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js');
+      const zip = await JSZip.loadAsync(file);
+      let path = '';
+      const ct = zip.file('META-INF/container.xml');
+      if(ct){ const m = (await ct.async('string')).match(/full-path="([^"]+)"/); if(m) path = m[1]; }
+      if(!path) path = Object.keys(zip.files).find(k => /\.(xml|musicxml)$/i.test(k) && !/^META-INF/i.test(k)) || '';
+      if(!path) throw new Error('mxl');
+      return await zip.file(path).async('string');
+    }
+    return await file.text();
+  }
+  function info(xml){
+    const d = new DOMParser().parseFromString(xml, 'application/xml');
+    if(d.querySelector('parsererror') || !d.querySelector('score-partwise, score-timewise')) return null;
+    const t = (d.querySelector('work > work-title') || d.querySelector('movement-title') || {}).textContent || '';
+    const p1 = d.querySelector('part');
+    const measures = p1 ? p1.querySelectorAll('measure').length : 0;
+    const stavesEl = d.querySelector('attributes > staves');
+    const parts = d.querySelectorAll('part').length;
+    return { title: t.trim(), measures, hands: (stavesEl && +stavesEl.textContent >= 2) || parts >= 2 ? 2 : 1 };
+  }
+  /* ---------- 音 ---------- */
+  let ac = null, master = null, comp = null;
+  function audio(){
+    if(!ac){
+      ac = new (window.AudioContext || window.webkitAudioContext)();
+      comp = ac.createDynamicsCompressor(); comp.threshold.value = -18; comp.ratio.value = 4;
+      master = ac.createGain(); master.gain.value = 0.9; master.connect(comp); comp.connect(ac.destination);
+    }
+    if(ac.state === 'suspended') ac.resume();
+    return ac;
+  }
+  function tone(midi, at, dur, vel = 1){
+    const f = 440 * Math.pow(2, (midi - 69) / 12), len = Math.min(3, Math.max(0.25, dur * 1.15) + 0.3);
+    const g = ac.createGain(); g.connect(master);
+    const peak = 0.16 * vel * (midi < 48 ? 1.15 : 1);
+    g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(peak, at + 0.006);
+    g.gain.exponentialRampToValueAtTime(peak * 0.35, at + 0.25); g.gain.exponentialRampToValueAtTime(0.0001, at + len);
+    [[1, 'triangle', 1], [2, 'sine', 0.35], [3, 'sine', 0.12]].forEach(([m, type, a]) => {
+      const o = ac.createOscillator(), og = ac.createGain(); o.type = type; o.frequency.value = f * m; og.gain.value = a;
+      o.connect(og); og.connect(g); o.start(at); o.stop(at + len + 0.05);
+    });
+  }
+  function click(at, strong){
+    const o = ac.createOscillator(), g = ac.createGain(); o.frequency.value = strong ? 1600 : 1100; g.connect(master); o.connect(g);
+    g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(0.25, at + 0.002); g.gain.exponentialRampToValueAtTime(0.0001, at + 0.06);
+    o.start(at); o.stop(at + 0.08);
+  }
+  /* ---------- 画面 ---------- */
+  const CSS = `.mps{background:#fff;border:3px solid #3B2A22;border-radius:22px;box-shadow:0 5px 0 #3B2A22;padding:10px 8px 8px;margin:8px 0 12px;text-align:left}
+  .mps .mpsBar{display:flex;flex-wrap:wrap;gap:7px 6px;align-items:center;justify-content:center;padding:2px 2px 8px}
+  .mps button{font:inherit;font-weight:900;border:3px solid #3B2A22;border-radius:999px;background:#FFF8EC;color:#3B2A22;padding:6px 11px;font-size:13.5px;box-shadow:0 3px 0 #3B2A22;cursor:pointer;line-height:1.1}
+  .mps button:active{transform:translateY(2px);box-shadow:0 1px 0 #3B2A22}
+  .mps .mpsPlay{background:#E2705A;color:#fff;font-size:17px;padding:9px 20px}
+  .mps .mpsPlay.on{background:#3B2A22}
+  .mps .seg{display:inline-flex;border:3px solid #3B2A22;border-radius:999px;overflow:hidden;box-shadow:0 3px 0 #3B2A22}
+  .mps .seg button{border:0;border-radius:0;box-shadow:none;padding:6px 9px;font-size:13px;background:#fff}
+  .mps .seg button+button{border-left:2px solid #3B2A22}
+  .mps .seg button.on{background:#FFD54A}
+  .mps .mpsKey{display:flex;gap:12px;justify-content:center;font-size:12.5px;font-weight:800;color:#6B5A4E;margin-top:2px}
+  .mps .mpsKey i{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:-1px;margin-right:4px}
+  .mps .mpsSheet{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;min-height:120px;position:relative}
+  .mps .mpsMsg{padding:24px 10px;text-align:center;font-weight:800;color:#6B5A4E}
+  .mps.big{position:fixed;inset:0;z-index:9000;margin:0;border-radius:0;border:0;box-shadow:none;overflow:auto;padding:12px 10px calc(16px + env(safe-area-inset-bottom))}
+  .mps.big .mpsSheet{overflow:visible}
+  .mps .mpsTtl{font-weight:900;text-align:center;font-size:17px;margin:2px 0 6px}`;
+  function css(){ if(document.getElementById('mpsCss')) return; const s = document.createElement('style'); s.id = 'mpsCss'; s.textContent = CSS; document.head.appendChild(s); }
+  /* 楽譜の 中の 音を、カーソルで 1つずつ たどって 表に する */
+  function timeline(osmd){
+    const c = osmd.cursor; c.reset(); const ev = [];
+    let guard = 0;
+    while(!c.Iterator.EndReached && guard++ < 20000){
+      const t = c.Iterator.currentTimeStamp.RealValue, notes = [];
+      (c.Iterator.CurrentVoiceEntries || []).forEach(ve => {
+        const staff = ve.ParentSourceStaffEntry && ve.ParentSourceStaffEntry.ParentStaff ? ve.ParentSourceStaffEntry.ParentStaff.idInMusicSheet : 0;
+        (ve.Notes || []).forEach(n => {
+          if(!n || (n.isRest && n.isRest()) || n.halfTone == null) return;
+          let dur = n.Length ? n.Length.RealValue : 0.25;
+          const tie = n.NoteTie;
+          if(tie){
+            if(tie.StartNote !== n) return;   /* タイの つづきは 鳴らさない */
+            dur = (tie.Notes || [n]).reduce((a, x) => a + (x.Length ? x.Length.RealValue : 0), 0);
+          }
+          notes.push({ midi: n.halfTone + 12, dur, staff });
+        });
+      });
+      ev.push({ t, notes });
+      c.next();
+    }
+    c.reset();
+    return ev;
+  }
+  function bpmOf(osmd){
+    const s = osmd.Sheet;
+    let b = s && (s.DefaultStartTempoInBpm || (s.SourceMeasures && s.SourceMeasures[0] && s.SourceMeasures[0].TempoInBPM));
+    if(!b || b < 30 || b > 240) b = 90;
+    return b;
+  }
+  function staffCount(osmd){ try{ return osmd.Sheet.Staves.length; }catch(e){ return 1; } }
+
+  /* mount(el, xml, { title, big, onClose }) → { stop() } */
+  async function mount(el, xmlOrSx, opt = {}){
+    css();
+    el.innerHTML = `<div class="mps${opt.big ? ' big' : ''}">${opt.big ? `<div class="mpsTtl">${(opt.title || '').replace(/[<>&]/g, '')}</div>` : ''}<div class="mpsMsg">がくふを よみこみちゅう…</div></div>`;
+    const box = el.firstElementChild;
+    let xml;
+    try{ xml = typeof xmlOrSx === 'string' ? xmlOrSx : await decode(xmlOrSx); }
+    catch(e){ box.innerHTML = '<div class="mpsMsg">この たんまつでは がくふを ひらけません（アプリを あたらしく してね）</div>'; return { stop(){} }; }
+    try{ await loadLib(); }
+    catch(e){ box.innerHTML = '<div class="mpsMsg">がくふを ひらけませんでした。インターネットに つながっているか みてね</div>'; return { stop(){} }; }
+    box.innerHTML = `${opt.big ? `<div class="mpsTtl">${(opt.title || '').replace(/[<>&]/g, '')}</div>` : ''}
+      <div class="mpsBar">
+        <button type="button" class="mpsPlay">▶ きいてみる</button>
+        <button type="button" class="mpsTop">はじめから</button>
+        <span class="seg mpsSpd"><button type="button" data-s="0.6">ゆっくり</button><button type="button" data-s="0.8" class="on">ちょっと ゆっくり</button><button type="button" data-s="1">ふつう</button></span>
+        <span class="seg mpsHand"><button type="button" data-h="b" class="on">りょうて</button><button type="button" data-h="r">みぎて</button><button type="button" data-h="l">ひだりて</button></span>
+        <button type="button" class="mpsCnt">カウント なし</button>
+        ${opt.big ? '<button type="button" class="mpsClose">とじる</button>' : '<button type="button" class="mpsBig">おおきく みる</button>'}
+      </div>
+      <div class="mpsKey"><span><i style="background:${COL.r}"></i>みぎて</span><span><i style="background:${COL.l}"></i>ひだりて</span><span>いま ながれている 音が ひかるよ</span></div>
+      <div class="mpsSheet"></div>`;
+    const sheet = box.querySelector('.mpsSheet');
+    const osmd = new opensheetmusicdisplay.OpenSheetMusicDisplay(sheet, {
+      autoResize: true, backend: 'svg', drawTitle: false, drawSubtitle: false, drawComposer: false, drawLyricist: false, drawCredits: false,
+      drawPartNames: false, drawPartAbbreviations: false, drawFingerings: true, drawMeasureNumbers: true, followCursor: !!opt.big,
+      cursorsOptions: [{ type: 0, color: '#FFD54A', alpha: 0.55, follow: !!opt.big }]
+    });
+    try{
+      if(!/^\s*<\?xml/.test(xml)) xml = '<?xml version="1.0" encoding="UTF-8"?>' + xml;
+      await osmd.load(xml);
+      const w0 = el.clientWidth || innerWidth; osmd.zoom = opt.big ? (w0 < 600 ? 0.85 : w0 > 1000 ? 1.35 : 1.1) : (w0 < 600 ? 0.72 : 0.95);
+      osmd.render();
+    }catch(e){ sheet.innerHTML = '<div class="mpsMsg">この がくふは よみこめませんでした（MusicXML を たしかめてね）</div>'; return { stop(){} }; }
+    const ev = timeline(osmd), nStaff = staffCount(osmd);
+    if(nStaff < 2){ box.querySelector('.mpsHand').style.display = 'none'; }
+    let spd = 0.8, hand = 'b', count = false, playing = false, pos = 0, raf = 0, t0 = 0, startT = 0, lit = [];
+    const secW = () => 240 / bpmOf(osmd) / spd;   /* 全音符 1つの びょう */
+    const unlight = () => { for(let k = lit.length - 1; k >= 0; k--) lit[k][0].style.cssText = lit[k][1]; lit = []; };
+    const light = () => {
+      unlight();
+      let gs = [];
+      try{ gs = osmd.cursor.GNotesUnderCursor() || []; }catch(e){}
+      gs.forEach(gn => {
+        let g = null; try{ g = gn.getSVGGElement && gn.getSVGGElement(); }catch(e){}
+        if(!g) return;
+        const st = gn.sourceNote && gn.sourceNote.ParentStaffEntry && gn.sourceNote.ParentStaffEntry.ParentStaff ? gn.sourceNote.ParentStaffEntry.ParentStaff.idInMusicSheet : 0;
+        const col = nStaff >= 2 && st >= 1 ? COL.l : COL.r;
+        lit.push([g, g.style.cssText]); g.style.fill = col; g.style.stroke = col;
+        g.querySelectorAll('path,rect,ellipse').forEach(p => { lit.push([p, p.style.cssText]); p.style.fill = col; p.style.stroke = col; });
+      });
+    };
+    const goto = i => { osmd.cursor.reset(); for(let k = 0; k < i; k++) osmd.cursor.next(); };
+    const btn = box.querySelector('.mpsPlay');
+    const stop = () => {
+      playing = false; cancelAnimationFrame(raf); btn.classList.remove('on'); btn.textContent = pos > 0 && pos < ev.length ? '▶ つづきから' : '▶ きいてみる';
+      if(master){ const old = master; master = ac.createGain(); master.gain.value = 0.9; master.connect(comp); old.gain.setTargetAtTime(0.0001, ac.currentTime, 0.03); setTimeout(() => old.disconnect(), 400); }
+    };
+    const play = () => {
+      if(!ev.length) return;
+      audio(); if(pos >= ev.length) pos = 0;
+      playing = true; btn.classList.add('on'); btn.textContent = '■ とめる';
+      goto(pos); osmd.cursor.show(); light();
+      const sw = secW(), base = ev[pos].t;
+      let lead = 0.15;
+      if(count){
+        const beat = sw / 4; for(let k = 0; k < 4; k++) click(ac.currentTime + 0.1 + k * beat, k === 0);
+        lead = 0.1 + 4 * beat;
+      }
+      startT = ac.currentTime + lead;
+      ev.slice(pos).forEach(e => e.notes.forEach(n => {
+        if(hand === 'r' && nStaff >= 2 && n.staff >= 1) return;
+        if(hand === 'l' && nStaff >= 2 && n.staff < 1) return;
+        tone(n.midi, startT + (e.t - base) * sw, n.dur * sw);
+      }));
+      const from = pos;
+      const tick = () => {
+        if(!playing) return;
+        const now = (ac.currentTime - startT) / sw + base;
+        let moved = false;
+        while(pos + 1 < ev.length && ev[pos + 1].t <= now + 0.0005){ pos++; osmd.cursor.next(); moved = true; }
+        if(moved || pos === from) light();
+        const last = ev[ev.length - 1];
+        if(now > last.t + Math.max(0.25, ...last.notes.map(n => n.dur), 0)){ pos = ev.length; unlight(); stop(); btn.textContent = '▶ もういちど'; pos = 0; return; }
+        raf = requestAnimationFrame(tick);
+      };
+      raf = requestAnimationFrame(tick);
+    };
+    btn.addEventListener('click', () => { if(playing) stop(); else play(); });
+    box.querySelector('.mpsTop').addEventListener('click', () => { const was = playing; if(playing) stop(); pos = 0; goto(0); osmd.cursor.show(); unlight(); btn.textContent = '▶ きいてみる'; if(was) play(); });
+    box.querySelectorAll('.mpsSpd button').forEach(b => b.addEventListener('click', () => { box.querySelectorAll('.mpsSpd button').forEach(x => x.classList.toggle('on', x === b)); spd = +b.dataset.s; if(playing){ stop(); play(); } }));
+    box.querySelectorAll('.mpsHand button').forEach(b => b.addEventListener('click', () => { box.querySelectorAll('.mpsHand button').forEach(x => x.classList.toggle('on', x === b)); hand = b.dataset.h; if(playing){ stop(); play(); } }));
+    const cb = box.querySelector('.mpsCnt'); cb.addEventListener('click', () => { count = !count; cb.textContent = count ? 'カウント 4つ' : 'カウント なし'; cb.style.background = count ? '#FFD54A' : ''; });
+    const bigB = box.querySelector('.mpsBig');
+    if(bigB) bigB.addEventListener('click', () => { stop(); const host = document.createElement('div'); document.body.appendChild(host); mount(host, xml, { title: opt.title, big: true, onClose: () => host.remove() }); });
+    const cl = box.querySelector('.mpsClose');
+    if(cl) cl.addEventListener('click', () => { stop(); if(opt.onClose) opt.onClose(); });
+    return { stop, osmd };
+  }
+  return { mount, encode, decode, readFile, info, minify, loadLib };
+})();
+
 </script>
 </body>
 </html>
