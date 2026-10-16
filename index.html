@@ -3375,7 +3375,7 @@ ruby rt{font-weight:700;color:#6E5B50}
    ・同じ地図に 教室みんなの主人公（ニックネーム・順位なし）
    ・おうちのひと：予定・振替・おしらせ・れんらくちょう
    ========================================================= */
-const APP_VER = 'v2026.10.13-1';   /* なおしたら かならず あげる（アップした ものが あたらしいか、おうちのかた→設定の いちばん したで たしかめられる） */
+const APP_VER = 'v2026.10.17-1';   /* なおしたら かならず あげる（アップした ものが あたらしいか、おうちのかた→設定の いちばん したで たしかめられる） */
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -17799,7 +17799,11 @@ const RPG_AREAS = [
   { name: 'けんばんの みずうみ', pal: ['#BFDDEB', '#E6F2F4', '#A8CB94', '#97BA6C'], mons: ['kani', 'kurage', 'otama'], boss: 'gamepiano', lv: [6, 9],
     nodes: ['b', 'b', 't', 'b', 'q', 'b', 's', 'b', 'b', 't', 'b', 'B'], intro: 'みずうみの けんばんが しずまりかえっている…' },
   { name: 'ソラシの おか', pal: ['#F2DDBF', '#F6EBD6', '#C0DA92', '#AFCB7E'], mons: ['chiku', 'tri', 'piro'], boss: 'orgel', lv: [9, 13],
-    nodes: ['b', 'b', 't', 'b', 'b', 's', 'q', 'b', 'b', 't', 'b', 's', 'B'], intro: 'おかの かぜが とまって、ふうしゃが まわらない…' }
+    nodes: ['b', 'b', 't', 'b', 'b', 's', 'q', 'b', 'b', 't', 'b', 's', 'B'], intro: 'おかの かぜが とまって、ふうしゃが まわらない…' },
+  { name: 'ヘおんの どうくつ', pal: ['#4F5A78', '#7E879E', '#857B6B', '#6F675A'], mons: ['heon', 'tubako', 'tinpa'], boss: 'kontra', lv: [13, 17],
+    nodes: ['b', 'b', 't', 'b', 'q', 'b', 's', 'b', 'b', 't', 'b', 'q', 'b', 'B'], intro: 'どうくつの ひくい おとが、もやに とじこめられている…' },
+  { name: 'こだまの やま', pal: ['#BCD6E8', '#EEF3F4', '#B6CC9C', '#A2BB86'], mons: ['horun', 'kodama', 'suzuyuki'], boss: 'alphorn', lv: [17, 21],
+    nodes: ['b', 'b', 't', 'b', 'b', 's', 'q', 'b', 'b', 't', 'b', 's', 'b', 'q', 'B'], intro: 'やまびこが かえってこない。やまが しずまりかえっている…' }
 ];
 /* おとの いきもの。role：たたかいかた（なかまの ときも てきの ときも） */
 const MON = {
@@ -17818,7 +17822,15 @@ const MON = {
   rappa: { n: 'ラッパばな',     a: 0, hp: 96, atk: 8,  def: 3,  spd: 4,  xp: 40,  coin: 40,  role: 'loud',   weak: 'n', sk: 'ファンファーレ', boss: true, line: 'パッパラー! ありがとう、はなが ひらいたよ!' },
   donguri:{ n: 'どんぐりドラム',a: 1, hp: 230, atk: 15, def: 7, spd: 6,  xp: 120, coin: 100, role: 'roll',   weak: 'r', sk: 'ドラムロール', boss: true, line: 'ドンドコ ドン! もりの リズムが もどった!' },
   gamepiano:{ n: 'ピアノがめ',  a: 2, hp: 430, atk: 22, def: 12, spd: 7, xp: 260, coin: 200, role: 'chord',  weak: 'n', sk: 'ぶあつい わおん', boss: true, line: 'ポロン… こうらの ピアノ、また ひけるよ' },
-  orgel: { n: 'オルゴール',     a: 3, hp: 720, atk: 30, def: 15, spd: 9, xp: 500, coin: 400, role: 'lull',   weak: 'r', sk: 'ねむりの オルゴール', boss: true, line: 'ねじを まいてくれて ありがとう。すてきな うたを きかせるね' }
+  orgel: { n: 'オルゴール',     a: 3, hp: 720, atk: 30, def: 15, spd: 9, xp: 500, coin: 400, role: 'lull',   weak: 'r', sk: 'ねむりの オルゴール', boss: true, line: 'ねじを まいてくれて ありがとう。すてきな うたを きかせるね' },
+  heon:  { n: 'ヘオンもぐら',   a: 4, hp: 76, atk: 24, def: 17, spd: 9,  xp: 50,  coin: 26,  role: 'guard',  weak: 'n', sk: 'ひくい おとの かべ', line: 'ドドド… つちの なかでも ひくい おとは よく ひびくんだ' },
+  tubako:{ n: 'チューバこうもり', a: 4, hp: 68, atk: 26, def: 13, spd: 17, xp: 50, coin: 26,  role: 'double', weak: 'r', sk: 'ブオーン ダブル', line: 'ブオーン♪ くらい ところでも おとで みちが わかるよ' },
+  tinpa: { n: 'ティンパいわ',   a: 4, hp: 82, atk: 28, def: 15, spd: 8,  xp: 54,  coin: 28,  role: 'strong', weak: 'r', sk: 'ゴロゴロ ロール', line: 'ドロロロ… かみなりみたいな おと、すき?' },
+  horun: { n: 'ホルンやぎ',     a: 5, hp: 92, atk: 32, def: 18, spd: 14, xp: 72,  coin: 36,  role: 'atk',    weak: 'r', sk: 'ホルン つの つき', line: 'パオーン♪ つのを ふくと やまの むこうまで とどくよ' },
+  kodama:{ n: 'こだまどり',     a: 5, hp: 84, atk: 30, def: 16, spd: 20, xp: 72,  coin: 36,  role: 'haste',  weak: 'n', sk: 'こだま テンポ', line: 'ヤッホー… ヤッホー… ほら、おなじ おとが かえってきた' },
+  suzuyuki:{ n: 'すずゆき',     a: 5, hp: 96, atk: 29, def: 19, spd: 11, xp: 74,  coin: 38,  role: 'heal',   weak: 'n', sk: 'すずの ひかり', line: 'シャンシャン♪ ゆきの ひも あったかい おとが するね' },
+  kontra:{ n: 'コントラバスの ぬし', a: 4, hp: 1000, atk: 38, def: 18, spd: 8, xp: 800, coin: 600, role: 'chord', weak: 'n', sk: 'ひくい ひくい ドローン', boss: true, line: 'ブーン… いちばん ひくい おとが、みんなの うたを ささえるんだよ' },
+  alphorn:{ n: 'アルプホルンの ぬし', a: 5, hp: 1350, atk: 45, def: 21, spd: 10, xp: 1200, coin: 900, role: 'loud', weak: 'r', sk: 'やまびこ ファンファーレ', boss: true, line: 'ホー… ホー… やまの こだまが かえってきた。ありがとう!' }
 };
 const RPG_ITEMS = {
   candy:   { n: 'はちみつキャンディ', t: 'use', heal: 30,  price: 8,   d: 'げんきが 30 もどる' },
@@ -17839,7 +17851,12 @@ const RPG_ITEMS = {
   a_star:   { n: 'ほしの マント',     t: 'a', def: 12, price: 700, art: 'cape', col: '#414E84', area: 3 },
   c_rhythm: { n: 'リズムの おまもり', t: 'c', rB: .3, price: 150, art: 'charm', col: '#D9644C', d: 'リズム・アタックが つよくなる', area: 1 },
   c_note:   { n: 'おんぷの おまもり', t: 'c', nB: .3, price: 150, art: 'charm', col: '#6EA7C6', d: 'おんぷ・マジックが つよくなる', area: 1 },
-  c_harmony:{ n: 'ハーモニーの おまもり', t: 'c', hB: .3, price: 150, art: 'charm', col: '#7FAE6D', d: 'ハーモニー・ヒールが つよくなる', area: 2 }
+  c_harmony:{ n: 'ハーモニーの おまもり', t: 'c', hB: .3, price: 150, art: 'charm', col: '#7FAE6D', d: 'ハーモニー・ヒールが つよくなる', area: 2 },
+  cocoa:    { n: 'あったか ココア',   t: 'use', heal: 200, price: 60,  art: 'milk', d: 'げんきが 200 もどる', area: 4 },
+  w_moon:   { n: 'つきの タクト',     t: 'w', atk: 22, price: 1400, art: 'baton', col: '#B9C7E8', star: true, area: 4 },
+  h_horn:   { n: 'ホルンの ぼうし',   t: 'h', def: 9, spd: 3, price: 900, art: 'hat', col: '#E3B143', area: 4 },
+  w_alp:    { n: 'やまの タクト',     t: 'w', atk: 30, price: 2600, art: 'baton', col: '#8FA27C', star: true, area: 5 },
+  a_snow:   { n: 'ゆきの マント',     t: 'a', def: 18, price: 1600, art: 'cape', col: '#DCE6EE', area: 5 }
 };
 const RPG_SLOT = { w: 'て', h: 'あたま', a: 'からだ', c: 'おまもり' };
 const RPG_SKILLS = [
@@ -18046,7 +18063,7 @@ function rpgWorld(){
       <div class="rpATx"><b>${a + 1}. ${A.name}</b><small>${open ? (cl ? 'もやが はれた! さんぽで つよく なれるよ' : `${pos}/${n} ます・めやす Lv ${A.lv[0]}〜${A.lv[1]}`) : 'まえの ばしょの ぬしの もやを はらうと いけるよ'}</small>
       ${open ? `<span class="rpAProg">${A.nodes.map((x, i) => `<i class="${i < pos || cl ? 'on' : ''}${x === 'B' ? ' boss' : ''}"></i>`).join('')}</span>` : ''}</div></button>`;
   });
-  h += `<div class="rpSoon card">${ICON('lock', 22)}<span><b>このさきの ばしょ</b><small>ヘおんの どうくつ・こだまの やま・ほしの うみ・おとの おしろ は、じゅんびちゅう</small></span></div></div>`;
+  h += `<div class="rpSoon card">${ICON('lock', 22)}<span><b>このさきの ばしょ</b><small>ほしの うみ・おとの おしろ は、じゅんびちゅう</small></span></div></div>`;
   $('rpgBody').innerHTML = h;
   rpgBindBack();
   $('rpgBody').querySelectorAll('.rpArea:not(.lock)').forEach(b => b.onclick = () => { rpgSfx('sel'); rpgField(+b.dataset.a); });
@@ -18134,12 +18151,22 @@ async function rpgEndOuting(why){
   const R = rpgSt(), a = R.out ? R.out.a : RPG_AREA;
   R.out = null; saveState();
   if(why === 'lose') await rpgPop(`<div class="rpStory">${rpgHeroFace(80)}</div><h3>みんな つかれて ねむって しまった…</h3><p>おうちで ゆっくり やすんだよ。すすんだ ところから、また いこうね。</p>`, [{ t: 'おうちに もどる', c: 'white' }]);
-  else if(why === 'camp') await rpgPop(`<div class="rpStory">${rpgCampSVG()}</div><h3>きょうの たびは ここまで</h3><p>キャンプで ひとやすみ。つぎの たびは、また れんしゅうしてから いこうね。</p>`, [{ t: 'おうちに もどる', c: 'sun' }]);
+  else if(why === 'camp'){
+    /* v2026.10.17-1：ちからが のこっていれば、その ばで つづけて でかけられる。のこっていなければ、ふやしかたを みせる */
+    if(R.en > 0){
+      const go = await rpgPop(`<div class="rpStory">${rpgCampSVG()}</div><h3>キャンプで ひとやすみ</h3><p>たびの ちからが あと <b>${R.en}</b> こ あるよ。つづけて でかけられるよ。</p>`, [{ t: 'つづけて いく', c: 'sun' }, { t: 'おうちに もどる', c: 'white' }]);
+      if(go === 0){ rpgBeginOuting(a); return; }
+    } else {
+      const c = R.cred[todayStr()] || {}, parts = ['piano', 'rhythm', 'note'].concat(S.keysOn ? ['keys'] : []), left = parts.filter(k => !c[k]).map(k => RPG_PART_NAME[k]);
+      const msg = left.length ? `まだ できる れんしゅう：<b>${left.join('・')}</b><br>1つ するごとに たびの ちからが 1つ ふえて、また でかけられるよ。` : 'きょうの れんしゅうは ぜんぶ できたね! あしたも 1かいは でかけられるよ。';
+      await rpgPop(`<div class="rpStory">${rpgCampSVG()}</div><h3>きょうの たびは ここまで</h3><p>${msg}</p>`, [{ t: 'おうちに もどる', c: 'sun' }]);
+    }
+  }
   rpgHome();
 }
 function rpgCampSVG(){ return `<svg width="120" height="90" viewBox="-60 -80 120 90"><path d="M-40 0 L0 -60 L40 0Z" fill="${P.red}" ${L(2)}/><path d="M0 -60 L-10 0 M0 -60 L10 0" stroke="${INK}" stroke-width="1.6"/><path d="M-10 0 L0 -26 L10 0Z" fill="#6B3B34"/><g transform="translate(34 0)"><path d="M-10 0 L10 0" stroke="${P.brown2}" stroke-width="3"/><path d="M-6 -2 C-8 -10 -2 -14 0 -20 C2 -14 8 -10 6 -2Z" fill="${P.orange}" ${L(1.4)} class="bob"/></g></svg>`; }
 async function rpgChest(a){
-  const pools = [['candy', 'candy', 'drop', 'balloon', 'w_wood', 'h_beret'], ['candy', 'milk', 'drop', 'bell', 'tea', 'a_cloth'], ['milk', 'tea', 'drop', 'bell', 'c_rhythm', 'c_note'], ['milk', 'tea', 'bell', 'drop', 'h_feather', 'c_harmony']];
+  const pools = [['candy', 'candy', 'drop', 'balloon', 'w_wood', 'h_beret'], ['candy', 'milk', 'drop', 'bell', 'tea', 'a_cloth'], ['milk', 'tea', 'drop', 'bell', 'c_rhythm', 'c_note'], ['milk', 'tea', 'bell', 'drop', 'h_feather', 'c_harmony'], ['cocoa', 'tea', 'bell', 'drop', 'h_horn', 'cocoa'], ['cocoa', 'tea', 'bell', 'drop', 'a_snow', 'cocoa']];
   const pool = pools[a] || pools[0], id = pool[Math.floor(Math.random() * pool.length)], coin = 6 + a * 8 + Math.floor(Math.random() * 6);
   const it = RPG_ITEMS[id], dup = it.t !== 'use' && rpgHas(id);
   if(!dup) rpgAddItem(id, 1);
@@ -19034,6 +19061,154 @@ const MON_ART = {
     s += `<path d="M30 -30 H38" stroke="${INK}" stroke-width="2.4"/><path d="M38 -38 C44 -40 46 -34 42 -30 C46 -26 44 -20 38 -22Z" fill="${P.mustard}" ${L(1.6)}/>`;
     s += `<g transform="translate(0 -26)">${noteSVG(-8, 4, 3.4, 'e', P.mustard, { stem: 3.2, line: 1, ink: INK })}${noteSVG(8, 2, 3.4, 'e', P.mustard, { stem: 3.2, line: 1, ink: INK })}</g>`;
     return s;
+  },
+  /* ---------- ヘおんの どうくつ（v2026.10.17-1） ---------- */
+  heon: () => {
+    const body = 'M-22 -20 C-24 -38 -12 -48 0 -48 C12 -48 24 -38 22 -20 C21 -9 12 -5 0 -5 C-12 -5 -21 -9 -22 -20Z';
+    let s = SHADOW(21);
+    /* あし（つめ） */
+    s += `<path d="M-14 -8 C-18 -4 -18 -1 -13 -2 C-12 -4 -10 -5 -9 -6Z M14 -8 C18 -4 18 -1 13 -2 C12 -4 10 -5 9 -6Z" fill="#E7B9A8" ${L(1.5)}/>`;
+    s += `<path d="${body}" fill="#7C7584" ${L()}/>` + shade(body, 'M6 -52 C30 -40 26 -6 2 -2 L34 0 L34 -52Z');
+    /* おなか と ヘおんきごう */
+    const belly = 'M-13 -22 C-14 -31 -7 -35 0 -35 C7 -35 14 -31 13 -22 C12 -13 6 -10 0 -10 C-6 -10 -12 -13 -13 -22Z';
+    s += `<path d="${belly}" fill="${P.cream}" ${L(1.5)}/>`;
+    s += `<path d="M-6 -24 C-7 -29 -2 -31 1 -29 C5 -27 4 -21 0 -17 C-2 -15 -5 -13 -8 -12" stroke="${INK}" stroke-width="2.3" fill="none" stroke-linecap="round"/><circle cx="-5.6" cy="-24.6" r="2" fill="${INK}"/>`;
+    s += `<circle cx="7" cy="-27" r="1.5" fill="${INK}"/><circle cx="7" cy="-21" r="1.5" fill="${INK}"/>`;
+    /* てのひら */
+    s += `<path d="M-22 -24 C-30 -24 -32 -18 -27 -15 C-25 -18 -23 -19 -20 -19Z M22 -24 C30 -24 32 -18 27 -15 C25 -18 23 -19 20 -19Z" fill="#E7B9A8" ${L(1.5)}/>`;
+    s += `<path d="M-29 -18 l-2 2 M-27 -16 l-1 3 M29 -18 l2 2 M27 -16 l1 3" stroke="${INK}" stroke-width="1.1" stroke-linecap="round"/>`;
+    /* はな と ひげ */
+    s += `<path d="${ell(0, -38, 3.6, 2.6)}" fill="#D98A95" ${L(1.3)}/>`;
+    s += `<path d="M-6 -37 L-15 -39 M-6 -35.5 L-15 -34 M6 -37 L15 -39 M6 -35.5 L15 -34" stroke="${INK}" stroke-width="1" stroke-linecap="round" opacity=".7"/>`;
+    s += `<path d="M-14 -42 q3 -3 6 -3" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" opacity=".5"/>`;
+    return s;
+  },
+  tubako: () => {
+    let s = SHADOW(18);
+    s += `<path d="M-5 -6 v4 M5 -6 v4" stroke="${P.brown2}" stroke-width="3" stroke-linecap="round"/>`;
+    /* こうもりの はね */
+    const wl = 'M-14 -34 C-24 -46 -36 -44 -42 -36 C-38 -36 -36 -33 -36 -30 C-32 -32 -29 -30 -28 -27 C-24 -29 -20 -28 -16 -24Z';
+    const wr = 'M14 -34 C24 -46 36 -44 42 -36 C38 -36 36 -33 36 -30 C32 -32 29 -30 28 -27 C24 -29 20 -28 16 -24Z';
+    s += `<path d="${wl}" fill="#5C5470" ${L(1.6)}/><path d="${wr}" fill="#5C5470" ${L(1.6)}/>`;
+    s += `<path d="M-18 -36 L-30 -33 M-20 -30 L-34 -32 M18 -36 L30 -33 M20 -30 L34 -32" stroke="#8F86A6" stroke-width="1" stroke-linecap="round"/>`;
+    /* チューバの からだ（ベルが うえ） */
+    const bodyD = 'M-11 -40 C-11 -26 -15 -16 -12 -10 C-8 -5 8 -5 12 -10 C15 -16 11 -26 11 -40Z';
+    s += `<path d="${bodyD}" fill="${P.mustard}" ${L()}/>` + shade(bodyD, 'M3 -44 L20 -44 L20 -2 L4 -2Z');
+    s += `<path d="${ell(0, -42, 19, 6)}" fill="#F0C863" ${L()}/><path d="${ell(0, -42, 13.5, 3.8)}" fill="#8E6420" ${L(1.4)}/>`;
+    s += `<path d="M-14 -45 q5 -3 10 -3" stroke="#FFF3C8" stroke-width="1.8" fill="none" stroke-linecap="round" opacity=".9"/>`;
+    /* ピストン と くだ */
+    s += `<path d="M11 -30 C18 -30 20 -24 18 -18 C17 -14 13 -14 11 -16" stroke="#B98B27" stroke-width="3.4" fill="none" stroke-linecap="round"/>`;
+    s += `<path d="M11 -30 C18 -30 20 -24 18 -18 C17 -14 13 -14 11 -16" stroke="${INK}" stroke-width="1" fill="none" stroke-linecap="round" opacity=".6"/>`;
+    [-5, 0, 5].forEach(x => { s += `<path d="M${x} -12 v-5" stroke="${INK}" stroke-width="1.1"/><circle cx="${x}" cy="-17.5" r="1.8" fill="${P.cream}" ${L(1)}/>`; });
+    /* みみ */
+    s += `<path d="M-9 -45 L-12 -55 L-4 -47Z M9 -45 L12 -55 L4 -47Z" fill="#5C5470" ${L(1.4)}/>`;
+    return s;
+  },
+  tinpa: () => {
+    let s = SHADOW(24);
+    s += `<path d="M-12 -6 L-16 0 M12 -6 L16 0 M0 -5 V0" stroke="${P.brown2}" stroke-width="3" stroke-linecap="round"/>`;
+    /* なべの からだ（どう いろ） */
+    const pot = 'M-24 -32 C-24 -14 -14 -6 0 -6 C14 -6 24 -14 24 -32Z';
+    s += `<path d="${pot}" fill="#C27B4E" ${L()}/>` + shade(pot, 'M6 -36 C30 -30 26 -2 2 -2 L34 0 L34 -36Z');
+    s += `<path d="M-20 -24 C-12 -20 12 -20 20 -24" stroke="#E2A57A" stroke-width="1.6" fill="none" opacity=".8"/>`;
+    s += `<path d="M-17 -28 C-16 -20 -12 -15 -8 -12" stroke="#F3CDA8" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".7"/>`;
+    /* かわの まく と ふち */
+    s += `<path d="${ell(0, -33, 26, 6.5)}" fill="${P.cream}" ${L()}/><path d="${ell(0, -33, 26, 6.5)}" fill="none" stroke="#9AA8B4" stroke-width="2.2"/>`;
+    [-20, -7, 7, 20].forEach(x => { s += `<path d="M${x} ${-33 + Math.abs(x) * .05 + 5} v5" stroke="#9AA8B4" stroke-width="2" stroke-linecap="round"/>`; });
+    /* いわの かけら（せなか） */
+    s += `<path d="M-28 -36 L-22 -46 L-14 -40Z M24 -38 L30 -46 L32 -36Z" fill="#9C958A" ${L(1.5)}/>`;
+    /* マレット（りょうて） */
+    s += `<path d="M-24 -22 L-36 -40" stroke="${P.brown}" stroke-width="2.6" stroke-linecap="round"/><circle cx="-37" cy="-42" r="4.4" fill="${P.white}" ${L(1.5)}/>`;
+    s += `<path d="M24 -22 L36 -40" stroke="${P.brown}" stroke-width="2.6" stroke-linecap="round"/><circle cx="37" cy="-42" r="4.4" fill="${P.white}" ${L(1.5)}/>`;
+    return s;
+  },
+  kontra: () => {
+    let s = SHADOW(30);
+    s += `<path d="M0 -6 V0" stroke="#6A4838" stroke-width="4" stroke-linecap="round"/>`;
+    /* ネック と うずまき */
+    s += `<path d="M-4 -62 V-86 H4 V-62Z" fill="#4E3428" ${L(1.6)}/>`;
+    s += `<path d="M0 -86 C-8 -86 -9 -96 -2 -97 C4 -98 6 -92 2 -90 C0 -89 -2 -91 -1 -93" fill="#9C6B48" ${L(1.6)}/>`;
+    s += `<path d="M-4 -82 h-6 M-4 -76 h-6 M4 -82 h6 M4 -76 h6" stroke="${INK}" stroke-width="2.2" stroke-linecap="round"/><circle cx="-11" cy="-82" r="2" fill="${P.cream}" ${L(1)}/><circle cx="-11" cy="-76" r="2" fill="${P.cream}" ${L(1)}/><circle cx="11" cy="-82" r="2" fill="${P.cream}" ${L(1)}/><circle cx="11" cy="-76" r="2" fill="${P.cream}" ${L(1)}/>`;
+    /* どう（ひょうたん がた） */
+    const bodyD = 'M0 -66 C-16 -66 -24 -58 -22 -48 C-21 -42 -18 -40 -20 -36 C-34 -32 -36 -16 -28 -10 C-20 -4 20 -4 28 -10 C36 -16 34 -32 20 -36 C18 -40 21 -42 22 -48 C24 -58 16 -66 0 -66Z';
+    s += `<path d="${bodyD}" fill="#B5703F" ${L(2.4)}/>` + shade(bodyD, 'M8 -70 C40 -50 40 -4 6 -2 L46 0 L46 -70Z');
+    s += `<path d="${bodyD}" fill="none" stroke="#6A4838" stroke-width="1.4" transform="translate(0 -1) scale(.93)" opacity=".7"/>`;
+    s += `<path d="M-14 -56 C-17 -50 -16 -46 -13 -42" stroke="#E2A57A" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".8"/>`;
+    /* fじの あな */
+    s += `<path d="M-14 -30 C-10 -28 -10 -20 -14 -16 M14 -30 C10 -28 10 -20 14 -16" stroke="${INK}" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="-14" cy="-31" r="1.4" fill="${INK}"/><circle cx="14" cy="-31" r="1.4" fill="${INK}"/><circle cx="-14" cy="-15" r="1.4" fill="${INK}"/><circle cx="14" cy="-15" r="1.4" fill="${INK}"/>`;
+    /* こま と げん */
+    s += `<path d="M-7 -26 H7 L5 -23 H-5Z" fill="#E9CFA0" ${L(1.2)}/>`;
+    s += `<path d="M-3 -36 V-9 M-1 -36 V-9 M1 -36 V-9 M3 -36 V-9" stroke="#DCD6CC" stroke-width=".9"/>`;
+    s += `<path d="M-6 -9 H6 L4 -5 H-4Z" fill="#4E3428" ${L(1.2)}/>`;
+    /* ゆみ（て） */
+    s += `<path d="M-38 -8 L-20 -40" stroke="#6A4838" stroke-width="2.6" stroke-linecap="round"/><path d="M-36 -10 L-19 -38" stroke="${P.white}" stroke-width="1.2" stroke-linecap="round"/>`;
+    return s;
+  },
+  /* ---------- こだまの やま（v2026.10.17-1） ---------- */
+  horun: () => {
+    let s = SHADOW(20);
+    s += `<path d="M-12 -12 v9 M-4 -11 v8 M5 -11 v8 M13 -12 v9" stroke="#6A4838" stroke-width="2.8" stroke-linecap="round"/>`;
+    const body = 'M-22 -24 C-24 -34 -14 -38 -2 -37 C10 -38 24 -35 23 -24 C23 -14 14 -10 0 -10 C-14 -10 -22 -14 -22 -24Z';
+    s += `<path d="${body}" fill="${P.white}" ${L()}/>` + shade(body, 'M6 -42 C30 -36 28 -8 2 -6 L34 -6 L34 -42Z', 'hatchL');
+    s += `<path d="M-18 -30 q4 -4 8 -2 q4 -4 8 -1 q4 -4 9 -1" stroke="${P.cream2}" stroke-width="1.4" fill="none" stroke-linecap="round"/>`;
+    /* あたま */
+    const head = 'M-12 -38 C-14 -50 -8 -56 0 -56 C8 -56 14 -50 12 -38 C10 -32 6 -30 0 -30 C-6 -30 -10 -32 -12 -38Z';
+    s += `<path d="${head}" fill="${P.white}" ${L()}/>`;
+    s += `<path d="M-3 -30 C-4 -26 -2 -23 0 -22 C2 -23 4 -26 3 -30" fill="${P.cream}" ${L(1.3)}/>`;
+    /* ホルンの つの（まきがい みたいに まく） */
+    s += `<g transform="translate(-14 -54)"><path d="M6 2 C-2 -2 -8 -8 -6 -14 C-4 -20 4 -20 6 -14 C7 -10 4 -8 1 -10" stroke="${P.mustard}" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M6 2 C-2 -2 -8 -8 -6 -14 C-4 -20 4 -20 6 -14 C7 -10 4 -8 1 -10" stroke="${INK}" stroke-width="1.1" fill="none" stroke-linecap="round" opacity=".7"/><path d="${ell(-7, -12, 3, 4.6, 20)}" fill="#F0C863" ${L(1.2)}/></g>`;
+    s += `<g transform="translate(14 -54) scale(-1 1)"><path d="M6 2 C-2 -2 -8 -8 -6 -14 C-4 -20 4 -20 6 -14 C7 -10 4 -8 1 -10" stroke="${P.mustard}" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M6 2 C-2 -2 -8 -8 -6 -14 C-4 -20 4 -20 6 -14 C7 -10 4 -8 1 -10" stroke="${INK}" stroke-width="1.1" fill="none" stroke-linecap="round" opacity=".7"/><path d="${ell(-7, -12, 3, 4.6, 20)}" fill="#F0C863" ${L(1.2)}/></g>`;
+    /* みみ と しっぽ */
+    s += `<path d="M-12 -46 C-20 -46 -22 -42 -18 -40 C-16 -41 -14 -42 -11 -42Z M12 -46 C20 -46 22 -42 18 -40 C16 -41 14 -42 11 -42Z" fill="${P.white}" ${L(1.4)}/>`;
+    s += `<path d="M22 -28 C27 -30 28 -25 25 -23" stroke="${INK}" stroke-width="1.6" fill="${P.white}"/>`;
+    return s;
+  },
+  kodama: () => {
+    let s = SHADOW(16);
+    s += `<path d="M-5 -8 L-7 -2 M5 -8 L7 -2 M-9 -2 h5 M4 -2 h5" stroke="${P.orange}" stroke-width="2" stroke-linecap="round"/>`;
+    const body = 'M-17 -26 C-18 -40 -8 -47 1 -47 C11 -47 18 -40 17 -27 C16 -15 9 -9 0 -9 C-9 -9 -16 -15 -17 -26Z';
+    s += `<path d="M14 -24 C24 -26 30 -20 30 -14 C24 -16 20 -16 15 -16Z" fill="${P.blue2}" ${L(1.5)}/>`;
+    s += `<path d="${body}" fill="${P.blue}" ${L()}/>` + shade(body, 'M5 -50 C26 -40 22 -6 0 -6 L30 -6 L30 -50Z');
+    s += `<path d="M-10 -24 C-10 -16 10 -16 10 -24 C8 -14 -8 -14 -10 -24Z" fill="${P.cream}" opacity=".95"/>`;
+    s += `<path d="M-15 -30 C-24 -32 -26 -24 -22 -20 C-19 -22 -16 -23 -14 -23Z" fill="${P.blue2}" ${L(1.5)}/>`;
+    /* くちばし と とさか */
+    s += `<path d="M-2 -32 L6 -31 L-1 -27Z" fill="${P.orange}" ${L(1.2)}/>`;
+    s += `<path d="M-2 -47 C-4 -54 2 -56 3 -51 C5 -55 9 -52 6 -47" fill="${P.red}" ${L(1.4)}/>`;
+    /* こだまの わ */
+    s += `<path d="M22 -42 C26 -38 26 -32 22 -28 M27 -46 C33 -40 33 -30 27 -24" stroke="${P.blue2}" stroke-width="1.8" fill="none" stroke-linecap="round" opacity=".75"/>`;
+    s += `<path d="M-12 -40 q3 -3 7 -3" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" opacity=".6"/>`;
+    return s;
+  },
+  suzuyuki: () => {
+    let s = SHADOW(20);
+    const ball = 'M-20 -24 C-21 -38 -11 -45 0 -45 C11 -45 21 -38 20 -24 C20 -12 11 -6 0 -6 C-11 -6 -20 -12 -20 -24Z';
+    s += `<path d="${ball}" fill="${P.white}" ${L()}/>` + shade(ball, 'M6 -50 C28 -40 26 -4 0 -2 L30 -2 L30 -50Z', 'hatchL');
+    s += `<path d="M-14 -16 q3 2 6 1 M8 -12 q3 0 5 -2 M-6 -40 q3 -1 6 0" stroke="#C9D8E2" stroke-width="1.4" fill="none" stroke-linecap="round"/>`;
+    /* あかい えりまき */
+    s += `<path d="M-18 -18 C-8 -13 8 -13 18 -18 L19 -14 C8 -9 -8 -9 -19 -14Z" fill="${P.red}" ${L(1.5)}/><path d="M10 -14 L13 -5 L17 -7 L15 -14Z" fill="${P.red}" ${L(1.3)}/>`;
+    /* すず（3こ） */
+    [[-10, -11], [0, -9], [10, -11]].forEach(([x, y]) => { s += `<circle cx="${x}" cy="${y}" r="3.4" fill="${P.mustard}" ${L(1.3)}/><path d="M${x - 1.6} ${y + .8} h3.2" stroke="${INK}" stroke-width="1"/>`; });
+    /* ぼうし（まつぼっくり いろ） */
+    s += `<path d="M-9 -43 C-8 -52 8 -52 9 -43Z" fill="${P.leaf2}" ${L(1.5)}/><circle cx="0" cy="-53" r="3" fill="${P.white}" ${L(1.2)}/>`;
+    s += `<path d="M-13 -36 q3 -3 7 -3" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".9"/>`;
+    return s;
+  },
+  alphorn: () => {
+    let s = SHADOW(34);
+    /* やまの からだ（ゆきの ぼうし） */
+    const mt = 'M-40 -6 C-36 -30 -24 -58 -6 -76 C-2 -80 2 -80 6 -76 C24 -58 36 -30 40 -6Z';
+    s += `<path d="${mt}" fill="#8FA27C" ${L(2.4)}/>` + shade(mt, 'M4 -84 L48 -84 L48 0 L10 0 C24 -30 18 -60 4 -84Z');
+    s += `<path d="M-16 -62 C-10 -56 -6 -60 -2 -54 C2 -60 8 -56 12 -62 C8 -68 4 -76 0 -78 C-6 -76 -12 -68 -16 -62Z" fill="${P.white}" ${L(1.6)}/>`;
+    s += `<path d="M-30 -20 l4 -6 l4 6Z M24 -26 l4 -7 l4 7Z M-20 -10 l3 -5 l3 5Z" fill="${P.leaf2}" ${L(1.2)}/>`;
+    s += `<path d="M-24 -40 C-22 -34 -22 -28 -24 -22" stroke="#B9CFA0" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".8"/>`;
+    /* アルプホルン（くちから ながく） */
+    s += `<path d="M2 -34 C14 -32 30 -26 42 -14" stroke="#B5703F" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+    s += `<path d="M2 -34 C14 -32 30 -26 42 -14" stroke="${INK}" stroke-width="1.2" fill="none" stroke-linecap="round" opacity=".6"/>`;
+    s += `<path d="M10 -33 l1 4 M20 -30 l1.4 4 M30 -25 l2 3.4" stroke="${P.mustard}" stroke-width="1.8" stroke-linecap="round"/>`;
+    s += `<path d="${ell(44, -10, 6, 9, -40)}" fill="#C88A5A" ${L(1.8)}/><path d="${ell(44.5, -9.5, 3, 5, -40)}" fill="#6A4838"/>`;
+    /* てぶくろの て */
+    s += `<path d="M-6 -30 C-10 -34 -6 -40 0 -38 C4 -36 4 -30 0 -28Z" fill="${P.red}" ${L(1.4)}/>`;
+    return s;
   }
 };
 /* かお：mood = 'fog'（もや）／'ok'（ふつう）／'joy'（もやが はれた） */
@@ -19053,7 +19228,15 @@ const MON_FACE = {
   rappa: { e: [-9, -70, 9, -70, 2.8], m: [0, -60, 7, 'round'], ck: [[-16, -62], [16, -62]] },
   donguri: { e: [-10, -32, 10, -32, 3], m: [0, -20, 7], ck: [[-18, -24], [18, -24]] },
   gamepiano: { e: [-40, -52, -31, -53, 2.4], m: [-36, -44, 4], ck: [[-44, -46], [-27, -47]] },
-  orgel: { e: [-11, -64, 11, -64, 3.2], m: [0, -41, 0, 'none'], ck: [[-19, -58], [19, -58]] }
+  orgel: { e: [-11, -64, 11, -64, 3.2], m: [0, -41, 0, 'none'], ck: [[-19, -58], [19, -58]] },
+  heon: { e: [-6.5, -43, 6.5, -43, 2], m: [0, -34.5, 2.6], ck: [[-12, -37], [12, -37]] },
+  tubako: { e: [-5, -31, 5, -31, 2], m: [0, -24, 3.5], ck: [[-9, -26], [9, -26]] },
+  tinpa: { e: [-8, -23, 8, -23, 2.3], m: [0, -15, 5], ck: [[-15, -18], [15, -18]] },
+  kontra: { e: [-9, -51, 9, -51, 3], m: [0, -42, 5, 'round'], ck: [[-15, -45], [15, -45]] },
+  horun: { e: [-5, -45, 5, -45, 2], m: [0, -37, 3], ck: [[-9, -39], [9, -39]] },
+  kodama: { e: [-7, -37, 7, -37, 2.2], m: [0, -28, 0, 'none'], ck: [[-12, -30], [12, -30]] },
+  suzuyuki: { e: [-7, -31, 7, -31, 2.3], m: [0, -24, 4], ck: [[-13, -26], [13, -26]] },
+  alphorn: { e: [-9, -47, 9, -47, 3], m: [0, -36, 0, 'none'], ck: [[-16, -41], [16, -41]] }
 };
 function monFace(k, mood){
   const F = MON_FACE[k]; if(!F) return '';
@@ -19097,7 +19280,7 @@ function fogFront(seed, big, topY){
   return s + '</g>';
 }
 /* 1ぴきの え。mood：fog／ok／joy。opt.size, opt.cls */
-const MON_TOP = { mame: -62, rin: -64, kasu: -50, poko: -60, tanba: -54, mara: -62, kani: -62, kurage: -74, otama: -70, chiku: -66, tri: -74, piro: -64, rappa: -90, donguri: -84, gamepiano: -80, orgel: -88 };
+const MON_TOP = { mame: -62, rin: -64, kasu: -50, poko: -60, tanba: -54, mara: -62, kani: -62, kurage: -74, otama: -70, chiku: -66, tri: -74, piro: -64, rappa: -90, donguri: -84, gamepiano: -80, orgel: -88, heon: -54, tubako: -56, tinpa: -50, kontra: -98, horun: -64, kodama: -58, suzuyuki: -56, alphorn: -82 };
 function monSVG(k, mood = 'ok', size = 96, opt = {}){
   const art = MON_ART[k]; if(!art) return '';
   SHADE_FLAT++; let b = art(); SHADE_FLAT--;
@@ -19130,6 +19313,21 @@ function rpgScene(area, W = 360, H = 200){
     for(let i = 0; i < 10; i++) s += `<path d="M${f1(R() * W)} ${f1(hz + R() * 30)} q7 -3 14 0" stroke="#fff" stroke-width="1.6" fill="none" opacity=".7" stroke-linecap="round"/>`;
     s += `<path d="M0 ${hz + H * .14} Q100 ${hz + H * .1} 200 ${hz + H * .15} T${W} ${hz + H * .12} V${H} H0Z" fill="${g1}"/>`;
     s += Deco.reeds(20, hz + H * .2) + Deco.reeds(340, hz + H * .22) + Deco.lily(70, hz + 14, .7) + Deco.lily(280, hz + 22, .6);
+  } else if(area === 4){
+    /* どうくつ：つらら・いわ・ひかる いし */
+    for(let i = 0; i < 9; i++){ const x = i * 44 + R() * 16, l = 18 + R() * 30; s += `<path d="M${f1(x - 9)} 0 L${f1(x)} ${f1(l)} L${f1(x + 9)} 0Z" fill="#3E4762" ${L(1.4)}/>`; }
+    s += `<path d="M0 ${hz - 10} Q60 ${hz - 40} 120 ${hz - 18} T240 ${hz - 26} T${W} ${hz - 14} V${H} H0Z" fill="#5B6280"/>`;
+    s += `<path d="M0 ${hz + 4} Q90 ${hz - 10} 180 ${hz + 2} T${W} ${hz - 2} V${H} H0Z" fill="${g1}"/>`;
+    [[40, hz + 18, '#9DD3E0'], [310, hz + 22, '#C9B6E8'], [210, hz + 10, '#9DD3E0']].forEach(([x, y, c]) => {
+      s += `<g transform="translate(${f1(x)} ${f1(y)})"><path d="M-6 0 L-3 -16 L2 -20 L5 -4Z" fill="${c}" ${L(1.4)}/><path d="M2 0 L6 -11 L10 -2Z" fill="${c}" ${L(1.3)}/><path d="M-2 -14 L0 -6" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity=".8"/></g>`; });
+    s += Deco.mushroom(330, hz + 34, .6, '#9A7FC1');
+  } else if(area === 5){
+    /* やま：ゆきの やま・はやし・くも */
+    s += `<g class="drift" style="animation-duration:46s">${Deco.cloud(80, 34, .9)}</g>` + Deco.cloud(290, 22, .6, .8);
+    [[110, hz + 4, 240, 92], [280, hz + 6, 220, 78]].forEach(([x, y, w, h]) => {
+      s += Deco.mountain(x, y, w, h, '#9DB0C2'); });
+    s += `<path d="M0 ${hz + 8} Q100 ${hz - 16} 200 ${hz} T${W} ${hz - 8} V${H} H0Z" fill="${g1}"/>`;
+    for(let i = 0; i < 6; i++) s += Deco.pine(20 + i * 62 + R() * 14, hz + 10 + R() * 8, .6 + R() * .25);
   } else {
     s += `<g class="drift" style="animation-duration:40s">${Deco.cloud(90, 40, 1)}</g>` + Deco.cloud(260, 28, .8, .9) + Deco.balloon(310, 60, '#D9798A');
     s += `<path d="M0 ${hz + 10} Q100 ${hz - 26} 200 ${hz - 6} T${W} ${hz - 14} V${H} H0Z" fill="${g1}"/>`;
@@ -19137,7 +19335,7 @@ function rpgScene(area, W = 360, H = 200){
   }
   /* じめん（てまえ） */
   s += `<path d="M0 ${H * .8} Q${W / 2} ${H * .74} ${W} ${H * .8} V${H} H0Z" fill="${g2}"/>`;
-  for(let i = 0; i < 12; i++) s += area === 2 ? '' : Deco.flower(R() * W, H * .82 + R() * H * .14, FLOWER_C ? FLOWER_C[i % 6] : '#D9798A', .6);
+  for(let i = 0; i < 12; i++) s += (area === 2 || area === 4) ? '' : Deco.flower(R() * W, H * .82 + R() * H * .14, FLOWER_C ? FLOWER_C[i % 6] : '#D9798A', .6);
   return `<svg class="rpgScene" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" aria-hidden="true">${s}</svg>`;
 }
 
