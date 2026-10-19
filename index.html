@@ -3375,7 +3375,7 @@ ruby rt{font-weight:700;color:#6E5B50}
    ・同じ地図に 教室みんなの主人公（ニックネーム・順位なし）
    ・おうちのひと：予定・振替・おしらせ・れんらくちょう
    ========================================================= */
-const APP_VER = 'v2026.10.17-1';   /* なおしたら かならず あげる（アップした ものが あたらしいか、おうちのかた→設定の いちばん したで たしかめられる） */
+const APP_VER = 'v2026.10.17-2';   /* なおしたら かならず あげる（アップした ものが あたらしいか、おうちのかた→設定の いちばん したで たしかめられる） */
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -3688,7 +3688,17 @@ function stallShow(){
       if(b && b.dataset.st === 'again'){ const r = STALL.restart; stallHide(); try{ if(r) r(); }catch(x){} if(!busyAudio()){ audioReset(); audioWake(); } return; }
       STALL.tries++; audioWake();
       try{ if(audio){ const r = audio.resume(); if(r && r.catch) r.catch(() => {}); } }catch(x){}
-      setTimeout(() => { if(STALL.on && STALL.tries >= 2) o.classList.add('hard'); }, 600);
+      /* v2026.10.17-2：iPhone は 一度「中断」した 音を もう うごかさない ことが ある。
+         0.8びょう まっても 音の とけいが すすまなければ、音の しくみを つくりなおして、この レベルを はじめから。
+         （おした のに なにも おきない、を なくす。あたらしい 音は つぎの タッチで おきる） */
+      const tap = STALL.tries;
+      setTimeout(() => {
+        if(!STALL.on || STALL.tries !== tap) return;
+        const r = STALL.restart; stallHide();
+        try{ if(r) r(); }catch(x){}
+        if(!busyAudio()) audioReset();
+        toast('おとを なおしたよ。この レベルを はじめから やるね', 3200);
+      }, 800);
     });
   }
   o.className = 'show';
@@ -4938,7 +4948,7 @@ const Deco = {
     return `<g transform="translate(${f1(x)} ${f1(y)})">${Deco.shadow(0, 0, 20)}<path d="M-3 0 L-3.4 -34 H3.4 L3 0Z" fill="${P.brown}" ${L(1.3)}/>
       <path d="M${-w / 2} -57 Q0 -60 ${w / 2} -57 L${w / 2 - 1} -31 Q0 -29 ${-w / 2 + 1} -31Z" fill="${c}" ${L(1.6)}/>
       <path d="M${-w / 2 + 6} -52 Q${-w / 4} -53 ${-w / 6} -52 M${w / 5} -36 Q${w / 3} -35 ${w / 2 - 8} -36" stroke="${P.brown}" stroke-width="1" opacity=".45" fill="none"/>
-      <text x="0" y="-39" text-anchor="middle" font-size="13.5" font-weight="900" fill="${INK}" font-family="Zen Maru Gothic, sans-serif">${text}</text></g>`;
+      <text x="0" y="-39" text-anchor="middle" font-size="13.5" font-weight="900" fill="${INK}" font-family="Zen Maru Gothic, sans-serif">${esc(text)}</text></g>`;
   },
   gate(x, y, c = '#D9644C', ang = -90){
     /* つなぎめの いしだたみ：道の むきに あわせて よこぎる */
@@ -9240,7 +9250,7 @@ async function openVisit(pid, from = 'plaza'){
   if(!d || !d.town || !Array.isArray(d.town.items) || !d.town.items.length){ toast('いまは あそびに いけないみたい。また こんど!'); return; }
   clearInterval(townTimer);
   const key = todayStr() + ':' + pid;
-  TOWN_VIEW = { pid, nick: d.nick || 'ともだち', avatar: d.avatar || {}, state: { items: d.town.items.filter(i => i && typeof i.k === 'string'), got: {}, req: {}, song: d.town.song && Array.isArray(d.town.song.n) ? d.town.song : null, hide: d.town.hide && typeof d.town.hide === 'object' ? { x: +d.town.hide.x, y: +d.town.hide.y, k: String(d.town.hide.k || '') } : null }, from, found: !!(S.found || {})[key], miss: 0 };
+  TOWN_VIEW = { pid, nick: d.nick || 'ともだち', avatar: d.avatar || {}, state: { items: d.town.items.filter(i => i && typeof i.k === 'string').map(townItemSafe).filter(Boolean), got: {}, req: {}, song: d.town.song && Array.isArray(d.town.song.n) ? d.town.song : null, hide: d.town.hide && typeof d.town.hide === 'object' ? { x: +d.town.hide.x, y: +d.town.hide.y, k: String(d.town.hide.k || '').slice(0, 40).replace(/[^\w-]/g, '') } : null }, from, found: !!(S.found || {})[key], miss: 0 };
   townEditing = false; townSel = null;
   const t = $('town');
   t.classList.remove('editing'); t.classList.add('visiting'); $('townTray').classList.add('hide'); $('townTalk').classList.add('hide'); $('townEdit').classList.add('hide');
@@ -9984,6 +9994,16 @@ function fxHeart(cx, cy){
 }
 
 /* ---------- さわると うごく ---------- */
+/* ともだちの まちの データは、ほかの 家の 端末から とどく。かずは かずに、もじは きまった 形だけに して つかう（v2026.10.17-2） */
+function townItemSafe(i){
+  const x = Math.round(+i.x), y = Math.round(+i.y);
+  if(!isFinite(x) || !isFinite(y)) return null;
+  const o = { k: String(i.k).slice(0, 40).replace(/[^\w-]/g, ''), x, y };
+  if(!o.k) return null;
+  if(typeof i.c === 'number' && isFinite(i.c)) o.c = Math.round(i.c);
+  if(typeof i.d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(i.d)) o.d = i.d;
+  return o;
+}
 function artOf(it){ return document.querySelector(`#townSvg .tObj[data-x="${it.x}"][data-y="${it.y}"] .tArt`); }
 function animArt(it, c, ms = 1300){
   const a = artOf(it); if(!a) return;
