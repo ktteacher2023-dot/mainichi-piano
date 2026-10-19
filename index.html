@@ -2666,6 +2666,47 @@ button.rpIt{cursor:pointer}
 .rcW.ng{background:#F4C9BE}
 .rcBk{position:absolute;top:0;width:6%;height:58%;background:var(--ink);border-radius:0 0 4px 4px;pointer-events:none}
 .rcChoices .rcCh:active,.rcPad:active{transform:translateY(3px)}
+/* v2026.10.19-1：もやの ふういん・おんぷの わざ */
+.rbSeal{position:absolute;top:30px;right:-18px;width:74px;padding:1px 2px 0;background:#FFFDF6;border:2px solid #6B5B8C;border-radius:12px;box-shadow:0 2px 0 #6B5B8C,0 0 0 3px rgba(155,140,200,.35);z-index:2;line-height:0;animation:rbSealIn .5s cubic-bezier(.34,1.4,.64,1)}
+.rbSeal .rbSealStf{display:block;width:100%;height:auto}
+.rbSeal i{position:absolute;left:-9px;top:-9px;width:22px;height:22px;border-radius:50%;background:#6B5B8C;border:2px solid var(--ink);display:flex;align-items:center;justify-content:center}
+.rbSeal i svg{filter:brightness(2.4)}
+.rbSeal.brk{animation:rbSealBrk .6s ease forwards}
+@keyframes rbSealIn{from{transform:scale(.3) rotate(-12deg);opacity:0}}
+@keyframes rbSealBrk{30%{transform:scale(1.25) rotate(8deg);opacity:1}100%{transform:scale(.2) rotate(-30deg) translateY(-20px);opacity:0}}
+.rbFoe.boss .rbSeal{top:78px;right:-22px;width:84px}
+.rbFoes.n3 .rbSeal{width:clamp(46px,14vw,60px);right:-4px;top:28px}
+.rbSeal.big{position:relative;top:auto;right:auto;width:110px;margin-left:-10px;display:inline-block;vertical-align:middle}
+.rpSealHow{display:flex;align-items:center;justify-content:center;gap:4px}
+.rbB.hint{box-shadow:0 3px 0 var(--ink),0 0 0 4px rgba(243,210,122,.75);animation:rbHint 1.6s ease-in-out infinite}
+@keyframes rbHint{50%{box-shadow:0 3px 0 var(--ink),0 0 0 7px rgba(243,210,122,.35)}}
+.rbB.skl.nt{background:#EFE6F8}
+.rbB.tgt.sl small{display:inline-flex;align-items:center;gap:2px;color:#6B5B8C;font-weight:900}
+.rcKbN{height:118px}
+.rcKbN .rcW[style]{background:color-mix(in srgb,var(--nc) 26%,#FFFDF8)}
+.rcKbN .rcW.lit{background:#FFE7A0;box-shadow:inset 0 -8px 0 #E3B143}
+.rcKbN .rcW.ok{background:#CFE7BE}
+.rcKbN .rcW.ng{background:#F4C9BE}
+.rcKbN .rcW small{font-weight:900;color:var(--ink2)}
+.rcTime{height:6px;border-radius:999px;background:#EFE7DA;overflow:hidden}
+.rcTime i{display:block;height:100%;background:#E3B143;transform-origin:left center}
+.rcPips{display:flex;align-items:center;justify-content:center;gap:8px;min-height:22px}
+.rcPips i{width:16px;height:16px;border-radius:50%;border:2.5px solid var(--line);background:#FFFDF8}
+.rcPips i.now{border-color:var(--ink);background:#FFF1CF}
+.rcPips i.ok{border-color:var(--leaf-d);background:#A8DB8E}
+.rcPips i.ng{border-color:#C4513B;background:#F4C9BE}
+.rcCombo{font-family:'MPKana','Zen Maru Gothic',sans-serif;font-size:18px;color:var(--coral);margin-left:6px;min-width:4.5em}
+.rcCombo.pop{animation:rbAct .3s ease}
+.rpNst{display:flex;align-items:center;gap:10px;padding:10px 14px}
+.rpNstI{flex:0 0 auto;width:44px;height:44px;border-radius:50%;background:#EFE6F8;display:flex;align-items:center;justify-content:center;border:2px solid var(--ink)}
+.rpNst span:last-child{display:flex;flex-direction:column;gap:2px;min-width:0}
+.rpNst b{font-size:14px}
+.rpNst em{font-style:normal;font-size:20px;color:#6B5B8C}
+.rpNst small{font-size:12px;color:var(--ink2);line-height:1.5;word-break:auto-phrase}
+.rpTitleB{display:inline-block;margin-top:4px;font-size:12px;font-weight:900;background:#F3D27A;border:2px solid var(--ink);border-radius:999px;padding:1px 10px}
+.rpSoon.done{background:#FFF6DD}
+.rpEndAll{display:flex;flex-wrap:wrap;justify-content:center;gap:2px;max-width:280px;margin:0 auto}
+@media (prefers-reduced-motion: reduce){.rbSeal{animation:none}.rbB.hint{animation:none}}
 /* おうちの もん */
 .rpgGate{cursor:pointer}
 .rpgGate:active{opacity:.8}
@@ -3375,7 +3416,7 @@ ruby rt{font-weight:700;color:#6E5B50}
    ・同じ地図に 教室みんなの主人公（ニックネーム・順位なし）
    ・おうちのひと：予定・振替・おしらせ・れんらくちょう
    ========================================================= */
-const APP_VER = 'v2026.10.17-2';   /* なおしたら かならず あげる（アップした ものが あたらしいか、おうちのかた→設定の いちばん したで たしかめられる） */
+const APP_VER = 'v2026.10.19-1';   /* なおしたら かならず あげる（アップした ものが あたらしいか、おうちのかた→設定の いちばん したで たしかめられる） */
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -17880,10 +17921,12 @@ const RPG_ITEMS = {
 };
 const RPG_SLOT = { w: 'て', h: 'あたま', a: 'からだ', c: 'おまもり' };
 const RPG_SKILLS = [
+  { id: 'slash',   n: 'おんぷ・スラッシュ', lv: 1, mp: 1, nt: 1, d: 'おんぷを よんで、その おとの けんばんを おすと 1ぴきに こうげき。ふういんも とける' },
   { id: 'rhythm',  n: 'リズム・アタック',   lv: 1, mp: 2, d: 'リズムに あわせて たたくと、1ぴきに つよい こうげき' },
-  { id: 'note',    n: 'おんぷ・マジック',   lv: 2, mp: 3, d: 'おんぷの なまえを あてると、ぜんいんに こうげき' },
+  { id: 'note',    n: 'おんぷ・マジック',   lv: 2, mp: 3, nt: 1, d: 'おんぷを つぎつぎ よむと、あたった かずだけ ぜんいんに まほう。ふういんも とける' },
   { id: 'harmony', n: 'ハーモニー・ヒール', lv: 4, mp: 3, d: 'けんばんを じゅんばんに おすと、みんなの げんきが もどる' },
-  { id: 'forte',   n: 'フォルテッシモ',     lv: 8, mp: 5, d: 'ながい リズムを たたくと、ぜんいんに だいこうげき' }
+  { id: 'forte',   n: 'フォルテッシモ',     lv: 8, mp: 5, d: 'ながい リズムを たたくと、ぜんいんに だいこうげき' },
+  { id: 'melody',  n: 'メロディ・ノヴァ',   lv: 12, mp: 5, nt: 1, d: 'ならんだ 4つの おんぷを ひだりから よむと、ぜんいんに だいまほう。ぜんぶ よめたら ふういんが ぜんぶ とける' }
 ];
 const RPG_NODE = { b: 'たたかい', t: 'たからばこ', s: 'おとの いずみ', q: 'おんぷの なぞなぞ', B: 'もやの ぬし' };
 
@@ -17983,7 +18026,9 @@ async function openRPG(){
   rpgHome();
   const R = rpgSt();
   await sleep(250);
+  const was = !!R.seen.intro;
   if(!R.seen.intro){ R.seen.intro = 1; saveState(); await rpgStory(); }
+  if(!R.seen.slash){ R.seen.slash = 1; saveState(); if(was) await rpgPop(`<div class="rpStory rpLvUp">${heroSVG(typeof avatarMe === 'function' ? avatarMe() : {}, 96)}</div><h3>あたらしい わざを おぼえた!</h3><p class="rpNew">「<b>おんぷ・スラッシュ</b>」<br><small>おんぷを よんで、その おとの けんばんを おすと こうげき</small></p><p>いきものに <b>もやの ふういん</b>（おんぷ）が つくように なったよ。おんぷを よむ わざで とこう!</p>`, [{ t: 'やってみる!', c: 'sun' }]); }
   if(got.length) await rpgGotPop(got);
   const lv = R.lv; await rpgLevelCheck();
   if(got.length || R.lv !== lv) rpgHome();
@@ -18007,8 +18052,9 @@ function rpgHome(){
       <div class="rpHeroTx"><div class="rpHn"><b>${esc(rpgName())}</b><span class="rpLv">Lv ${R.lv}</span></div>
         <div class="rpSt"><span>げんき ${st.hp}</span><span>こうげき ${st.atk}</span><span>まもり ${st.def}</span><span>すばやさ ${st.spd}</span></div>
         <div class="rpXp"><small>つぎの レベルまで あと <b>${Math.max(0, need - R.xp)}</b></small>${rpgBar(R.xp, need, 'xp')}</div>
-        <div class="rpCoin">${rpgItemSVG('coin', 22)}<b>${R.coin}</b><small>おとコイン</small></div></div>
+        <div class="rpCoin">${rpgItemSVG('coin', 22)}<b>${R.coin}</b><small>おとコイン</small></div>${R.seen.ending ? '<div class="rpTitleB">おとの ゆうしゃ</div>' : ''}</div>
     </div>
+    ${(() => { const ns = rpgNst(); return `<div class="rpNst card"><span class="rpNstI">${ICON('note', 26)}</span><span><b>きょう ぼうけんで よんだ おんぷ <em>${ns.n}</em> こ</b><small>${ns.best ? `おんぷ・マジックの いちばん ながい れんさ：${ns.best}${ns.tb ? `（きょう ${ns.tb}）` : ''}` : 'おんぷを よむ わざで、もやの ふういんが とけるよ'}</small></span></div>`; })()}
     <div class="rpPrac card"><div class="rpPt"><b>れんしゅうで たびの ちからが ふえるよ</b><small>きょう：</small></div>
       <div class="rpPd">${parts.map(k => `<span class="${c[k] ? 'on' : ''}">${c[k] ? ICON('check', 16) : ICON(k === 'rhythm' ? 'drum' : k === 'note' ? 'note' : k === 'keys' ? 'cherry' : 'piano', 16)}${RPG_PART_NAME[k]}</span>`).join('')}</div>
       <small class="rpPs">1つ するごとに ちから ＋1・けいけんち ＋${rpgPracticeXp()}。れんしゅう しない ひも、1かいは でかけられるよ</small></div>
@@ -18083,7 +18129,7 @@ function rpgWorld(){
       <div class="rpATx"><b>${a + 1}. ${A.name}</b><small>${open ? (cl ? 'もやが はれた! さんぽで つよく なれるよ' : `${pos}/${n} ます・めやす Lv ${A.lv[0]}〜${A.lv[1]}`) : 'まえの ばしょの ぬしの もやを はらうと いけるよ'}</small>
       ${open ? `<span class="rpAProg">${A.nodes.map((x, i) => `<i class="${i < pos || cl ? 'on' : ''}${x === 'B' ? ' boss' : ''}"></i>`).join('')}</span>` : ''}</div></button>`;
   });
-  h += `<div class="rpSoon card">${ICON('lock', 22)}<span><b>このさきの ばしょ</b><small>ほしの うみ・おとの おしろ は、じゅんびちゅう</small></span></div></div>`;
+  h += R.seen.ending ? `<div class="rpSoon card done">${ICON('star', 22)}<span><b>おとの くにに おとが もどった!</b><small>どの ばしょも さんぽで つよく なれるよ。ふういんの おんぷを よんで、もっと つよく なろう</small></span></div></div>` : '</div>';
   $('rpgBody').innerHTML = h;
   rpgBindBack();
   $('rpgBody').querySelectorAll('.rpArea:not(.lock)').forEach(b => b.onclick = () => { rpgSfx('sel'); rpgField(+b.dataset.a); });
@@ -18186,7 +18232,7 @@ async function rpgEndOuting(why){
 }
 function rpgCampSVG(){ return `<svg width="120" height="90" viewBox="-60 -80 120 90"><path d="M-40 0 L0 -60 L40 0Z" fill="${P.red}" ${L(2)}/><path d="M0 -60 L-10 0 M0 -60 L10 0" stroke="${INK}" stroke-width="1.6"/><path d="M-10 0 L0 -26 L10 0Z" fill="#6B3B34"/><g transform="translate(34 0)"><path d="M-10 0 L10 0" stroke="${P.brown2}" stroke-width="3"/><path d="M-6 -2 C-8 -10 -2 -14 0 -20 C2 -14 8 -10 6 -2Z" fill="${P.orange}" ${L(1.4)} class="bob"/></g></svg>`; }
 async function rpgChest(a){
-  const pools = [['candy', 'candy', 'drop', 'balloon', 'w_wood', 'h_beret'], ['candy', 'milk', 'drop', 'bell', 'tea', 'a_cloth'], ['milk', 'tea', 'drop', 'bell', 'c_rhythm', 'c_note'], ['milk', 'tea', 'bell', 'drop', 'h_feather', 'c_harmony'], ['cocoa', 'tea', 'bell', 'drop', 'h_horn', 'cocoa'], ['cocoa', 'tea', 'bell', 'drop', 'a_snow', 'cocoa']];
+  const pools = [['candy', 'candy', 'drop', 'balloon', 'w_wood', 'h_beret'], ['candy', 'milk', 'drop', 'bell', 'tea', 'a_cloth'], ['milk', 'tea', 'drop', 'bell', 'c_rhythm', 'c_note'], ['milk', 'tea', 'bell', 'drop', 'h_feather', 'c_harmony'], ['cocoa', 'tea', 'bell', 'drop', 'h_horn', 'cocoa'], ['cocoa', 'tea', 'bell', 'drop', 'a_snow', 'cocoa'], ['cocoa', 'soda', 'bell', 'drop', 'h_shell', 'c_note2'], ['cocoa', 'soda', 'bell', 'drop', 'a_royal', 'soda']];
   const pool = pools[a] || pools[0], id = pool[Math.floor(Math.random() * pool.length)], coin = 6 + a * 8 + Math.floor(Math.random() * 6);
   const it = RPG_ITEMS[id], dup = it.t !== 'use' && rpgHas(id);
   if(!dup) rpgAddItem(id, 1);
@@ -18212,14 +18258,25 @@ function rpgQuizAsk(q){
     let ov = $('rpgPop'); if(!ov){ ov = document.createElement('div'); ov.id = 'rpgPop'; $('rpg').appendChild(ov); }
     ov.innerHTML = `<div class="rpgPopBox"><h3>この おんぷは?</h3><div class="rcStaff">${rpgStaffSVG(q)}</div><div class="rcChoices">${q.choices.map((c, i) => `<button class="rcCh" data-i="${i}" ${q.color ? `style="--nc:${colorOf(c)}"` : ''}>${kanaOf(c)}</button>`).join('')}</div></div>`;
     ov.className = 'show';
-    ov.querySelectorAll('.rcCh').forEach(b => b.onclick = () => { const ok = q.choices[+b.dataset.i] === q.dia; b.classList.add(ok ? 'ok' : 'ng'); if(ok) chime(true); else rpgSfx('miss'); try{ pKeyNote(midiOfDia(q.dia), .7); }catch(e){}
+    ov.querySelectorAll('.rcCh').forEach(b => b.onclick = () => { const ok = q.choices[+b.dataset.i] === q.dia; b.classList.add(ok ? 'ok' : 'ng'); if(ok) chime(true); else rpgSfx('miss'); try{ pKeyNote(midiOfDia(q.dia), .7); }catch(e){} rpgNoteResult(q, ok);
       setTimeout(() => { ov.className = ''; res(ok); }, 700); });
   });
 }
 async function rpgAreaClear(a){
   const A = RPG_AREAS[a];
+  if(a === RPG_AREAS.length - 1 && !rpgSt().seen.ending){ await rpgEnding(); return; }
   rpgSfx('win'); if(typeof confetti === 'function') confetti(40);
   await rpgPop(`<div class="rpStory">${monSVG(A.boss, 'joy', 120)}</div><h3>${A.name}の もやが はれた!</h3><p>${esc(MON[A.boss].line)}</p>${RPG_AREAS[a + 1] ? `<p>つぎの ばしょ「${RPG_AREAS[a + 1].name}」に いけるように なったよ</p>` : '<p>いま いける ばしょは ぜんぶ もやが はれたよ。つぎの ばしょは じゅんびちゅう</p>'}`, [{ t: 'やったー!', c: 'sun' }]);
+}
+
+/* さいごの ばしょの ぬしを はらったら：おしまいの おはなし（v2026.10.19-1） */
+async function rpgEnding(){
+  const R = rpgSt();
+  rpgSfx('win'); if(typeof confetti === 'function') confetti(60);
+  await rpgPop(`<div class="rpStory">${monSVG('shizuka', 'joy', 130)}</div><h3>しずかの おうの もやが はれた!</h3><p>「${esc(MON.shizuka.line)}」</p>`, [{ t: 'いいよ!', c: 'sun' }]);
+  await rpgPop(`<div class="rpStory rpEndAll">${['rappa', 'donguri', 'gamepiano', 'orgel', 'kontra', 'alphorn', 'hoshikujira'].map(k => monSVG(k, 'joy', 54)).join('')}</div><h3>おとの くにに おとが もどった!</h3><p>はらっぱにも もりにも うみにも、また うたが きこえるように なったよ。<br>${esc(rpgName())}は「<b>おとの ゆうしゃ</b>」に なった!</p>`, [{ t: 'やったー!', c: 'sun' }]);
+  R.seen.ending = 1; saveState();
+  await rpgPop(`<div class="rpStory">${rpgHeroFace(80)}</div><h3>たびは まだ つづくよ</h3><p>どの ばしょも さんぽに いけるよ。ふういんの おんぷを よんで、もっと つよく なろう。</p>`, [{ t: 'おうちに もどる', c: 'white' }]);
 }
 
 /* =========================================================
@@ -18243,7 +18300,8 @@ function rpgMember(id){
 function rpgBattleStart(a, boss){
   return new Promise(async done => {
     const R = rpgSt();
-    RB = { a, boss, foes: rpgFoesFor(a, boss), party: ['hero'].concat(R.party).map(rpgMember), guard: 0, haste: 0, fguard: 0, fhaste: 0, used: 0, done, over: false, round: 0 };
+    RB = { a, boss, foes: rpgFoesFor(a, boss), party: ['hero'].concat(R.party).map(rpgMember), guard: 0, haste: 0, fguard: 0, fhaste: 0, used: 0, done, over: false, round: 0, nRead: 0 };
+    rbSealInit();
     R.party.forEach(k => { R.seen['m_' + k] = 1; });
     RB.foes.forEach(f => { R.seen['m_' + f.k] = 1; });
     RPG_VIEW = 'battle';
@@ -18253,14 +18311,15 @@ function rpgBattleStart(a, boss){
     const appear = boss ? `もやの ぬし ${RB.foes[0].n}が あらわれた!` : Object.keys(names).map(n => `${n}${names[n] > 1 ? `が ${names[n]}ひき` : ''}`).join('と ') + (Object.keys(names).length === 1 && names[Object.keys(names)[0]] > 1 ? ' あらわれた!' : 'が あらわれた!');
     say(appear);
     await rbSay(appear, 1300);
-    if(boss) await rbSay({ rappa: 'もやに つつまれて、おおきな こえで さけんでいる…!', donguri: 'ドンドコ ドンドコ… リズムが めちゃくちゃに なっている…!', gamepiano: 'にごった わおんを ずっと ならしている…!', orgel: 'ねじが くるって、とまらない メロディを ならしている…!' }[RB.foes[0].k] || 'もやに つつまれて あばれている…!', 1400);
+    if(boss) await rbSay({ rappa: 'もやに つつまれて、おおきな こえで さけんでいる…!', donguri: 'ドンドコ ドンドコ… リズムが めちゃくちゃに なっている…!', gamepiano: 'にごった わおんを ずっと ならしている…!', orgel: 'ねじが くるって、とまらない メロディを ならしている…!', hoshikujira: 'ほしの うたを わすれて、なみを あらく している…!', shizuka: 'この くにの おとを ぜんぶ しずかに しようと している…!' }[RB.foes[0].k] || 'もやに つつまれて あばれている…!', 1400);
+    if(RB.foes.some(f => f.seal)){ await rbSealIntro(); if(!boss) await rbSay(RB.foes.filter(f => f.seal).length > 1 ? 'ふういんの おんぷが ついている いきものが いる!' : `${RB.foes.find(f => f.seal).n}に ふういんの おんぷが ついている!`, 1100); else await rbSay('ぬしは ふういんで まもられている! おんぷを よんで とこう', 1200); }
     rbTurn();
   });
 }
 function rpgBattleDraw(){
   const B = RB, A = RPG_AREAS[B.a];
   rpgHead(B.boss ? 'もやの ぬし' : A.name);
-  const foes = B.foes.map((f, i) => `<div class="rbFoe${f.boss ? ' boss' : ''}${f.hp <= 0 ? ' gone' : ''}" data-f="${i}"><div class="rbFn">${esc(f.n)}<small>Lv${f.lv}</small></div>${rpgBar(f.hp, f.max, 'fog')}<div class="rbArt">${monSVG(f.k, f.hp <= 0 ? 'joy' : 'fog', f.boss ? 168 : B.foes.length > 2 ? 104 : 118)}</div><div class="rbNum"></div></div>`).join('');
+  const foes = B.foes.map((f, i) => `<div class="rbFoe${f.boss ? ' boss' : ''}${f.hp <= 0 ? ' gone' : ''}${f.seal && f.hp > 0 ? ' sealed' : ''}" data-f="${i}"><div class="rbFn">${esc(f.n)}<small>Lv${f.lv}</small></div>${rpgBar(f.hp, f.max, 'fog')}<div class="rbArt">${monSVG(f.k, f.hp <= 0 ? 'joy' : 'fog', f.boss ? 168 : B.foes.length > 2 ? 104 : 118)}</div><div class="rbNum"></div>${f.seal && f.hp > 0 ? rbSealChip(f.seal) : ''}</div>`).join('');
   $('rpgBody').innerHTML = `<div class="rpgBattle">
     <div class="rbStage">${rpgScene(B.a, 360, 210)}<div class="rbFoes n${B.foes.length}">${foes}</div></div>
     <div class="rbParty n${B.party.length}">${B.party.map((m, i) => rbMemHTML(m, i)).join('')}</div>
@@ -18326,7 +18385,9 @@ function rbTurn(){
 function rbCmd(){
   const c = $('rbCmd'); if(!c) return;
   c.innerHTML = `<button class="rbB atk" data-c="atk">${ICON('star', 22)}<b>たたかう</b></button><button class="rbB sk" data-c="sk">${ICON('note', 22)}<b>わざ</b><small>おと ${RB.party[0].mp}</small></button><button class="rbB it" data-c="it">${rpgItemSVG('candy', 26)}<b>どうぐ</b></button><button class="rbB run" data-c="run">${ICON('foot', 22)}<b>にげる</b></button>`;
-  $('rbMsg').textContent = `${rpgName()}は どうする?`;
+  const sealed = rbAliveFoes().filter(([f]) => f.seal).length;
+  $('rbMsg').textContent = sealed ? `${rpgName()}は どうする?（ふういんは おんぷを よむ わざで とけるよ）` : `${rpgName()}は どうする?`;
+  if(sealed) c.querySelector('[data-c="sk"]').classList.add('hint');
   c.querySelectorAll('[data-c]').forEach(b => b.onclick = () => { rpgSfx('sel'); ({ atk: rbPickAtk, sk: rbPickSkill, it: rbPickItem, run: rbRun })[b.dataset.c](); });
 }
 function rbBackBtn(){ return `<button class="rbB back" data-back="1">${ICON('back', 20)}<b>もどる</b></button>`; }
@@ -18335,7 +18396,7 @@ function rbPickTarget(label){
     const alive = rbAliveFoes();
     if(alive.length === 1){ res(alive[0][1]); return; }
     $('rbMsg').textContent = label || 'どの いきものに する?';
-    $('rbCmd').innerHTML = alive.map(([f, i]) => `<button class="rbB tgt" data-t="${i}">${monSVG(f.k, 'fog', 34)}<b>${esc(f.n)}</b></button>`).join('') + rbBackBtn();
+    $('rbCmd').innerHTML = alive.map(([f, i]) => `<button class="rbB tgt${f.seal ? ' sl' : ''}" data-t="${i}">${monSVG(f.k, 'fog', 34)}<b>${esc(f.n)}</b>${f.seal ? `<small>${ICON('lock', 12)} ふういん</small>` : ''}</button>`).join('') + rbBackBtn();
     document.querySelectorAll('.rbFoe:not(.gone)').forEach(el => el.classList.add('pick'));
     const fin = v => { document.querySelectorAll('.rbFoe.pick').forEach(el => { el.classList.remove('pick'); el.onclick = null; }); res(v); };
     $('rbCmd').querySelectorAll('[data-t]').forEach(b => b.onclick = () => { rpgSfx('sel'); fin(+b.dataset.t); });
@@ -18347,17 +18408,20 @@ async function rbPickAtk(){ const t = await rbPickTarget(); if(t < 0){ rbCmd(); 
 function rbPickSkill(){
   const hero = RB.party[0], R = rpgSt();
   $('rbMsg').textContent = 'どの わざに する?';
+  const sealed = rbAliveFoes().some(([f]) => f.seal);
   $('rbCmd').innerHTML = RPG_SKILLS.map(s => { const ok = s.lv <= R.lv, mp = hero.mp >= s.mp;
-    return `<button class="rbB skl${ok ? '' : ' lk'}" data-s="${s.id}" ${ok && mp ? '' : 'disabled'}><b>${ok ? s.n : '？？？'}</b><small>${ok ? `おと ${s.mp}` : `Lv${s.lv}で おぼえる`}</small></button>`; }).join('') + rbBackBtn();
+    return `<button class="rbB skl${ok ? '' : ' lk'}${s.nt ? ' nt' : ''}${s.nt && ok && sealed ? ' hint' : ''}" data-s="${s.id}" ${ok && mp ? '' : 'disabled'}><b>${ok ? s.n : '？？？'}</b><small>${ok ? `おと ${s.mp}${s.nt ? '・おんぷ' : ''}` : `Lv${s.lv}で おぼえる`}</small></button>`; }).join('') + rbBackBtn();
   $('rbCmd').querySelectorAll('[data-s]').forEach(b => b.onclick = async () => {
     rpgSfx('sel');
     const s = RPG_SKILLS.find(x => x.id === b.dataset.s);
     let t = -1;
     if(s.id === 'rhythm'){ t = await rbPickTarget('どの いきものに リズムを とどける?'); if(t < 0){ rbPickSkill(); return; } }
+    if(s.id === 'slash'){ t = await rbPickTarget('どの いきものの おんぷを よむ?'); if(t < 0){ rbPickSkill(); return; } }
     hero.mp -= s.mp; rbRefresh();
-    const acc = await rbChallenge(s.id);
+    const out = await rbChallenge(s.id, t);
+    const acc = typeof out === 'number' ? out : (out && out.acc) || 0;
     RB.used++;
-    rbRound({ k: 'sk', s: s.id, t, acc });
+    rbRound({ k: 'sk', s: s.id, t, acc, r: typeof out === 'object' ? out : null });
   });
   $('rbCmd').querySelector('[data-back]').onclick = () => { rpgSfx('sel'); rbCmd(); };
 }
@@ -18404,23 +18468,29 @@ async function rbRound(heroAct){
   for(const a of acts){
     if(!RB || RB.over) return;
     if(a.who.hp <= 0) continue;
+    if(a.side === 'f' && a.who.stun){ a.who.stun--; await rbSay(`${a.who.n}は ひるんで うごけない!`, 800); continue; }
     if(a.who.sleep){ a.who.sleep--; rbRefresh(); await rbSay(`${a.who.n}は ぐっすり ねむっている…`, 800); continue; }
     if(a.side === 'p'){ if(a.i === 0){ if(a.act) await rbHeroAct(a.act); } else await rbMateAct(a.who, a.i); }
     else await rbFoeAct(a.who, a.i);
     if(await rbCheck()) return;
   }
   if(RB.guard) RB.guard--; if(RB.haste) RB.haste--; if(RB.fguard) RB.fguard--; if(RB.fhaste) RB.fhaste--;
+  await rbSealRound(); if(!RB || RB.over) return;
   const hero = RB.party[0]; if(hero.hp > 0 && hero.mp < hero.mpMax){ hero.mp++; }
   rbRefresh();
   rbTurn();
 }
-async function rbHit(fi, dmg, how){
+async function rbHit(fi, dmg, how, note){
   const f = RB.foes[fi], el = rbFoeEl(fi); if(!f || f.hp <= 0) return;
+  let tell = false;
+  if(f.seal && !note){ dmg = Math.max(1, Math.round(dmg * .5)); if(!RB.sealTold){ RB.sealTold = 1; tell = true; } }
   f.hp = Math.max(0, f.hp - dmg);
   if(f.sleep && Math.random() < .5) f.sleep = 0;
   rpgSfx(how === 'magic' ? 'magic' : 'hit'); rbFx(el, 'hit'); rbBurst(el, how === 'magic' ? 'magic' : how === 'crit' ? 'crit' : 'hit'); rbNum(el, '-' + dmg, how === 'crit' ? 'crit' : '');
   rbRefresh();
-  if(f.hp <= 0){ await sleep(250); await rbClearFoe(fi); }
+  if(f.hp <= 0){ await sleep(250); await rbClearFoe(fi); return; }
+  if(tell) await rbSay('ふういんで こうげきが はんぶんに なった… おんぷを よむ わざで とこう!', 1150);
+  await rbAfterHit(fi);
 }
 async function rbClearFoe(fi){
   const f = RB.foes[fi], el = rbFoeEl(fi);
@@ -18449,10 +18519,37 @@ async function rbHeroAct(act){
         const mult = (all ? 1.3 + 1.2 * acc : 1.15 + 1.25 * acc) * (weak ? 1.5 : 1) * (1 + (eq.rB || 0));
         await rbHit(t, rbDmg(hero.atk, f.def, mult), 'crit');
         if(weak && acc > .3) await rbSay(`リズムが よく ひびいた!`, 650); }
+    } else if(act.s === 'slash'){
+      const r = act.r || {};
+      let t = act.t; if(t == null || t < 0 || !RB.foes[t] || RB.foes[t].hp <= 0){ const al = rbAliveFoes(); if(!al.length) return; t = al[0][1]; }
+      const f = RB.foes[t];
+      await rbSay(r.ok ? `${hero.n}の おんぷ・スラッシュ!${r.fast ? ' すばやい!' : ''}` : r.near ? `${hero.n}の おんぷ・スラッシュ… おしい! おとの たかさが ちがった` : `${hero.n}の おんぷ・スラッシュ… おんぷが ちがった`, 850);
+      let broke = false; if(r.ok && f.seal && r.sealQ){ await rbBreakSeal(t); broke = true; }
+      const weak = MON[f.k].weak === 'n';
+      const mult = (r.ok ? 1.5 + (r.fast ? .3 : 0) : r.near ? .8 : .45) * (weak ? 1.4 : 1) * (1 + (eq.nB || 0)) * (broke ? 1.25 : 1);
+      await rbHit(t, rbDmg(hero.atk, f.def, mult), r.ok ? 'crit' : '', r.ok || r.near);
+      if(weak && r.ok) await rbSay('おんぷが よく ひびいた!', 650);
     } else if(act.s === 'note'){
-      await rbSay(acc >= 1 ? `${hero.n}の おんぷ・マジック! おとの ひかりが ひろがった!` : `${hero.n}の おんぷ・マジック… ひかりが ちいさい`, 900);
-      const pow = (12 + R.lv * 5) * (acc >= 1 ? 1 : .3) * (1 + (eq.nB || 0));
-      for(const [f, t] of rbAliveFoes()){ const weak = MON[f.k].weak === 'n'; await rbHit(t, Math.max(1, Math.round(pow * (weak ? 1.5 : 1) * (.9 + Math.random() * .2) - f.def * .25)), 'magic'); }
+      const r = act.r || { res: [] }, okN = r.res.filter(x => x.ok).length;
+      await rbSay(okN ? `${hero.n}の おんぷ・マジック! ${okN}この おとの ひかり!${r.best >= 3 ? ` れんさ ×${r.best}!` : ''}` : `${hero.n}の おんぷ・マジック… ひかりが ちいさい`, 950);
+      for(const x of r.res) if(x.ok && x.fi != null && RB.foes[x.fi] && RB.foes[x.fi].hp > 0 && RB.foes[x.fi].seal) await rbBreakSeal(x.fi);
+      const base = (8 + R.lv * 3.2) * (1 + (eq.nB || 0));
+      let combo = 0;
+      for(const x of r.res){
+        if(!x.ok){ combo = 0; continue; }
+        combo++;
+        const al = rbAliveFoes(); if(!al.length) break;
+        await rbVolley(al.map(([f, t]) => [t, Math.max(1, Math.round(base * (1 + .15 * (combo - 1)) * (MON[f.k].weak === 'n' ? 1.5 : 1) * (.9 + Math.random() * .2) - f.def * .2))]));
+      }
+      if(!okN){ const al = rbAliveFoes(); await rbVolley(al.map(([f, t]) => [t, Math.max(1, Math.round(base * .3))])); }
+      if(r.res.length && okN === r.res.length && hero.mp < hero.mpMax){ hero.mp++; rbNum(rbMemEl(0), '+1', 'mp'); rbRefresh(); await rbSay('ぜんぶ よめた! おとの ちからが 1 もどった', 900); }
+    } else if(act.s === 'melody'){
+      const r = act.r || { res: [], okN: 0 }, okN = r.okN || 0, all = okN === 4;
+      await rbSay(all ? `${hero.n}の メロディ・ノヴァ! 4つの おとが ひとつの うたに なった!` : okN ? `${hero.n}の メロディ・ノヴァ! ${okN}つの おとが ひびいた` : `${hero.n}の メロディ・ノヴァ… うたに ならなかった`, 1000);
+      if(all) for(const [f, t] of rbAliveFoes()) if(f.seal) await rbBreakSeal(t);
+      const mult = (.5 + .5 * okN) * (1 + (eq.nB || 0));
+      const al = rbAliveFoes();
+      await rbVolley(al.map(([f, t]) => [t, rbDmg(hero.atk, f.def, mult * (MON[f.k].weak === 'n' ? 1.4 : 1))]));
     } else if(act.s === 'harmony'){
       await rbSay(`${hero.n}の ハーモニー・ヒール! ${rbAccWord(acc)}`, 850);
       const amt = Math.round((14 + R.lv * 6) * (.35 + .65 * acc) * (1 + (eq.hB || 0)));
@@ -18540,6 +18637,7 @@ async function rbWin(){
   B.party.slice(1).forEach(m => { const mm = R.mon[m.id]; if(!mm) return; mm.xp = (mm.xp || 0) + xp; while(mm.xp >= rpgMonNeed(mm.lv)){ mm.xp -= rpgMonNeed(mm.lv); mm.lv++; ups.push(m.n); } });
   say('もやが ぜんぶ はれた!');
   await rbSay(`もやが ぜんぶ はれた! けいけんち ${xp}と おとコイン ${coin}を もらった`, 1500);
+  if(B.nRead) await rbSay(`この たたかいで おんぷを ${B.nRead}こ よめたね!`, 1100);
   for(const n of ups){ rpgSfx('lvup'); await rbSay(`${n}は レベルが あがった!`, 1000); }
   /* つかれた なかまも げんきに（1だけ） */
   B.party.forEach(m => { if(m.hp <= 0) m.hp = 1; m.sleep = 0; });
@@ -18582,10 +18680,12 @@ async function rpgLevelCheck(inBattle){
 /* =========================================================
    わざ ＝ おんがくの ちょうせん
    ========================================================= */
-function rbChallenge(id){
+function rbChallenge(id, t){
   if(id === 'rhythm') return rcRhythm(false);
   if(id === 'forte') return rcRhythm(true);
-  if(id === 'note') return rcNote();
+  if(id === 'slash'){ const f = RB && RB.foes[t]; const sealQ = !!(f && f.seal); return rcSlash(sealQ ? f.seal : rpgNoteQ(), sealQ ? f.n : '').then(r => Object.assign(r, { sealQ })); }
+  if(id === 'note'){ const seeds = rbAliveFoes().filter(([f]) => f.seal).map(([f, i]) => ({ q: f.seal, fi: i, name: f.n })); return rcNoteChain(rpgChainLen(), seeds); }
+  if(id === 'melody') return rcMelody();
   if(id === 'harmony') return rcKeys();
   return Promise.resolve(.5);
 }
@@ -18665,18 +18765,7 @@ function rcRhythm(two){
     raf = requestAnimationFrame(loop);
   });
 }
-/* ---- おんぷ：その子の おんぷの レベルの おとから 1つ ---- */
-function rpgNoteQ(){
-  const lv = Math.min(S.noteLv || 1, NLEVELS.length), L = NLEVELS[lv - 1] || NLEVELS[0];
-  const dias = (L.dias || [0, 1, 2]).filter(d => d >= -9 && d <= 9);
-  const dia = dias[Math.floor(Math.random() * dias.length)];
-  const bass = L.layout === 'grand-bass' || L.layout === 'bass' || (L.layout === 'grand' && dia < 0) || (L.layout === 'grand' && dia === 0 && Math.random() < .5);
-  const pcs = new Set([pc(dia)]), choices = [dia];
-  const near = [1, -1, 2, -2, 3, -3].map(k => dia + k).filter(d => !pcs.has(pc(d)));
-  for(const d of near){ if(choices.length >= 3) break; if(!pcs.has(pc(d))){ pcs.add(pc(d)); choices.push(d); } }
-  choices.sort(() => Math.random() - .5);
-  return { dia, bass, choices, color: !!L.color, name: kanaOf(dia) };
-}
+/* ---- おんぷ：rpgNoteQ は v2026.10.19-1 で うしろに うつした（まちがえた おとを もういちど だす） ---- */
 function rpgStaffSVG(q, W = 260, H = 150){
   const g = 16, top = 42, x0 = 18, x1 = W - 14, bot = top + 4 * g, cx = 168;
   let s = '';
@@ -19301,6 +19390,417 @@ function fogFront(seed, big, topY){
 }
 /* 1ぴきの え。mood：fog／ok／joy。opt.size, opt.cls */
 const MON_TOP = { mame: -62, rin: -64, kasu: -50, poko: -60, tanba: -54, mara: -62, kani: -62, kurage: -74, otama: -70, chiku: -66, tri: -74, piro: -64, rappa: -90, donguri: -84, gamepiano: -80, orgel: -88, heon: -54, tubako: -56, tinpa: -50, kontra: -98, horun: -64, kodama: -58, suzuyuki: -56, alphorn: -82 };
+
+/* =========================================================
+   v2026.10.19-1：おんぷを よむ わざ と もやの ふういん
+   ・けいてぃ「みんな おんぷを よむ れんしゅうは しなくて、リズム ちゅうしんに なってしまっている」
+   ・いきものに「もやの ふういん（おんぷ）」が つくことが ある。ふういんが ある あいだは、
+     おんぷを よむ わざ いがいの こうげきが はんぶんに なる。よめば とけて、ひるむ
+   ・おんぷ・スラッシュ（Lv1）：おんぷを よんで、その おとの けんばん（ほんとうの たかさ）を おす
+   ・おんぷ・マジック（Lv2）：おんぷを つぎつぎ よむ。あたった かずだけ ぜんいんに まほう
+   ・メロディ・ノヴァ（Lv12）：ならんだ 4つの おんぷを ひだりから よむ
+   ・まちがえた おんぷは すこし あとに もういちど でる（かんかくを あけた そうき）
+   ========================================================= */
+let RPG_NQN = 0;
+function rpgNL(){ const lv = Math.min(S.noteLv || 1, NLEVELS.length); return NLEVELS[lv - 1] || NLEVELS[0]; }
+function rpgNoteDias(L){ return (L.dias || [0, 1, 2]).filter(d => d >= -9 && d <= 9); }
+function rpgNoteQMake(dia, bass, L, again){
+  const pcs = new Set([pc(dia)]), choices = [dia];
+  const near = [1, -1, 2, -2, 3, -3].map(k => dia + k).filter(d => !pcs.has(pc(d)));
+  for(const d of near){ if(choices.length >= 3) break; if(!pcs.has(pc(d))){ pcs.add(pc(d)); choices.push(d); } }
+  choices.sort(() => Math.random() - .5);
+  return { dia, bass, choices, color: !!L.color, name: kanaOf(dia), again: !!again };
+}
+function rpgBassFor(L, dia){ return L.layout === 'grand-bass' || L.layout === 'bass' || (L.layout === 'grand' && dia < 0) || (L.layout === 'grand' && dia === 0 && Math.random() < .5); }
+function rpgNoteQ(){
+  const R = rpgSt(), L = rpgNL(); RPG_NQN++;
+  R.nq = Array.isArray(R.nq) ? R.nq : [];
+  const due = R.nq.find(x => x && x.due <= RPG_NQN);
+  if(due){ due.due = RPG_NQN + 3; return rpgNoteQMake(due.dia, !!due.bass, L, true); }
+  const dias = rpgNoteDias(L), dia = dias[Math.floor(Math.random() * dias.length)];
+  return rpgNoteQMake(dia, rpgBassFor(L, dia), L);
+}
+/* こたえの きろく：まちがえた おとは 2もん あとに もういちど。あたれば ならびから はずす */
+function rpgNoteResult(q, ok){
+  const R = rpgSt(); R.nq = Array.isArray(R.nq) ? R.nq : [];
+  const i = R.nq.findIndex(x => x && x.dia === q.dia && !!x.bass === !!q.bass);
+  if(ok){ if(i >= 0) R.nq.splice(i, 1); rpgNoteCount(); }
+  else { if(i >= 0) R.nq[i].due = RPG_NQN + 2; else R.nq.push({ dia: q.dia, bass: q.bass ? 1 : 0, due: RPG_NQN + 2 }); R.nq = R.nq.slice(-6); }
+  if(RB) RB.nRead = (RB.nRead || 0) + (ok ? 1 : 0);
+}
+function rpgNst(){ const R = rpgSt(), t = todayStr(); if(!R.nst || R.nst.d !== t) R.nst = { d: t, n: 0, tb: 0, best: (R.nst && R.nst.best) || 0 }; return R.nst; }
+function rpgNoteCount(){ rpgNst().n++; }
+function rpgComboRec(c){ const n = rpgNst(); if(c > n.tb) n.tb = c; if(c > n.best) n.best = c; }
+
+/* ---------- けんばん（こたえは ほんとうの おとの たかさ） ---------- */
+function rpgKbRange(q){
+  const dias = rpgNoteDias(rpgNL());
+  let lo = Math.min(q.dia, ...dias) - 1, hi = Math.max(q.dia, ...dias) + 1;
+  while(hi - lo + 1 < 8){ if((hi - lo) % 2) lo--; else hi++; }
+  if(hi - lo + 1 > 15){ lo = Math.max(lo, q.dia - 7); hi = lo + 14; if(q.dia > hi){ hi = q.dia + 1; lo = hi - 14; } }
+  const out = []; for(let d = lo; d <= hi; d++) out.push(d); return out;
+}
+function rpgKbHTML(keys, color){
+  const n = keys.length, bw = 62 / n;
+  const whites = keys.map(d => `<button class="rcW" data-d="${d}" ${color ? `style="--nc:${colorOf(d)}"` : ''}><small>${pc(d) === 0 ? (d === 0 ? 'ド' : 'ド') : ''}</small></button>`).join('');
+  const blacks = keys.map((d, i) => (i < n - 1 && [0, 1, 3, 4, 5].includes(pc(d))) ? `<span class="rcBk" style="left:${f1((i + 1) / n * 100 - bw / 2)}%;width:${f1(bw)}%"></span>` : '').join('');
+  return `<div class="rcKb rcKbN">${whites}${blacks}</div>`;
+}
+
+/* ---------- ふういんの しるし ---------- */
+/* ちいさな ごせん（ト音・ヘ音つき）。いきものの よこに つく */
+function rpgSealSVG(q){
+  const g = 12, top = 30, x0 = 4, x1 = 116, bot = top + 4 * g, cx = 82;
+  let t = '';
+  for(let i = 0; i < 5; i++) t += `<line x1="${x0}" x2="${x1}" y1="${top + i * g}" y2="${top + i * g}" stroke="${N_INK}" stroke-width="1.5"/>`;
+  t += q.bass ? clefSVG('b', x0 + 4, top + g, g, N_INK) : clefSVG('t', x0 + 4, top + 3 * g, g, N_INK);
+  const cy = q.bass ? bot - (q.dia + 10) * g / 2 : bot - (q.dia - 2) * g / 2, hw = g * .95, dn = cy <= top + g * 2;
+  for(let y = bot + g; y <= cy + .1; y += g) t += `<line x1="${cx - hw}" x2="${cx + hw}" y1="${y}" y2="${y}" stroke="${N_INK}" stroke-width="1.8"/>`;
+  for(let y = top - g; y >= cy - .1; y -= g) t += `<line x1="${cx - hw}" x2="${cx + hw}" y1="${y}" y2="${y}" stroke="${N_INK}" stroke-width="1.8"/>`;
+  t += noteSVG(cx, cy, g, 'q', q.color ? colorOf(q.dia) : '#6B5B8C', { stem: 3.3, line: 1.2, ink: N_INK, down: dn });
+  const minY = Math.min(top - 10, dn ? cy - g : cy - 3.4 * g - 4), maxY = Math.max(bot + 10, dn ? cy + 3.4 * g + 4 : cy + g);
+  return `<svg viewBox="0 ${f1(minY)} 120 ${f1(maxY - minY)}" class="rbSealStf">${t}</svg>`;
+}
+function rbSealChip(q){ return `<div class="rbSeal" aria-label="もやの ふういん">${rpgSealSVG(q)}<i>${ICON('lock', 13)}</i></div>`; }
+function rbSealDraw(fi){
+  const f = RB && RB.foes[fi], el = rbFoeEl(fi); if(!f || !el) return;
+  const old = el.querySelector('.rbSeal');
+  if(f.seal && f.hp > 0){ if(old) old.remove(); el.insertAdjacentHTML('beforeend', rbSealChip(f.seal)); el.classList.add('sealed'); }
+  else { el.classList.remove('sealed'); if(old){ old.classList.add('brk'); setTimeout(() => old.remove(), 600); } }
+}
+function rbSealInit(){
+  const R = rpgSt();
+  RB.foes.forEach(f => { const ch = f.boss ? 1 : (RB.a === 0 ? .4 : .55); if(Math.random() < ch) f.seal = rpgNoteQ(); });
+  if(!RB.boss && !RB.foes.some(f => f.seal) && Math.random() < .5) RB.foes[0].seal = rpgNoteQ();
+  return R;
+}
+async function rbSealIntro(){
+  const R = rpgSt();
+  if(R.seen.seal || !RB.foes.some(f => f.seal)) return;
+  R.seen.seal = 1; saveState();
+  const f = RB.foes.find(x => x.seal);
+  await rpgPop(`<div class="rpStory rpSealHow">${monSVG(f.k, 'fog', 96)}<div class="rbSeal big">${rpgSealSVG(f.seal)}<i>${ICON('lock', 15)}</i></div></div><h3>もやの ふういん!</h3><p>いきものの よこに <b>おんぷ</b>が ついていたら、もやの ふういん。<br>ふういんが ある あいだは、こうげきが <b>はんぶん</b>しか とどかないよ。</p><p><b>おんぷを よむ わざ</b>（おんぷ・スラッシュ・おんぷ・マジック）で おんぷを よめば、ふういんが とけて あいては ひるむよ!</p>`, [{ t: 'わかった!', c: 'sun' }]);
+}
+async function rbBreakSeal(fi){
+  const f = RB.foes[fi], el = rbFoeEl(fi); if(!f || !f.seal || f.hp <= 0) return;
+  f.seal = null; f.stun = 1; f.sealCd = 3;
+  rbSealDraw(fi); rpgSfx('magic'); rbBurst(el, 'magic'); rbFx(el, 'hit');
+  await rbSay(`${f.n}の ふういんが とけた! ${f.n}は ひるんで いる!`, 950);
+}
+/* ぬしは しばらくすると また ふういんを かける */
+async function rbSealRound(){
+  if(!RB || RB.over) return;
+  let again = false;
+  RB.foes.forEach((f, i) => { if(f.boss && f.hp > 0 && !f.seal){ f.sealCd = (f.sealCd || 3) - 1; if(f.sealCd <= 0){ f.seal = rpgNoteQ(); rbSealDraw(i); again = true; } } });
+  if(again){ rpgSfx('appear'); await rbSay('もやの ぬしが また ふういんを かけた!', 950); }
+}
+
+/* ---------- わざ：おんぷ・スラッシュ ---------- */
+function rcSlash(q, who){
+  return new Promise(res => {
+    ensureAudio(); window.__rcq = q;
+    const keys = rpgKbRange(q);
+    const c = rcShow(`<div class="rcBox"><div class="rcT"><b>おんぷ・スラッシュ</b><small>${who ? `${esc(who)}の ふういんの おんぷ。` : ''}この おとの <b>けんばん</b>を おそう</small></div>
+      <div class="rcStaff">${rpgStaffSVG(q)}</div>${rpgKbHTML(keys, q.color)}<div class="rcTime"><i></i></div></div>`);
+    const t0 = performance.now(); let done = false;
+    const bar = c.querySelector('.rcTime i'); requestAnimationFrame(() => { if(bar){ bar.style.transition = 'transform 4s linear'; bar.style.transform = 'scaleX(0)'; } });
+    c.querySelectorAll('.rcW').forEach(b => b.addEventListener('pointerdown', e => {
+      e.preventDefault(); if(done) return; done = true;
+      const d = +b.dataset.d, ok = d === q.dia, near = !ok && pc(d) === pc(q.dia), fast = ok && performance.now() - t0 < 4000;
+      try{ pKeyNote(midiOfDia(d), .8); }catch(e2){}
+      b.classList.add(ok ? 'ok' : 'ng');
+      if(!ok){ const r = c.querySelector(`.rcW[data-d="${q.dia}"]`); if(r) r.classList.add('lit'); rpgSfx('miss'); setTimeout(() => { try{ pKeyNote(midiOfDia(q.dia), .7); }catch(e3){} }, 450); }
+      else chimeOn(midiOfDia(q.dia));
+      rpgNoteResult(q, ok);
+      const msg = c.querySelector('.rcT small'); if(msg) msg.innerHTML = ok ? (fast ? '<b>すばやい!</b> ぴったりの けんばん!' : 'ぴったりの けんばん!') : near ? `おしい! <b>${kanaOf(q.dia)}</b>だけど、おとの たかさが ちがうよ` : `こたえは <b>${kanaOf(q.dia)}</b>`;
+      if(bar){ bar.style.transition = 'none'; }
+      setTimeout(() => { rcHide(); res({ ok, near, fast, acc: ok ? 1 : near ? .5 : .2 }); }, ok ? 800 : 1500);
+    }));
+  });
+}
+/* ---------- わざ：おんぷ・マジック（れんぞく） ---------- */
+function rpgChainLen(){ const lv = rpgSt().lv; return lv >= 10 ? 5 : lv >= 6 ? 4 : 3; }
+function rcNoteChain(n, seeds){
+  return new Promise(res => {
+    const qs = seeds.slice(0, n);
+    while(qs.length < n) qs.push({ q: rpgNoteQ() });
+    const c = rcShow(`<div class="rcBox"><div class="rcT"><b>おんぷ・マジック</b><small id="rcNcT"></small></div>
+      <div class="rcPips">${qs.map((_, i) => `<i data-p="${i}"></i>`).join('')}<span class="rcCombo" id="rcCombo"></span></div>
+      <div class="rcStaff" id="rcNcS"></div><div class="rcChoices" id="rcNcC"></div></div>`);
+    let k = 0, combo = 0, best = 0; const out = [];
+    const ask = () => {
+      const it = qs[k], q = it.q; window.__rcq = q;
+      $('rcNcT').innerHTML = it.fi != null ? `<b>${esc(it.name)}</b>の ふういんの おんぷ。なまえは?` : 'この おんぷの なまえは? あたるたびに まほうが たまるよ';
+      $('rcNcS').innerHTML = rpgStaffSVG(q);
+      $('rcNcC').innerHTML = q.choices.map((d, i) => `<button class="rcCh" data-i="${i}" ${q.color ? `style="--nc:${colorOf(d)}"` : ''}>${kanaOf(d)}</button>`).join('');
+      c.querySelectorAll('.rcPips i').forEach((p, i) => p.classList.toggle('now', i === k));
+      let lock = false;
+      $('rcNcC').querySelectorAll('.rcCh').forEach(b => b.onclick = () => {
+        if(lock) return; lock = true;
+        const ok = q.choices[+b.dataset.i] === q.dia;
+        try{ pKeyNote(midiOfDia(q.dia), .8); }catch(e){}
+        b.classList.add(ok ? 'ok' : 'ng');
+        if(ok){ combo++; best = Math.max(best, combo); chimeOn(midiOfDia(q.dia)); }
+        else { combo = 0; const r = [...$('rcNcC').querySelectorAll('.rcCh')][q.choices.indexOf(q.dia)]; if(r) r.classList.add('ok'); rpgSfx('miss'); }
+        rpgNoteResult(q, ok);
+        out.push({ ok, fi: it.fi });
+        const pip = c.querySelector(`.rcPips i[data-p="${k}"]`); if(pip){ pip.classList.remove('now'); pip.classList.add(ok ? 'ok' : 'ng'); }
+        const ce = $('rcCombo'); ce.textContent = combo >= 2 ? `れんさ ×${combo}` : ''; if(combo >= 2) rbFx(ce, 'pop', 300);
+        k++;
+        setTimeout(() => { if(k < qs.length) ask(); else { rpgComboRec(best); setTimeout(() => { rcHide(); res({ res: out, best, acc: out.filter(x => x.ok).length / out.length }); }, 250); } }, ok ? 520 : 1150);
+      });
+    };
+    ask();
+  });
+}
+/* ---------- わざ：メロディ・ノヴァ（よこに ならんだ 4つ） ---------- */
+function rpgRowQs(n = 4){
+  const L = rpgNL(), first = rpgNoteQ(), qs = [first];
+  const dias = rpgNoteDias(L).filter(d => first.bass ? d <= (L.layout === 'grand' ? 0 : 9) : d >= (L.layout === 'grand' ? 0 : -9));
+  let prev = first.dia;
+  while(qs.length < n){
+    const pool = dias.filter(d => Math.abs(d - prev) <= 3); const p = pool.length ? pool : dias;
+    const d = p[Math.floor(Math.random() * p.length)]; qs.push(rpgNoteQMake(d, first.bass, L)); prev = d;
+  }
+  return qs;
+}
+function rpgRowSVG(qs, cur, W = 320){
+  const g = 15, top = 40, x0 = 12, x1 = W - 10, bot = top + 4 * g, sx = (x1 - 86) / qs.length;
+  const ys = qs.map(q => q.bass ? bot - (q.dia + 10) * g / 2 : bot - (q.dia - 2) * g / 2);
+  let s = '';
+  if(cur >= 0 && cur < qs.length){ const cx = 86 + sx * (cur + .5); s += `<rect x="${f1(cx - sx * .42)}" y="${top - 34}" width="${f1(sx * .84)}" height="${4 * g + 68}" rx="12" fill="#FFF1CF"/>`; }
+  for(let i = 0; i < 5; i++) s += `<line x1="${x0}" x2="${x1}" y1="${top + i * g}" y2="${top + i * g}" stroke="${N_INK}" stroke-width="1.5" opacity=".85"/>`;
+  s += qs[0].bass ? clefSVG('b', x0 + 6, top + g, g, N_INK) : clefSVG('t', x0 + 6, top + 3 * g, g, N_INK);
+  qs.forEach((q, i) => {
+    const cx = 86 + sx * (i + .5), cy = ys[i], hw = g * .95, dn = cy <= top + g * 2;
+    for(let y = bot + g; y <= cy + .1; y += g) s += `<line x1="${f1(cx - hw)}" x2="${f1(cx + hw)}" y1="${y}" y2="${y}" stroke="${N_INK}" stroke-width="1.8"/>`;
+    for(let y = top - g; y >= cy - .1; y -= g) s += `<line x1="${f1(cx - hw)}" x2="${f1(cx + hw)}" y1="${y}" y2="${y}" stroke="${N_INK}" stroke-width="1.8"/>`;
+    s += noteSVG(cx, cy, g, 'q', q.color ? colorOf(q.dia) : null, { stem: 3.4, line: q.color ? 1.3 : 0, ink: N_INK, down: dn, shine: q.color });
+  });
+  const minY = Math.min(top - 36, ...ys.map(y => y - 3.6 * g)), maxY = Math.max(bot + 36, ...ys.map(y => y + 3.6 * g));
+  return `<svg viewBox="0 ${f1(minY)} ${W} ${f1(maxY - minY)}" class="rcStf">${s}</svg>`;
+}
+function rcMelody(){
+  return new Promise(res => {
+    const qs = rpgRowQs(4);
+    const c = rcShow(`<div class="rcBox"><div class="rcT"><b>メロディ・ノヴァ</b><small>ひだりから じゅんに、おんぷの なまえを よもう</small></div>
+      <div class="rcStaff" id="rcMlS"></div><div class="rcChoices" id="rcMlC"></div></div>`);
+    let k = 0; const out = [];
+    const ask = () => {
+      const q = qs[k]; window.__rcq = q;
+      $('rcMlS').innerHTML = rpgRowSVG(qs, k);
+      $('rcMlC').innerHTML = q.choices.map((d, i) => `<button class="rcCh" data-i="${i}" ${q.color ? `style="--nc:${colorOf(d)}"` : ''}>${kanaOf(d)}</button>`).join('');
+      let lock = false;
+      $('rcMlC').querySelectorAll('.rcCh').forEach(b => b.onclick = () => {
+        if(lock) return; lock = true;
+        const ok = q.choices[+b.dataset.i] === q.dia;
+        try{ pKeyNote(midiOfDia(q.dia), .7); }catch(e){}
+        b.classList.add(ok ? 'ok' : 'ng');
+        if(!ok){ const r = [...$('rcMlC').querySelectorAll('.rcCh')][q.choices.indexOf(q.dia)]; if(r) r.classList.add('ok'); rpgSfx('miss'); }
+        rpgNoteResult(q, ok); out.push(ok); k++;
+        setTimeout(() => {
+          if(k < qs.length){ ask(); return; }
+          $('rcMlS').innerHTML = rpgRowSVG(qs, -1);
+          try{ ensureAudio(); qs.forEach((x, i) => setTimeout(() => { try{ pKeyNote(midiOfDia(x.dia), .6); }catch(e){} }, i * 330)); }catch(e){}
+          setTimeout(() => { rcHide(); const okN = out.filter(Boolean).length; rpgComboRec(okN === qs.length ? qs.length : 0); res({ res: out, okN, acc: okN / qs.length }); }, 1500);
+        }, ok ? 420 : 1100);
+      });
+    };
+    ask();
+  });
+}
+/* いっせいに あてる（まほう 1かいぶん） */
+async function rbVolley(list){
+  if(!list.length) return;
+  rpgSfx('magic');
+  const gone = [];
+  list.forEach(([fi, dmg]) => { const f = RB.foes[fi], el = rbFoeEl(fi); if(!f || f.hp <= 0) return;
+    f.hp = Math.max(0, f.hp - dmg); if(f.sleep && Math.random() < .5) f.sleep = 0;
+    rbFx(el, 'hit'); rbBurst(el, 'magic'); rbNum(el, '-' + dmg, ''); if(f.hp <= 0) gone.push(fi); });
+  rbRefresh(); await sleep(420);
+  for(const fi of gone){ await rbClearFoe(fi); }
+  for(const [fi] of list) if(!gone.includes(fi)) await rbAfterHit(fi);
+}
+/* ぬしの もやが こく なる（はんぶんを きったら 1かい） */
+async function rbAfterHit(fi){
+  const f = RB && RB.foes[fi]; if(!f || f.hp <= 0) return;
+  if(f.boss && !f.ph2 && f.hp < f.max * .5){
+    f.ph2 = 1; f.atk = Math.round(f.atk * 1.15); if(!f.seal){ f.seal = rpgNoteQ(); rbSealDraw(fi); }
+    rbFx($('rpgBody').querySelector('.rpgBattle'), 'quake', 500); rpgSfx('boss');
+    await rbSay(`${f.n}の もやが こく なった! あたらしい ふういんを かけてきた!`, 1200);
+  }
+}
+
+/* =========================================================
+   ほしの うみ・おとの おしろ の いきもの（v2026.10.19-1）
+   ========================================================= */
+Object.assign(MON_ART, {
+  fuefish: () => {
+    let s = SHADOW(16);
+    s += `<path d="M17 -27 L31 -40 C33 -34 32 -30 29 -27 C32 -24 33 -19 31 -13Z" fill="${P.blue2}" ${L(1.7)}/>`;
+    s += `<path d="M-2 -42 C1 -51 11 -52 13 -41Z" fill="${P.blue}" ${L(1.5)}/><path d="M2 -44 L4 -49 M7 -44 L8 -50" stroke="${INK}" stroke-width="1" opacity=".5"/>`;
+    const body = 'M-14 -27 C-14 -38 -3 -44 7 -43 C17 -42 22 -34 20 -27 C22 -20 17 -12 7 -11 C-3 -10 -14 -16 -14 -27Z';
+    s += `<path d="${body}" fill="${P.sky}" ${L()}/>` + shade(body, 'M6 -47 C30 -40 26 -7 4 -7 L30 -7 L30 -47Z');
+    s += `<path d="M-10 -20 C-3 -12 10 -12 17 -19 C12 -14 -2 -12 -10 -20Z" fill="${P.white}" opacity=".9"/>`;
+    s += `<path d="M13 -33 C16 -29 16 -24 13 -20" stroke="${P.blue2}" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;
+    /* フルートの くち（ぎんいろ・キイつき） */
+    s += `<path d="M-13 -30 L-41 -34 C-43 -34 -43 -27 -41 -27 L-13 -24Z" fill="#DCE2E4" ${L(1.6)}/>`;
+    s += `<path d="M-15 -28.5 L-40 -31" stroke="#fff" stroke-width="1.2" stroke-linecap="round" opacity=".9"/>`;
+    [-20, -26, -32, -37].forEach(x => { s += `<circle cx="${x}" cy="${f1(-28.6 + (x + 13) * .1)}" r="1.7" fill="#9AA6AC" ${L(.9)}/>`; });
+    s += `<path d="M-22 -26 L-36 -27.5" stroke="${INK}" stroke-width=".9" opacity=".5"/>`;
+    s += `<g opacity=".9">${noteSVG(-36, -44, 2.6, 'e', P.white, { stem: 3, line: 1, ink: INK })}${noteSVG(-28, -52, 2.2, 'q', P.white, { stem: 3, line: 1, ink: INK })}</g>`;
+    s += `<path d="M-9 -36 q3 -3 7 -3" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" opacity=".7"/>`;
+    return s;
+  },
+  harpkai: () => {
+    let s = SHADOW(21);
+    const sh = 'M0 -8 C-11 -8 -23 -14 -25 -27 C-27 -41 -15 -53 0 -53 C15 -53 27 -41 25 -27 C23 -14 11 -8 0 -8Z';
+    s += `<path d="${sh}" fill="#F2C9B5" ${L()}/>` + shade(sh, 'M7 -57 C35 -45 31 -6 2 -4 L35 -4 L35 -57Z', 'hatchL');
+    for(let i = -3; i <= 3; i++){ const a = (i * 21 - 90) * Math.PI / 180; s += `<path d="M${f1(Math.cos(a) * 9)} ${f1(-12 + Math.sin(a) * 9)} L${f1(Math.cos(a) * 23)} ${f1(-28 + Math.sin(a) * 22)}" stroke="#D99A86" stroke-width="1.6" stroke-linecap="round"/>`; }
+    /* ハープの わく と げん */
+    s += `<path d="M-15 -45 C-12 -60 12 -62 16 -46" stroke="${P.mustard}" stroke-width="3.6" fill="none" stroke-linecap="round"/><path d="M-15 -45 C-12 -60 12 -62 16 -46" stroke="${INK}" stroke-width="1" fill="none" stroke-linecap="round" opacity=".6"/>`;
+    [-9, -4, 1, 6, 11].forEach((x, i) => { const yt = -55.5 + Math.abs(x - 1) * .28; s += `<path d="M${x} ${f1(yt)} V${-44 + Math.abs(x) * .2}" stroke="#FFFBF2" stroke-width="1" opacity=".95"/>`; });
+    s += `<circle cx="16" cy="-46" r="2.6" fill="${P.mustard}" ${L(1.1)}/><circle cx="-15" cy="-45" r="2.6" fill="${P.mustard}" ${L(1.1)}/>`;
+    s += `<path d="M-8 -10 L-12 -3 H12 L8 -10Z" fill="#E5AE98" ${L(1.5)}/>`;
+    s += `<circle cx="0" cy="-62" r="3.4" fill="${P.white}" ${L(1.2)}/><path d="M-1.4 -63.4 a1.4 1.4 0 0 1 2 -.3" stroke="#C9D8E2" stroke-width="1" fill="none"/>`;
+    s += `<path d="M-19 -32 q1 -6 5 -10" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" opacity=".7"/>`;
+    return s;
+  },
+  bellstar: () => {
+    let s = SHADOW(20);
+    const pts = []; for(let i = 0; i < 10; i++){ const a = (-90 + i * 36) * Math.PI / 180, r = i % 2 ? 11 : 24; pts.push([Math.cos(a) * r, -26 + Math.sin(a) * r]); }
+    const star = 'M' + pts.map(([x, y]) => `${f1(x)} ${f1(y)}`).join(' L') + 'Z';
+    s += `<path d="${star}" fill="#E8956B" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>` + shade(star, 'M4 -56 L34 -56 L34 4 L4 4Z', 'hatchL');
+    [[0, -42], [-14, -30], [14, -30], [-9, -12], [9, -12], [-4, -34], [5, -36]].forEach(([x, y]) => { s += `<circle cx="${x}" cy="${y}" r="1.5" fill="#F7C9A8"/>`; });
+    /* ハンドベル */
+    s += `<g transform="translate(24 -42) rotate(28)"><path d="M0 -4 V-12" stroke="${P.brown}" stroke-width="3.4" stroke-linecap="round"/><circle cx="0" cy="-13" r="2.4" fill="${P.brown}" ${L(1)}/><path d="M-7 6 C-8 -2 -5 -5 0 -5 C5 -5 8 -2 7 6 L9 8 H-9Z" fill="${P.mustard}" ${L(1.6)}/><circle cx="0" cy="10" r="2" fill="${P.brown2}"/><path d="M-4 0 q-1 3 -1 6" stroke="#fff" stroke-width="1.4" fill="none" opacity=".7"/></g>`;
+    s += `<path d="M30 -54 q3 2 3 5 M34 -58 q5 3 5 9" stroke="${INK}" stroke-width="1.2" fill="none" stroke-linecap="round" opacity=".55"/>`;
+    return s;
+  },
+  hoshikujira: () => {
+    let s = SHADOW(38);
+    s += `<path d="M33 -36 C37 -42 39 -50 39 -56" stroke="#3E4E80" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M39 -56 C34 -62 28 -66 26 -61 C29 -59 35 -57 39 -56 C41 -62 46 -68 50 -65 C49 -61 44 -57 39 -56Z" fill="#3E4E80" ${L(1.8)}/>`;
+    const body = 'M-46 -30 C-46 -52 -25 -64 1 -64 C25 -64 40 -51 42 -35 C44 -19 30 -8 4 -8 C-25 -8 -46 -14 -46 -30Z';
+    s += `<path d="${body}" fill="#4D5F95" ${L(2.4)}/>` + shade(body, 'M8 -70 C46 -56 44 -6 6 -4 L50 -4 L50 -70Z');
+    s += `<path d="M-42 -22 C-30 -10 16 -8 36 -20 C30 -12 12 -8 -6 -9 C-24 -9 -38 -14 -42 -22Z" fill="#C9D3EA" opacity=".95"/>`;
+    s += `<path d="M-30 -15 C-10 -10 10 -10 28 -15 M-24 -12 C-6 -8 8 -8 22 -12" stroke="#9AA8CC" stroke-width="1.2" fill="none" opacity=".8"/>`;
+    /* せなかの てっきん */
+    const bars = [['#D9644C', -26, -58], ['#E88A4A', -15, -62], ['#E3B143', -4, -64], ['#7FAE6D', 7, -63], ['#6EA7C6', 18, -60], ['#9A7FC1', 28, -55]];
+    bars.forEach(([c, x, y], i) => { s += `<rect x="${x - 4}" y="${y - 9 + i * .6}" width="8" height="${12 - i}" rx="1.6" fill="${c}" ${L(1.3)} transform="rotate(${-14 + i * 6} ${x} ${y})"/><circle cx="${x}" cy="${y - 5}" r=".9" fill="${INK}" transform="rotate(${-14 + i * 6} ${x} ${y})"/>`; });
+    [[-14, -48], [8, -46], [22, -32], [-36, -50], [-4, -30]].forEach(([x, y], i) => { s += Deco.star(x, y, i % 2 ? 1.6 : 2.2, '#F3E3A0', false); });
+    s += `<path d="M-6 -20 C-2 -12 8 -10 13 -15 C8 -18 2 -20 -6 -20Z" fill="#3E4E80" ${L(1.6)}/>`;
+    /* しおと おんぷ */
+    s += `<path d="M-8 -64 C-12 -74 -18 -78 -24 -78 M-8 -64 C-6 -76 -2 -82 4 -84" stroke="#9DC6DC" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
+    s += noteSVG(-26, -82, 2.8, 'e', '#FFFBF2', { stem: 3, line: 1.1, ink: INK }) + noteSVG(6, -90, 2.6, 'q', '#F3E3A0', { stem: 3, line: 1.1, ink: INK });
+    s += `<path d="M-36 -42 q4 -8 12 -12" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".55"/>`;
+    return s;
+  },
+  rappahei: () => {
+    let s = SHADOW(16);
+    s += `<path d="M-7 -16 V-4 M5 -16 V-4" stroke="#3E4E80" stroke-width="5.4" stroke-linecap="round"/><path d="M-10 -2 H-3 M2 -2 H9" stroke="${INK}" stroke-width="3.6" stroke-linecap="round"/>`;
+    const coat = 'M-11 -38 C-11 -41 11 -41 11 -38 L12 -16 C6 -13 -6 -13 -12 -16Z';
+    s += `<path d="${coat}" fill="${P.red}" ${L()}/>` + shade(coat, 'M3 -44 L20 -44 L20 -10 L3 -10Z');
+    s += `<path d="M-10 -37 L9 -18 M10 -37 L-9 -18" stroke="${P.white}" stroke-width="2.4"/><path d="M-12 -18 H12" stroke="${INK}" stroke-width="2.2"/>`;
+    [-31, -25].forEach(y => { s += `<circle cx="0" cy="${y}" r="1.4" fill="${P.mustard}" ${L(.8)}/>`; });
+    s += `<path d="M-11 -37 C-16 -34 -17 -26 -14 -22" stroke="${P.red}" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M-11 -37 C-16 -34 -17 -26 -14 -22" stroke="${INK}" stroke-width="1" fill="none" opacity=".4"/>`;
+    s += `<path d="M-14.4 -38 h-1.5 M14.4 -38 h1.5" stroke="${P.mustard}" stroke-width="2.6" stroke-linecap="round"/>`;
+    s += `<circle cx="0" cy="-46" r="9" fill="#F6D7BC" ${L(1.8)}/>`;
+    s += `<path d="M-9 -49 C-10 -64 -6 -72 0 -72 C6 -72 10 -64 9 -49Z" fill="#3B3443" ${L(1.8)}/><path d="M-9 -49 H9" stroke="${P.mustard}" stroke-width="2"/><path d="M-9 -48 C-9 -42 -6 -38 -2 -37 M9 -48 C9 -42 6 -38 2 -37" stroke="${P.mustard}" stroke-width="1.2" fill="none"/>`;
+    s += `<path d="M5 -70 C9 -76 13 -76 12 -70 C10 -68 7 -68 5 -70Z" fill="${P.red}" ${L(1.2)}/><path d="M-5 -66 q2 -3 5 -3" stroke="#fff" stroke-width="1.4" fill="none" opacity=".4"/>`;
+    /* ラッパ（みぎてで もちあげる） */
+    s += `<path d="M10 -36 C15 -34 17 -30 15 -27" stroke="${P.red}" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+    s += `<path d="M12 -30 L28 -44" stroke="${P.mustard}" stroke-width="3" stroke-linecap="round"/><path d="M12 -30 L28 -44" stroke="${INK}" stroke-width="1" stroke-linecap="round" opacity=".5"/>`;
+    s += `<path d="M26 -46 L33 -54 C37 -51 38 -46 35 -42 Z" fill="${P.mustard}" ${L(1.4)}/><path d="M18 -37 l3 -2 M22 -40 l3 -2" stroke="${INK}" stroke-width="1.6" stroke-linecap="round"/>`;
+    s += `<circle cx="14" cy="-29" r="3" fill="${P.white}" ${L(1.2)}/>`;
+    return s;
+  },
+  metrono: () => {
+    let s = SHADOW(19);
+    s += `<path d="M-12 -4 v4 M12 -4 v4" stroke="${INK}" stroke-width="4" stroke-linecap="round"/>`;
+    const body = 'M-17 -5 L-8 -60 C-7 -63 7 -63 8 -60 L17 -5Z';
+    s += `<path d="${body}" fill="#B5703F" ${L()}/>` + shade(body, 'M3 -66 L26 -66 L26 0 L8 0Z');
+    s += `<path d="M-12 -9 L-5 -52 H5 L12 -9Z" fill="#E9CFA0" ${L(1.6)}/>`;
+    for(let i = 0; i < 6; i++){ const y = -48 + i * 4.4; s += `<path d="M${f1(-3.6 + i * .2)} ${f1(y)} h${i % 2 ? 2 : 3.4}" stroke="${INK}" stroke-width="1" opacity=".55"/>`; }
+    s += `<path d="M-19 -5 H19" stroke="${INK}" stroke-width="2.6" stroke-linecap="round"/><path d="M-17 -5 L-18 -1 H18 L17 -5Z" fill="#8E5534" ${L(1.4)}/>`;
+    /* ふりこ（ゆれる） */
+    s += `<g><animateTransform attributeName="transform" type="rotate" values="-16 0 -26;16 0 -26;-16 0 -26" dur="1.4s" repeatCount="indefinite"/><path d="M0 -26 V-66" stroke="#DCE2E4" stroke-width="2.4" stroke-linecap="round"/><path d="M0 -26 V-66" stroke="${INK}" stroke-width=".8" opacity=".6"/><path d="M-4 -52 H4 L3 -46 H-3Z" fill="${P.mustard}" ${L(1.2)}/></g>`;
+    s += `<circle cx="0" cy="-26" r="2.2" fill="${P.brown2}" ${L(1)}/>`;
+    s += `<path d="M-14 -16 C-20 -18 -22 -12 -19 -9 M14 -16 C20 -18 22 -12 19 -9" stroke="#B5703F" stroke-width="3.4" fill="none" stroke-linecap="round"/>`;
+    return s;
+  },
+  violinneko: () => {
+    let s = SHADOW(18);
+    s += `<path d="M13 -10 C27 -12 29 -27 21 -31 C18 -32 16 -29 18 -27" stroke="#9E978D" stroke-width="4.4" fill="none" stroke-linecap="round"/><path d="M13 -10 C27 -12 29 -27 21 -31 C18 -32 16 -29 18 -27" stroke="${INK}" stroke-width="1" fill="none" stroke-linecap="round" opacity=".5"/>`;
+    const body = 'M-15 -10 C-17 -24 -12 -34 0 -34 C12 -34 17 -24 15 -10 C10 -6 -10 -6 -15 -10Z';
+    s += `<path d="${body}" fill="#CFC9C0" ${L()}/>` + shade(body, 'M4 -38 C24 -30 22 -4 2 -3 L24 -3 L24 -38Z', 'hatchL');
+    s += `<path d="M-6 -30 C-6 -20 6 -20 6 -30 C4 -23 -4 -23 -6 -30Z" fill="${P.white}" opacity=".9"/>`;
+    s += `<path d="M-14 -46 L-15 -60 L-5 -53Z M14 -46 L15 -60 L5 -53Z" fill="#CFC9C0" ${L(1.6)}/><path d="M-12.5 -50 L-13 -56 L-8.5 -53Z M12.5 -50 L13 -56 L8.5 -53Z" fill="#E9A9A0"/>`;
+    const head = 'M-14 -42 C-14 -53 -7 -57 0 -57 C7 -57 14 -53 14 -42 C14 -34 8 -30 0 -30 C-8 -30 -14 -34 -14 -42Z';
+    s += `<path d="${head}" fill="#CFC9C0" ${L()}/>`;
+    s += `<path d="M-3 -56 l1 4 M0 -57 v4 M3 -56 l-1 4" stroke="#8E877D" stroke-width="1.4" stroke-linecap="round"/>`;
+    s += `<path d="M-9 -38 H-19 M-9 -36 L-18 -33 M9 -38 H19 M9 -36 L18 -33" stroke="${INK}" stroke-width=".9" stroke-linecap="round" opacity=".6"/>`;
+    /* バイオリン（ななめに かかえる） */
+    s += `<g transform="translate(5 -21) rotate(-38)"><path d="M0 -10 C-4 -10 -6 -8 -5 -5 C-4 -3 -4 -2 -5 0 C-7 3 -6 8 0 8 C6 8 7 3 5 0 C4 -2 4 -3 5 -5 C6 -8 4 -10 0 -10Z" fill="#B5703F" ${L(1.4)}/><path d="M-2 -4 q-1 2 0 4 M2 -4 q1 2 0 4" stroke="${INK}" stroke-width=".8" fill="none"/><path d="M-1 -10 V-21 H1 V-10Z" fill="#4E3428" ${L(1)}/><circle cx="0" cy="-22.5" r="2" fill="#9C6B48" ${L(1)}/><path d="M-.6 -20 V6 M.6 -20 V6" stroke="#E9E2D6" stroke-width=".5"/></g>`;
+    s += `<path d="M-20 -32 L14 -6" stroke="#8E5534" stroke-width="1.8" stroke-linecap="round"/><path d="M-19 -33 L15 -7" stroke="#F3E3C0" stroke-width=".8"/>`;
+    s += `<path d="${ell(-10, -22, 4, 3, 30)}" fill="${P.white}" ${L(1.2)}/><path d="${ell(10, -14, 4, 3, -20)}" fill="${P.white}" ${L(1.2)}/>`;
+    return s;
+  },
+  shizuka: () => {
+    let s = SHADOW(36);
+    const cape = 'M-38 -8 C-42 -32 -34 -54 -20 -62 L20 -62 C34 -54 42 -32 38 -8Z';
+    s += `<path d="${cape}" fill="#6B5B8C" ${L(2.2)}/>` + shade(cape, 'M8 -66 L48 -66 L48 0 L10 0 C30 -24 26 -50 8 -66Z');
+    s += `<path d="M-30 -10 C-32 -30 -26 -48 -16 -56" stroke="${P.red}" stroke-width="3" fill="none" stroke-linecap="round" opacity=".9"/>`;
+    const body = puff(0, -40, 27, 25, rng(77), 12, .1);
+    s += `<path d="${body}" fill="#B9B3CE" ${L(2.4)}/>` + shade(body, 'M6 -70 C34 -60 32 -12 4 -12 L40 -12 L40 -70Z', 'hatchL');
+    s += `<path d="M-20 -60 C-12 -54 12 -54 20 -60 L22 -55 C12 -48 -12 -48 -22 -55Z" fill="${P.white}" ${L(1.6)}/>`;
+    [-14, -6, 2, 10, 17].forEach((x, i) => { s += `<path d="M${x} ${-55 + (i % 2)} l1 2.6" stroke="${INK}" stroke-width="1.6" stroke-linecap="round"/>`; });
+    s += `<path d="M-16 -66 L-17 -82 L-8 -74 L0 -88 L8 -74 L17 -82 L16 -66 C8 -68 -8 -68 -16 -66Z" fill="${P.mustard}" ${L(1.8)}/>`;
+    s += `<circle cx="0" cy="-74" r="2.6" fill="${P.red}" ${L(1)}/><circle cx="-10" cy="-71" r="1.8" fill="${P.blue}" ${L(.9)}/><circle cx="10" cy="-71" r="1.8" fill="${P.leaf}" ${L(.9)}/><circle cx="0" cy="-89" r="2" fill="${P.white}" ${L(1)}/>`;
+    /* タクト */
+    s += `<path d="M24 -30 L45 -58" stroke="${P.white}" stroke-width="2.6" stroke-linecap="round"/><path d="M24 -30 L45 -58" stroke="${INK}" stroke-width=".8" stroke-linecap="round" opacity=".6"/><path d="${ell(25, -31, 3.6, 2.6, -55)}" fill="${P.brown}" ${L(1.2)}/>`;
+    s += `<path d="${puff(23, -28, 6, 5, rng(5), 5, .08)}" fill="#B9B3CE" ${L(1.6)}/>`;
+    s += `<path d="${puff(-24, -26, 6, 5, rng(9), 5, .08)}" fill="#B9B3CE" ${L(1.6)}/>`;
+    s += `<path d="M46 -64 l1.4 3 l3 1.4 l-3 1.4 l-1.4 3 l-1.4 -3 l-3 -1.4 l3 -1.4Z" fill="#F3E3A0" ${L(.8)}/>`;
+    s += `<path d="M-16 -52 q4 -6 10 -8" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".6"/>`;
+    return s;
+  }
+});
+Object.assign(MON_FACE, {
+  fuefish: { e: [-5, -32, 6, -32, 2.1], m: [1, -23, 3.5], ck: [[-9, -26], [11, -26]] },
+  harpkai: { e: [-7, -30, 7, -30, 2.2], m: [0, -21, 4], ck: [[-13, -24], [13, -24]] },
+  bellstar: { e: [-6, -29, 6, -29, 2.1], m: [0, -21, 4], ck: [[-11, -23], [11, -23]] },
+  hoshikujira: { e: [-31, -38, -18, -40, 3], m: [-26, -26, 6, 'round'], ck: [[-37, -30], [-12, -32]] },
+  rappahei: { e: [-3.6, -47, 3.6, -47, 1.6], m: [0, -41.5, 2.6], ck: [[-6.5, -43], [6.5, -43]] },
+  metrono: { e: [-4.6, -18, 4.6, -18, 1.9], m: [0, -12, 3], ck: [[-8, -14], [8, -14]] },
+  violinneko: { e: [-5, -44, 5, -44, 2], m: [0, -37, 3], ck: [[-9, -39], [9, -39]] },
+  shizuka: { e: [-10, -46, 10, -46, 3], m: [0, -33, 6, 'round'], ck: [[-18, -38], [18, -38]] }
+});
+Object.assign(MON_TOP, { fuefish: -58, harpkai: -70, bellstar: -62, hoshikujira: -92, rappahei: -78, metrono: -70, violinneko: -62, shizuka: -94 });
+Object.assign(MON, {
+  fuefish:  { n: 'フルートうお',   a: 6, hp: 104, atk: 37, def: 20, spd: 22, xp: 94,  coin: 46, role: 'double', weak: 'n', sk: 'ピロロ ダブル', line: 'ピーロロ♪ うみの なかでも ふえは ふけるんだよ' },
+  harpkai:  { n: 'ハープがい',     a: 6, hp: 112, atk: 34, def: 24, spd: 12, xp: 96,  coin: 48, role: 'guard',  weak: 'r', sk: 'かいがらの たて', line: 'ポロン… かいがらの なかで ずっと ハープを ひいていたの' },
+  bellstar: { n: 'ベルヒトデ',     a: 6, hp: 108, atk: 35, def: 21, spd: 14, xp: 96,  coin: 48, role: 'heal',   weak: 'n', sk: 'ほしの ベル', line: 'チリリン♪ よぞらの ほしと おなじ かたちでしょ' },
+  hoshikujira: { n: 'ほしくじらの ぬし', a: 6, hp: 1750, atk: 52, def: 24, spd: 11, xp: 1650, coin: 1200, role: 'chord', weak: 'n', sk: 'ほしの うた', boss: true, line: 'オーン… オーン… うみの そこまで、また うたが とどくよ。ありがとう' },
+  rappahei: { n: 'ラッパへいたい', a: 7, hp: 122, atk: 43, def: 24, spd: 17, xp: 120, coin: 56, role: 'atk',    weak: 'n', sk: 'しんぐんラッパ', line: 'パッパカパーン! おしろの もんを まもるのが ぼくの しごと!' },
+  metrono:  { n: 'メトロノームばん', a: 7, hp: 116, atk: 40, def: 25, spd: 24, xp: 120, coin: 56, role: 'haste',  weak: 'r', sk: 'カチカチ テンポ', line: 'カチ・カチ・カチ。おなじ はやさで うたうと、きもちが いいね' },
+  violinneko:{ n: 'バイオリンねこ', a: 7, hp: 118, atk: 44, def: 22, spd: 18, xp: 124, coin: 58, role: 'sleep',  weak: 'n', sk: 'ねこの セレナーデ', line: 'ニャ〜♪ よるの おしろで ひく バイオリンは とくべつなの' },
+  shizuka:  { n: 'しずかの おう',   a: 7, hp: 2300, atk: 60, def: 27, spd: 12, xp: 2400, coin: 1800, role: 'lull', weak: 'n', sk: 'しずかの マント', boss: true, line: 'ほんとうは… みんなの うたが ききたかったんだ。これからは いっしょに うたっても いい?' }
+});
+RPG_AREAS.push(
+  { name: 'ほしの うみ', pal: ['#2F3F6E', '#6F82B4', '#3F78A0', '#E6D3A4'], mons: ['fuefish', 'harpkai', 'bellstar'], boss: 'hoshikujira', lv: [21, 25],
+    nodes: ['b', 'q', 't', 'b', 'b', 's', 'q', 'b', 'b', 't', 'b', 'q', 's', 'b', 'B'], intro: 'うみの なみの おとが きえて、ほしが ひかりを なくしている…' },
+  { name: 'おとの おしろ', pal: ['#E6D4EC', '#F6EEF3', '#B9C98E', '#A7BA7C'], mons: ['rappahei', 'metrono', 'violinneko'], boss: 'shizuka', lv: [25, 30],
+    nodes: ['b', 'b', 'q', 't', 'b', 's', 'b', 'q', 'b', 't', 'b', 's', 'q', 'b', 'b', 'B'], intro: 'おしろの なかから、なにも きこえない。しずかの おうが いるらしい…' }
+);
+Object.assign(RPG_ITEMS, {
+  soda:     { n: 'ほしの ソーダ',     t: 'use', healAll: 130, price: 140, art: 'tea', d: 'みんなの げんきが 130 もどる', area: 6 },
+  c_note2:  { n: 'きらきら おんぷの おまもり', t: 'c', nB: .6, price: 2400, art: 'charm', col: '#F3D27A', d: 'おんぷを よむ わざが とても つよくなる', area: 6 },
+  w_sea:    { n: 'うみの タクト',     t: 'w', atk: 38, price: 4200, art: 'baton', col: '#9DC6DC', star: true, area: 6 },
+  h_shell:  { n: 'かいの ぼうし',     t: 'h', def: 13, spd: 4, price: 1800, art: 'hat', col: '#F2C9B5', area: 6 },
+  a_wave:   { n: 'なみの ローブ',     t: 'a', def: 24, price: 2600, art: 'cape', col: '#4C84A4', area: 6 },
+  w_king:   { n: 'おうさまの タクト', t: 'w', atk: 48, price: 7000, art: 'baton', col: '#E3B143', star: true, area: 7 },
+  a_royal:  { n: 'おしろの マント',   t: 'a', def: 30, price: 4800, art: 'cape', col: '#B24A37', area: 7 }
+});
 function monSVG(k, mood = 'ok', size = 96, opt = {}){
   const art = MON_ART[k]; if(!art) return '';
   SHADE_FLAT++; let b = art(); SHADE_FLAT--;
@@ -19341,6 +19841,22 @@ function rpgScene(area, W = 360, H = 200){
     [[40, hz + 18, '#9DD3E0'], [310, hz + 22, '#C9B6E8'], [210, hz + 10, '#9DD3E0']].forEach(([x, y, c]) => {
       s += `<g transform="translate(${f1(x)} ${f1(y)})"><path d="M-6 0 L-3 -16 L2 -20 L5 -4Z" fill="${c}" ${L(1.4)}/><path d="M2 0 L6 -11 L10 -2Z" fill="${c}" ${L(1.3)}/><path d="M-2 -14 L0 -6" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity=".8"/></g>`; });
     s += Deco.mushroom(330, hz + 34, .6, '#9A7FC1');
+  } else if(area === 6){
+    /* ほしの うみ：よぞら・つき・なみ・しま */
+    for(let i = 0; i < 26; i++) s += Deco.star(R() * W, R() * hz * .8, .8 + R() * 1.4, '#F3E3A0', i % 3 === 0);
+    s += `<circle cx="${W * .78}" cy="${H * .2}" r="${H * .09}" fill="#F6EBC4" ${L(1.6)}/><circle cx="${W * .78 + H * .035}" cy="${H * .2 - H * .02}" r="${H * .07}" fill="#E8DBA8" opacity=".5"/>`;
+    s += `<rect y="${hz - 4}" width="${W}" height="${H * .3}" fill="${g1}"/>`;
+    for(let i = 0; i < 14; i++) s += `<path d="M${f1(R() * W)} ${f1(hz + 4 + R() * H * .2)} q8 -4 16 0" stroke="#BFD8EA" stroke-width="1.6" fill="none" opacity=".75" stroke-linecap="round"/>`;
+    s += `<path d="M${W * .12} ${hz + 6} h40" stroke="#F6EBC4" stroke-width="2" opacity=".5" stroke-linecap="round"/>`;
+    s += Deco.island(W * .2, hz + 8, .8);
+  } else if(area === 7){
+    /* おとの おしろ */
+    s += `<g class="drift" style="animation-duration:48s">${Deco.cloud(70, 30, .8)}</g>` + Deco.cloud(300, 22, .6, .85);
+    s += Deco.mountain(60, hz + 4, 160, 50, '#C3B6CF') + Deco.mountain(320, hz + 6, 170, 56, '#BBAFC8');
+    s += Deco.castle(W * .55, hz + 6, .62);
+    s += `<path d="M0 ${hz + 4} Q100 ${hz - 6} 200 ${hz + 6} T${W} ${hz} V${H} H0Z" fill="${g1}"/>`;
+    s += `<path d="M${W * .55 - 14} ${hz + 6} L${W * .5} ${H} H${W * .6 + 10} L${W * .55 + 14} ${hz + 6}Z" fill="#E9D3A6" opacity=".9"/>`;
+    s += Deco.tree(30, hz + 14, .6) + Deco.tree(W - 30, hz + 16, .6);
   } else if(area === 5){
     /* やま：ゆきの やま・はやし・くも */
     s += `<g class="drift" style="animation-duration:46s">${Deco.cloud(80, 34, .9)}</g>` + Deco.cloud(290, 22, .6, .8);
@@ -19355,7 +19871,8 @@ function rpgScene(area, W = 360, H = 200){
   }
   /* じめん（てまえ） */
   s += `<path d="M0 ${H * .8} Q${W / 2} ${H * .74} ${W} ${H * .8} V${H} H0Z" fill="${g2}"/>`;
-  for(let i = 0; i < 12; i++) s += (area === 2 || area === 4) ? '' : Deco.flower(R() * W, H * .82 + R() * H * .14, FLOWER_C ? FLOWER_C[i % 6] : '#D9798A', .6);
+  for(let i = 0; i < 12; i++) s += (area === 2 || area === 4 || area === 6) ? '' : Deco.flower(R() * W, H * .82 + R() * H * .14, FLOWER_C ? FLOWER_C[i % 6] : '#D9798A', .6);
+  if(area === 6) [[.15, .9, '#F2C9B5'], [.62, .94, '#E8956B'], [.86, .88, '#FFFBF2']].forEach(([x, y, c], i) => { s += `<path d="${i === 1 ? 'M0 -5 L1.6 -1.6 L5 -1.4 L2.4 1 L3.2 4.6 L0 2.8 L-3.2 4.6 L-2.4 1 L-5 -1.4 L-1.6 -1.6Z' : 'M-5 2 C-5 -4 5 -4 5 2Z'}" transform="translate(${f1(W * x)} ${f1(H * y)})" fill="${c}" ${L(1.2)}/>`; });
   return `<svg class="rpgScene" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" aria-hidden="true">${s}</svg>`;
 }
 
