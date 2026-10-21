@@ -1377,7 +1377,7 @@ details.adv summary{font-size:12.5px;font-weight:900;color:var(--ink2);cursor:po
     <div id="rsMsg" class="authMsg" role="status"></div>
   </div>
   <div class="legal"><a href="terms.html" target="_blank">利用規約</a>・<a href="privacy.html" target="_blank">プライバシーポリシー</a>・<a href="tokushoho.html" target="_blank">特定商取引法に基づく表記</a></div>
-  <div class="legal verTag">v2026.10.05-1</div>
+  <div class="legal verTag">v2026.10.21-1</div>
 </div>
 
 <!-- 本体 -->
@@ -1606,6 +1606,8 @@ document.addEventListener('focusin', e => { const t = e.target; if(t && t.closes
   else if(t && t.closest && t.closest('#main')) setTimeout(() => { if(document.activeElement === t) kbMark(t); }, 0);   /* 設定の「保存」は 書きかえると 出てくる */
 }, true));
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('.ov.show .sheet button'); if(b && !b.closest('.foot')) b.closest('.ov').dataset.dirty = '1'; }, true);
+/* 日本語の変換中・変換を決めた直後の Enter は「入れる」にしない（iPad・Mac の Safari は 変換を決める Enter も keydown で 届く）v2026.10.19-1 */
+function kbImeEnter(e){ return e.isComposing || e.keyCode === 229 || Date.now() - KB_COMP_END < 80; }
 document.addEventListener('keydown', e => {
   if(e.key === 'Tab') KB_TABNAV = true;
   if(e.defaultPrevented || e.isComposing || e.keyCode === 229) return;
@@ -3970,7 +3972,7 @@ $('fgBtn').addEventListener('click', async () => {
   }catch(e){ msg.textContent = e.message; }
   $('fgBtn').disabled = false;
 });
-$('fgEmail').addEventListener('keydown', e => { if(e.key === 'Enter') $('fgBtn').click(); });
+$('fgEmail').addEventListener('keydown', e => { if(e.key === 'Enter' && !kbImeEnter(e)) $('fgBtn').click(); });
 /* メールの リンクから もどって、新しい パスワードを 決める */
 let RESET = null;
 async function showReset(h){
@@ -3995,8 +3997,8 @@ $('rsBtn').addEventListener('click', async () => {
   }
   $('rsBtn').disabled = false;
 });
-$('rsPass2').addEventListener('keydown', e => { if(e.key === 'Enter') $('rsBtn').click(); });
-$('password').addEventListener('keydown', e => { if(e.key === 'Enter') $('loginBtn').click(); });
+$('rsPass2').addEventListener('keydown', e => { if(e.key === 'Enter' && !kbImeEnter(e)) $('rsBtn').click(); });
+$('password').addEventListener('keydown', e => { if(e.key === 'Enter' && !kbImeEnter(e)) $('loginBtn').click(); });
 $('logoutBtn').addEventListener('click', () => { if(!confirm('ログアウトしますか？')) return; saveSession(null); showLogin(); });
 document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
   tab = t.dataset.t;
@@ -4668,7 +4670,7 @@ function feeAmtRender(){
   const ins = [...sh.querySelectorAll('[data-fa]')];
   let last = ins[0] || null;
   ins.forEach((el, i) => { el.addEventListener('focus', () => { last = el; ins.forEach(x => x.closest('.kanaRow').classList.toggle('on', x === el)); });
-    el.addEventListener('keydown', e => { if(e.key === 'Enter' && !e.isComposing){ e.preventDefault(); const n = ins[i + 1]; if(n) n.focus(); else $('fmSave').focus(); } }); });
+    el.addEventListener('keydown', e => { if(e.key === 'Enter' && !kbImeEnter(e)){ e.preventDefault(); const n = ins[i + 1]; if(n) n.focus(); else $('fmSave').focus(); } }); });
   sh.querySelectorAll('.feeQuick [data-q]').forEach(b => { b.addEventListener('mousedown', e => e.preventDefault()); b.addEventListener('click', () => {
     if(!last) return; last.value = b.dataset.q; last.classList.add('flash'); setTimeout(() => last && last.classList.remove('flash'), 400);
     const i = ins.indexOf(last); if(ins[i + 1]) ins[i + 1].focus(); }); });
@@ -5557,7 +5559,7 @@ function openKana(){
     ${done.length ? `<div class="kanaH">入っている子（${done.length}人）</div><div class="kanaList">${done.map(rowH).join('')}</div>` : ''}
     <div class="foot"><button class="btn w" id="knCancel">閉じる</button><button class="btn g" id="knSave">${ti('check', 18)}保存</button></div>`;
   const ins = [...sh.querySelectorAll('[data-k]')];
-  ins.forEach((el, i) => el.addEventListener('keydown', e => { if(e.key === 'Enter' && !e.isComposing){ e.preventDefault(); const n = ins[i + 1]; if(n) n.focus(); else $('knSave').focus(); } }));
+  ins.forEach((el, i) => el.addEventListener('keydown', e => { if(e.key === 'Enter' && !kbImeEnter(e)){ e.preventDefault(); const n = ins[i + 1]; if(n) n.focus(); else $('knSave').focus(); } }));
   $('knCancel').addEventListener('click', () => $('stuOv').classList.remove('show'));
   $('knSave').addEventListener('click', async () => {
     const ch = ins.map(el => ({ s: stuById(el.dataset.k), k: toHira(el.value.trim()).replace(/[　]+/g, ' ').slice(0, 40) || null })).filter(x => x.s && (x.k || null) !== (x.s.kana || null));
@@ -6089,7 +6091,7 @@ function openStudent(s, opt = {}){
       else $('repIn') && $('repIn').focus();
     };
     $('repAdd').addEventListener('click', () => passRep($('repIn').value));
-    $('repIn').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); passRep($('repIn').value); } });
+    $('repIn').addEventListener('keydown', e => { if(e.key === 'Enter' && !kbImeEnter(e)){ e.preventDefault(); passRep($('repIn').value); } });
     sh.querySelectorAll('[data-sug]').forEach(b => b.addEventListener('click', () => { $('repIn').value = b.dataset.sug; $('repIn').focus(); }));
     const more = $('repMore'); if(more) more.addEventListener('click', () => { collect(); repAll = true; draw(); });
     sh.querySelectorAll('[data-rmrep]').forEach(b => b.addEventListener('click', async () => {
@@ -6735,7 +6737,7 @@ async function viewNotice(m){
   drawOpts();
   $('nSv').addEventListener('change', e => $('svBox').classList.toggle('hide', !e.target.checked));
   const addOpt = () => { const v = $('svNew').value.trim(); if(v && !opts.includes(v) && opts.length < 5){ opts.push(v); $('svNew').value = ''; drawOpts(); } };
-  $('svAdd').addEventListener('click', addOpt); $('svNew').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); addOpt(); } });
+  $('svAdd').addEventListener('click', addOpt); $('svNew').addEventListener('keydown', e => { if(e.key === 'Enter' && !kbImeEnter(e)){ e.preventDefault(); addOpt(); } });
   $('nSave').addEventListener('click', async () => {
     const title = $('nTitle').value.trim(), body = $('nBody').value.trim();
     if(!title){ toast('タイトルを入れてください'); return; }
@@ -6995,7 +6997,7 @@ async function viewSettings(m){
       <span class="muted" style="flex:1">「保存」でアプリに反映されます</span><button class="btn g" id="cSave">保存</button></div>
     ${ntCardHTML()}${roomsTeachersHTML(invites)}${calCardHTML()}${DEMO_MULTI ? `<div class="card"><button class="btn w" id="asStaff">${ti('eye', 18)}講師の画面を見てみる（見本）</button></div>` : ''}
     <div class="row" style="justify-content:center;margin-top:8px;gap:18px;flex-wrap:wrap"><button class="linkBtn" id="suShow">${ti('flag', 16)}「はじめの準備」をもう一度出す</button>${DEMO ? '' : `<button class="linkBtn" id="logoutBtn2">${ti('door', 16)}ログアウト</button>`}</div>
-    <div class="verTag">先生の画面 v2026.10.05-1</div>`;
+    <div class="verTag">先生の画面 v2026.10.21-1</div>`;
   m.innerHTML = h;
   $('suShow').addEventListener('click', () => { try{ localStorage.removeItem(SETUP_KEY()); }catch(e){} SETUP_FORCE = true; goTab('today'); });
   /* 保存の バーは なにか かえた ときだけ 出す（あいた すきまや 重なりを ださない） */
@@ -7372,6 +7374,117 @@ const MPS = (() => {
   return { mount, encode, decode, readFile, info, minify, loadLib };
 })();
 
+</script>
+<div class="ov" id="lnTxOv"><div class="sheet wide" id="lnTxSheet"></div></div>
+<style>
+/* v2026.10.21-1 予定を 個別のLINEに 貼る文（けいてぃ 10/21「次の月のレッスンを確認できない親向けにLINEで個別で送りたい。すぐに次の予定をコピペして文章にしてくれる仕組み」） */
+.lnTxBar{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
+.lnTxBar button{border:1.5px solid var(--line2,#e6dccf);background:#fff;border-radius:999px;padding:6px 12px;font-weight:800;font-size:13px;cursor:pointer}
+.lnTxBar button.on{background:var(--coral,#E2705A);border-color:var(--coral,#E2705A);color:#fff}
+.lnTxCard{border:1px solid var(--line2,#e6dccf);border-radius:16px;padding:12px;margin:10px 0;background:#fff}
+.lnTxCard .hd{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.lnTxCard .hd .nm{font-weight:900}
+.lnTxCard textarea{width:100%;min-height:150px;border:1px solid var(--line2,#e6dccf);border-radius:12px;padding:10px;font:inherit;font-size:14px;line-height:1.7;resize:vertical;box-sizing:border-box}
+.lnTxCard .bt{display:flex;justify-content:flex-end;gap:8px;margin-top:6px}
+.lnTxCard.done{opacity:.6}
+.lnTxTpl{margin:8px 0 4px}
+.lnTxTpl summary{cursor:pointer;font-weight:800;font-size:13px}
+.lnTxTpl textarea{width:100%;min-height:170px;border:1px dashed var(--line2,#e6dccf);border-radius:12px;padding:10px;font:inherit;font-size:13px;line-height:1.7;box-sizing:border-box;margin-top:6px}
+.lnTxTpl .muted{font-size:12px}
+</style>
+<script>
+'use strict';
+/* ===== 予定を LINEに 貼る文（v2026.10.21-1）=====
+   ・予定の「届ける」のところに「LINEに貼る文」。確認の一覧（確認 ◯/◯家庭）にも「まだの家庭に送る文」
+   ・家庭ごとに、その子の その月の レッスン（日・曜日・時間・振替／追加）を 文にする → コピー → 先生が LINEに 貼って 送る
+   ・送るのは 先生。この画面からは 何も 送らない
+   ・文の 型は 先生が 1回 直せば この端末に 残る（{名前}{月}{予定}{教室} が おきかわる） */
+(function(){
+  const KEY = 'mp_line_tpl_v1', DONEKEY = 'mp_line_tpl_done';
+  const DEF = '{名前}さんのおうちの方へ\n{教室}です。{月}月のレッスンの予定をお送りします。\n\n{予定}\n\nご都合のわるい日があれば、このLINEでお知らせください。';
+  const tpl = () => { try{ return localStorage.getItem(KEY) || DEF; }catch(e){ return DEF; } };
+  const doneSet = mon => { try{ return new Set(JSON.parse(localStorage.getItem(DONEKEY + mon) || '[]')); }catch(e){ return new Set(); } };
+  const saveDone = (mon, set) => { try{ localStorage.setItem(DONEKEY + mon, JSON.stringify([...set])); }catch(e){} };
+  const endIso = l => new Date(Date.parse(l.starts_at) + (l.minutes || 30) * 60000).toISOString();
+  const lineOf = l => md(l.starts_at) + hm(l.starts_at) + '〜' + hm(endIso(l)) + (l.kind && l.kind !== 'regular' && KIND[l.kind] ? '（' + KIND[l.kind][0] + '）' : '');
+  const school = () => (typeof SET !== 'undefined' && SET && SET.display_name) || (typeof SCHOOL !== 'undefined' && SCHOOL && SCHOOL.name) || 'ピアノ教室';
+  function textFor(s, lessons, mo){
+    return tpl().replace(/\{名前\}/g, nameOf(s)).replace(/\{月\}/g, String(mo + 1)).replace(/\{教室\}/g, school())
+      .replace(/\{予定\}/g, lessons.map(lineOf).join('\n') + '\n（全' + lessons.length + '回）');
+  }
+  async function openLineText(startFilter){
+    if(!SCHED_LES || !SCHED_MON) return;
+    const [y, m] = SCHED_MON.split('-').map(Number), mo = m - 1, mon = SCHED_MON;
+    const mine = SCHED_LES.filter(l => l.kind !== 'open' && l.student_id);
+    const byStu = {};
+    mine.filter(l => l.status === 'scheduled').forEach(l => { (byStu[l.student_id] = byStu[l.student_id] || []).push(l); });
+    Object.values(byStu).forEach(a => a.sort((p, q) => p.starts_at.localeCompare(q.starts_at)));
+    let gs = []; try{ gs = await DB.guardians() || []; }catch(e){}
+    const linked = new Set(gs.filter(g => g.notify !== false).map(g => g.student_id));
+    const ids = stuSorted(STU.filter(s => byStu[s.id]), 'kana').map(s => s.id);
+    const conf = {}; ids.forEach(id => { conf[id] = confState(id, mine); });
+    const isWait = id => conf[id].st !== 'conf';
+    const F = { wait: ['まだ確認していない', isWait], noline: ['LINE未登録', id => !linked.has(id)], all: ['ぜんぶ', () => true] };
+    let cur = startFilter || 'wait';
+    const done = doneSet(mon);
+    const sh = $('lnTxSheet');
+    function render(){
+      const list = ids.filter(F[cur][1]);
+      sh.innerHTML = `<h3>${ti('copy', 22)}${mo + 1}月の予定を LINEに貼る文</h3>
+        <div class="muted">家庭ごとに、その子の${mo + 1}月のレッスンの日と時間を文にしました。「コピー」を押して、その家庭とのLINEのトークに貼って送ってください。この画面からは送りません。</div>
+        <div class="lnTxBar">${Object.keys(F).map(k => `<button type="button" data-f="${k}" class="${k === cur ? 'on' : ''}">${F[k][0]}（${ids.filter(F[k][1]).length}）</button>`).join('')}</div>
+        <details class="lnTxTpl"><summary>文の型を直す（この端末に残ります）</summary>
+          <textarea id="lnTpl">${esc(tpl())}</textarea>
+          <div class="muted">{名前} → 生徒の名前／{月} → ${mo + 1}／{予定} → レッスンの日と時間の一覧／{教室} → ${esc(school())}</div>
+          <div class="bt" style="display:flex;gap:8px;justify-content:flex-end;margin-top:6px"><button type="button" class="btn sm w" id="lnTplDef">はじめの型にもどす</button><button type="button" class="btn sm g" id="lnTplSave">この型にする</button></div></details>
+        ${list.length ? list.map(id => { const s = stuById(id), st = conf[id].st;
+          const tag = st === 'conf' ? '<span class="pill ok">✓ 確認ずみ</span>' : st === 'unpub' ? '<span class="pill pub">まだ公開していない</span>' : st === 'part' ? '<span class="pill off">一部まだ</span>' : '<span class="pill off">まだ見ていない</span>';
+          return `<div class="lnTxCard${done.has(id) ? ' done' : ''}" data-id="${id}"><div class="hd">${avatarDot(s, 1)}<span class="nm">${esc(nameOf(s))}</span>${tag}${linked.has(id) ? '' : '<span class="pill off">LINE未登録</span>'}${done.has(id) ? '<span class="pill ok">コピーずみ</span>' : ''}</div>
+            <textarea aria-label="${esc(nameOf(s))}さんへの文">${esc(textFor(s, byStu[id], mo))}</textarea>
+            <div class="bt"><button type="button" class="btn sm g" data-cp="${id}">${ti('copy', 16)}コピー</button></div></div>`; }).join('')
+          : `<div class="note">${F[cur][0]}の家庭はありません。</div>`}
+        <div class="foot"><button class="btn w" id="lnTxClose">閉じる</button></div>`;
+      sh.querySelectorAll('.lnTxCard textarea').forEach(t => { t.style.height = 'auto'; t.style.height = (t.scrollHeight + 4) + 'px'; });
+      sh.querySelectorAll('[data-f]').forEach(b => b.addEventListener('click', () => { cur = b.dataset.f; render(); }));
+      sh.querySelectorAll('[data-cp]').forEach(b => b.addEventListener('click', async () => {
+        const id = b.dataset.cp, ta = sh.querySelector(`.lnTxCard[data-id="${id}"] textarea`);
+        await copyText(ta.value); done.add(id); saveDone(mon, done);
+        const card = ta.closest('.lnTxCard'); card.classList.add('done');
+        if(!card.querySelector('.hd .pill.ok.cpd')){ const p = document.createElement('span'); p.className = 'pill ok cpd'; p.textContent = 'コピーずみ'; card.querySelector('.hd').appendChild(p); }
+      }));
+      $('lnTplSave').addEventListener('click', () => { try{ localStorage.setItem(KEY, $('lnTpl').value); }catch(e){} toast('文の型を保存しました'); render(); });
+      $('lnTplDef').addEventListener('click', () => { try{ localStorage.removeItem(KEY); }catch(e){} render(); });
+      $('lnTxClose').addEventListener('click', () => $('lnTxOv').classList.remove('show'));
+    }
+    showOv('lnTxOv'); render();
+  }
+  window.openLineText = openLineText;
+  /* 予定の 画面：「届ける」の 下に ボタン */
+  const _vs = viewSched;
+  viewSched = async function(m){
+    const r = await _vs.apply(this, arguments);
+    try{
+      const sb = $('sendBtn');
+      if(sb && !$('lnTxBtn') && SCHED_LES && SCHED_LES.some(l => l.kind !== 'open' && l.student_id && l.status === 'scheduled')){
+        const b = document.createElement('button'); b.type = 'button'; b.id = 'lnTxBtn'; b.className = 'btn sm w';
+        b.innerHTML = ti('copy', 18) + 'LINEに貼る文'; b.title = '家庭ごとに、その月の予定を文にしてコピーします（送るのは先生）';
+        sb.insertAdjacentElement('beforebegin', b); b.addEventListener('click', () => openLineText('wait'));
+      }
+    }catch(e){}
+    return r;
+  };
+  /* 確認の 一覧：まだの 家庭に 送る文 */
+  const _ocl = openConfirmList;
+  openConfirmList = function(){
+    const r = _ocl.apply(this, arguments);
+    try{
+      const ft = $('confSheet').querySelector('.foot');
+      if(ft && !$('cfLnTx')){ const b = document.createElement('button'); b.className = 'btn g'; b.id = 'cfLnTx'; b.innerHTML = ti('copy', 18) + 'まだの家庭に送る文'; ft.appendChild(b);
+        b.addEventListener('click', () => { $('confOv').classList.remove('show'); openLineText('wait'); }); }
+    }catch(e){}
+    return r;
+  };
+})();
 </script>
 </body>
 </html>
