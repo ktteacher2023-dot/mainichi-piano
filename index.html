@@ -2965,6 +2965,9 @@ ruby rt{font-weight:700;color:#6E5B50}
 .hnEmpty{text-align:center}
 .hnEmpty svg{display:block;margin:4px auto 6px}
 .noteCard .nr.kid span{color:var(--coral-d);font-weight:900}
+.delBox{margin-top:12px;border-top:1.5px dashed #EFE6DD;padding-top:8px}
+.delBox summary{cursor:pointer;font-size:13px;font-weight:900;color:var(--ink2);padding:6px 0}
+.delBox p{font-size:12.5px;line-height:1.8;margin-top:6px}
 </style>
 </head>
 <body>
@@ -3504,7 +3507,7 @@ ruby rt{font-weight:700;color:#6E5B50}
    ・同じ地図に 教室みんなの主人公（ニックネーム・順位なし）
    ・おうちのひと：予定・振替・おしらせ・れんらくちょう
    ========================================================= */
-const APP_VER = 'v2026.10.27-2';   /* なおしたら かならず あげる（アップした ものが あたらしいか、おうちのかた→設定の いちばん したで たしかめられる） */
+const APP_VER = 'v2026.10.27-3';   /* なおしたら かならず あげる（アップした ものが あたらしいか、おうちのかた→設定の いちばん したで たしかめられる） */
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* 教室だより（v2026.10.27-1）：先生の 画面（teacher.html）と おなじ 一文・おなじ 写真の きまり */
@@ -14221,7 +14224,12 @@ function famSettingsCommon(){
     ${linked() ? '' : `<input class="fInput" id="setCode" placeholder="招待コード" autocomplete="off">${S.consentAt ? '' : '<label class="agree"><input type="checkbox" id="setAgree"><span><a href="privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a>に同意します</span></label>'}<button class="fBtn c" id="setCodeBtn">つなぐ</button>`}
     ${linked() && !DEMO ? '<button class="fBtn o" id="setLine">LINEでレッスンのお知らせを受け取る</button>' : ''}
     <p style="font-size:11px;color:var(--mute);margin-top:8px">まいにちピアノ ${APP_VER}　<a href="terms.html" target="_blank" rel="noopener" style="color:var(--ink2)">利用規約</a>・<a href="privacy.html" target="_blank" rel="noopener" style="color:var(--ink2)">プライバシーポリシー</a></p>
-    <p style="font-size:11px;color:var(--mute)">「ごうかくのレコード」で録音した演奏は、この端末の中だけに保存されます。</p></div>`;
+    <p style="font-size:11px;color:var(--mute)">「ごうかくのレコード」で録音した演奏は、この端末の中だけに保存されます。</p>
+    ${DEMO ? '' : `<details class="delBox"><summary>データの削除</summary>
+      ${linked() ? `<p>教室に保存されているお子さんのデータ（名前・予定・連絡帳・練習の記録など）の削除を、先生にお願いできます。先生が削除すると、元にもどせません。</p>
+      <button type="button" class="fBtn o" id="setDelReq">教室にデータの削除をお願いする</button>` : ''}
+      <p>この端末に保存されている記録（まち・レベル・録音など）を消すこともできます。${linked() ? '教室のデータは残ります。' : ''}</p>
+      <button type="button" class="fBtn o" id="setForget">この端末の記録をすべて消す</button></details>`}</div>`;
 }
 function wireSettings(){
   document.querySelectorAll('#modeCard [data-mode]').forEach(b => b.addEventListener('click', async () => {
@@ -14253,8 +14261,28 @@ function wirePlayCard(){
     toast(+b.dataset.pm ? `1日${b.dataset.pm}分までにしました` : '時間は決めないことにしました');
   }));
 }
+/* データの 削除（v2026.10.27-3。App Store の きまり：アプリの 中から 削除を はじめられること） */
+function wireDelete(){
+  const rq = $('setDelReq'); if(rq) rq.addEventListener('click', async () => {
+    if(!confirm('教室に「データの削除のお願い」を送ります。先生が削除すると、このアプリで教室の予定や連絡帳が使えなくなります。よろしいですか？')) return;
+    rq.disabled = true;
+    try{ await API.sendMsg(`【データの削除のお願い】${S.hero.name || 'この子'}のデータの削除をお願いします（アプリの「設定」から送りました）`); toast('先生に送りました。削除がすんだら、先生からお知らせがあります', 4200); }
+    catch(e){ toast('送れませんでした。電波のよいところで、もう一度お試しください'); rq.disabled = false; }
+  });
+  const fg = $('setForget'); if(fg) fg.addEventListener('click', async () => {
+    if(!confirm('この端末のまいにちピアノの記録（まち・レベル・録音・教室とのつながり）を、すべて消します。よろしいですか？')) return;
+    if(!confirm('元にもどせません。本当に消しますか？')) return;
+    try{ Object.keys(localStorage).filter(k => /^(mainichi_v2|mp2_|mp_)/.test(k) && !/_demo/.test(k)).forEach(k => localStorage.removeItem(k)); }catch(e){}
+    try{ sessionStorage.clear(); }catch(e){}
+    try{ indexedDB.deleteDatabase('mp2rec'); }catch(e){}
+    /* アプリ版は 端末の 中に 予備を もっているので、それも けす */
+    try{ if(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.mpStore) window.webkit.messageHandlers.mpStore.postMessage('{}'); }catch(e){}
+    toast('消しました'); setTimeout(() => location.replace(location.pathname), 600);
+  });
+}
 function wireSettingsCommon(){
   wirePlayCard();
+  wireDelete();
   $('setVoice').addEventListener('change', e => { S.voice = e.target.checked; saveState(); });
   if($('otoOpen')) $('otoOpen').addEventListener('click', () => openOtoTest());
   $('setSfx').addEventListener('change', e => { S.sfx = e.target.checked; saveState(); if(fxBus) fxBus.gain.value = S.sfx ? .4 : 0; });
@@ -16472,6 +16500,8 @@ window.addEventListener('appinstalled', () => { installEv = null; toast('アプ�
 const isStandalone = () => { try{ return matchMedia('(display-mode: standalone)').matches || navigator.standalone === true; }catch(e){ return false; } };
 const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const inLineApp = () => /Line\//i.test(navigator.userAgent);
+/* App Store の アプリ（iPhone・iPad）の 中で ひらいている（v2026.10.27-3。アプリは ふつうの ページを よみこむ） */
+const inNativeApp = () => /MainichiPianoApp\//.test(navigator.userAgent);
 function kidQR(text, px = 128){
   if(typeof qrcode !== 'function') return '';
   try{ const q = qrcode(0, 'M'); q.addData(text, 'Byte'); q.make(); const n = q.getModuleCount(), c = px / (n + 8);
@@ -16484,7 +16514,7 @@ function famDeviceCard(){
   const code = (FAM && FAM.student && FAM.student.invite_code) || (DEMO ? 'a1b2c3d4' : '');
   const full = WEB_URL + (code ? '?code=' + code : '');
   const inst = installEv ? `<button class="fBtn g" id="devInstall">${ICON('laptop', 22)}この端末にアプリとして入れる</button>`
-    : isStandalone() ? `<p class="devOk">${ICON('check', 18)}この端末には、アプリとして入っています</p>`
+    : isStandalone() || inNativeApp() ? `<p class="devOk">${ICON('check', 18)}この端末には、アプリとして入っています</p>`
     : inLineApp() ? '' : `<p class="fNote">この端末に入れるとき：${isIOS() ? 'Safariの共有ボタン →「ホーム画面に追加」' : 'Chromeの右上の「︙」→「アプリをインストール」（または「ホーム画面に追加」）'}</p>`;
   return `<div class="fCard" id="devCard"><h3>${ICON('laptop', 24)}ほかの端末でも使う</h3>
     <p>お子さんが使うクロームブック・タブレット・パソコンでも、同じ主人公の続きができます。記録は教室とつながっているので、どの端末でやっても地図の歩数に入ります。</p>
