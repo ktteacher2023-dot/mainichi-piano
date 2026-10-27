@@ -2882,6 +2882,89 @@ ruby rt{font-weight:700;color:#6E5B50}
 .resStep.goal .dgTx{display:block;font-size:13px;text-align:center;line-height:1.6}
 .resStep.goal .dgTx b{color:var(--coral-d)}
 .dgLine{display:inline-flex;align-items:center;gap:4px;margin-top:8px;font-size:13px;font-weight:900;background:#FFF7E3;border:2px solid var(--ink);border-radius:999px;padding:1px 10px;line-height:1.7;color:var(--ink)}
+/* ---------- 教室だより（v2026.10.27-1） ---------- */
+#letOv{align-items:flex-end;padding:0;z-index:120}
+.letSheet{background:var(--paper);width:100%;max-width:560px;max-height:94dvh;overflow-y:auto;border-radius:22px 22px 0 0;padding:0 14px calc(18px + var(--safe-b));overscroll-behavior:contain;animation:letSheetIn .26s ease-out}
+@keyframes letSheetIn{from{transform:translateY(28px)}to{transform:none}}
+@media (min-width:700px){ #letOv{align-items:center;padding:20px} .letSheet{border-radius:22px;max-height:92dvh} }
+.letBar{position:sticky;top:0;z-index:2;background:var(--paper);padding:12px 0 10px;display:flex}
+.letX{border:2px solid var(--ink);background:var(--card);border-radius:999px;padding:5px 14px 5px 8px;font-weight:900;font-size:14px;display:inline-flex;align-items:center;gap:4px;box-shadow:0 2px 0 var(--ink);color:var(--ink);cursor:pointer;min-height:44px}
+.letFoot{margin-top:8px}
+.letCard .lcTop{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.letCard .lcKick{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:900;color:var(--coral-d);letter-spacing:.08em}
+.letCard .lcIss{background:var(--coral);color:#FFFBF2;border:1.5px solid var(--ink);border-radius:999px;padding:0 10px;font-size:12px;font-weight:900;line-height:1.75}
+.letCard h3.lcT{font-size:17px;line-height:1.5;margin-bottom:4px;word-break:auto-phrase}
+.letCard .lcLead{white-space:pre-wrap;word-break:auto-phrase}
+.letCard .fBtn small{font-size:12px;font-weight:700;opacity:.92;margin-left:4px}
+.lBack .lBackRow{display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:0;border-bottom:1.5px dashed #EFE6DD;background:none;padding:10px 2px;font:inherit;color:var(--ink);cursor:pointer;min-height:48px}
+.lBack .lBackRow:last-child{border-bottom:0}
+.lBack .iss{flex:0 0 auto;font-size:12px;font-weight:900;background:#F3E9D3;border-radius:999px;padding:1px 9px}
+.lBack .tt{flex:1;min-width:0;font-size:14px;font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lBack .dt{flex:0 0 auto;font-size:11px;color:var(--mute);font-weight:700}
+/* ---------- 教室だより（v2026.10.27-1）：保護者に見える形。先生の画面（teacher.html）と おなじ ---------- */
+.lp{background:#FFFBF2;border:1.5px solid #3B2A22;border-radius:18px;overflow:hidden;color:#3B2A22;box-shadow:0 3px 0 #3B2A22;text-align:left;font-family:'Zen Maru Gothic',system-ui,sans-serif}
+.lp .lpHead{background:#F6ECD8;padding:16px 18px 14px;border-bottom:1.5px dashed #D9C6A5}
+.lp .lpKick{font-size:12px;font-weight:900;letter-spacing:.14em;color:#B55B43}
+.lp .lpIss{display:inline-block;margin-left:8px;background:#E07A5F;color:#FFFBF2;border:1.5px solid #3B2A22;border-radius:999px;padding:0 10px;font-size:12px;font-weight:900;line-height:1.75;vertical-align:1px}
+.lp h2{font-size:clamp(19px,5.2vw,23px);font-weight:900;line-height:1.45;margin:6px 0 0;word-break:auto-phrase}
+.lp .lpFrom{font-size:12px;color:#6E5B50;font-weight:700;margin:4px 0 0}
+.lp .lpLead{padding:14px 18px 4px;margin:0;font-size:15px;line-height:1.95;font-weight:700;white-space:pre-wrap;word-break:auto-phrase;color:#3B2A22}
+.lp .lpSec{padding:12px 18px 14px;border-top:1px dashed #E3D3BA}
+.lp .lpLead + .lpSec,.lp .lpHead + .lpSec{border-top:0}
+.lp .lpSec h3{font-size:16px;font-weight:900;display:flex;align-items:center;gap:8px;margin:0 0 6px;line-height:1.5;word-break:auto-phrase}
+.lp .lpSec h3::before{content:'';flex:0 0 auto;width:10px;height:10px;border-radius:50%;background:#E3B143;border:1.5px solid #3B2A22}
+.lp .lpSec p{font-size:14.5px;line-height:1.95;white-space:pre-wrap;color:#57473F;font-weight:500;margin:0;word-break:auto-phrase}
+.lp figure{margin:10px 0 0}
+.lp figure img{display:block;width:100%;height:auto;max-height:70vh;object-fit:contain;background:#F6ECD8;border-radius:12px;border:1.5px solid #3B2A22}
+.lp figcaption{font-size:12px;color:#6E5B50;margin-top:5px;font-weight:700;line-height:1.6}
+.lp .lpEnd{padding:4px 18px 16px;margin:0;font-size:12px;color:#6E5B50;text-align:right;font-weight:700}
+/* ---------- ランキング・はなまる ノート（v2026.10.27-1） ---------- */
+#rkOv,#hnOv{align-items:flex-end;padding:0;z-index:120}
+.rkSheet{background:var(--paper);width:100%;max-width:560px;max-height:94dvh;overflow-y:auto;border-radius:22px 22px 0 0;padding:0 14px calc(18px + var(--safe-b));overscroll-behavior:contain;animation:letSheetIn .26s ease-out;word-break:keep-all;overflow-wrap:anywhere}
+@media (min-width:700px){ #rkOv,#hnOv{align-items:center;padding:20px} .rkSheet{border-radius:22px;max-height:92dvh} }
+.rkTop{position:sticky;top:0;z-index:2;background:var(--paper);padding:12px 0 8px;display:flex;align-items:center;gap:10px}
+.rkTop h2{flex:1;min-width:0;font-size:19px;font-weight:900;line-height:1.3}
+.rkTop h2 small{display:block;font-size:12px;color:var(--ink2);font-weight:900}
+.rkGl{font-size:11.5px;color:var(--ink2);font-weight:900;margin:6px 2px 0}
+.rkChips{display:flex;gap:6px;flex-wrap:wrap;padding:4px 0 4px}
+.rkChips button{border:2px solid var(--ink);border-radius:999px;background:var(--card);color:var(--ink);padding:4px 12px 4px 7px;font-weight:900;font-size:13px;box-shadow:0 2px 0 var(--ink);display:inline-flex;align-items:center;gap:4px;min-height:40px;cursor:pointer}
+.rkChips button.on{background:var(--coral);color:#FFFBF2}
+.rkChips button:active{transform:translateY(2px);box-shadow:0 0 0 var(--ink)}
+.rkBoard{background:var(--card);border:2.5px solid var(--ink);border-radius:20px;box-shadow:0 4px 0 var(--ink);padding:12px 12px 10px;margin-top:10px}
+.rkBoard h3{font-size:18px;font-weight:900;display:flex;align-items:center;gap:6px;line-height:1.4}
+.rkSub{font-size:12px;color:var(--ink2);margin:2px 0 8px;font-weight:700}
+.rkR{display:flex;align-items:center;gap:8px;padding:6px 6px;border-bottom:1.5px dashed #EFE6DD}
+.rkR:last-of-type{border-bottom-color:transparent}
+.rkR.me{background:#FBEBDD;border-radius:14px;box-shadow:inset 0 0 0 2px var(--coral);border-bottom-color:transparent}
+.rkN{width:32px;height:32px;flex:0 0 auto;border-radius:50%;border:2px solid var(--ink);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;background:#FFFBF2;font-variant-numeric:tabular-nums}
+.rkN.r1{background:#F2C94C} .rkN.r2{background:#D5DBE1} .rkN.r3{background:#DDA77A}
+.rkFace{flex:0 0 auto;width:40px;height:40px;display:flex;align-items:center;justify-content:center}
+.rkNick{flex:1;min-width:0;font-weight:900;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rkNick small{display:block;font-size:11px;color:var(--coral-d);line-height:1.2}
+.rkVal{flex:0 0 auto;font-weight:900;font-size:16px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rkVal small{font-size:11px;margin-left:2px}
+.rkGap{text-align:center;color:var(--mute);letter-spacing:.3em;font-weight:900;margin:2px 0}
+.rkHint{font-size:13px;color:var(--ink2);text-align:center;margin:8px 0 2px;font-weight:900;line-height:1.7}
+.rkEmpty{font-size:14px;text-align:center;padding:14px 0;font-weight:900;color:var(--ink2)}
+.rkNote{font-size:12px;color:var(--ink2);text-align:center;margin:12px 0 4px;line-height:1.8;font-weight:700}
+.pzRankBtn{display:inline-flex;align-items:center;gap:3px;min-height:40px;flex:0 0 auto;padding:3px 10px 3px 6px;font-size:12.5px}
+#plaza .gHead .ttl{white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:400px){ #plaza .gHead .ttl .ic-in{display:none} }
+@media (max-width:365px){ .pzRankBtn span{display:none} .pzRankBtn{padding:3px 8px} }
+.sealBig{display:flex;align-items:center;justify-content:center;border-radius:50%;background:#FFF3E6;margin:0 auto}
+.hnCount{display:inline-block;margin-top:10px;background:#FFF6E0;border:2px solid var(--ink);border-radius:999px;padding:1px 12px;font-size:13px;font-weight:900;color:var(--ink)}
+.hnOpenBtn{display:inline-flex;align-items:center;gap:4px;margin-top:8px;min-height:40px}
+.hnN{flex:0 0 auto;font-size:22px;font-weight:900;color:var(--coral-d);font-variant-numeric:tabular-nums}
+.hnN small{font-size:12px;margin-left:2px;color:var(--ink2)}
+.hnGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:4px}
+.hnCard{position:relative;background:var(--card);border:2.5px solid var(--ink);border-radius:18px;box-shadow:0 3px 0 var(--ink);padding:12px 12px 10px;display:flex;flex-direction:column;gap:6px}
+.hnCard.s-star{background:#FFF8E4} .hnCard.s-heart{background:#FDEDEA} .hnCard.s-clap{background:#EEF5E8}
+.hnSeal{display:flex;width:46px;height:46px;align-items:center;justify-content:center}
+.hnCard p{font-size:15px;font-weight:900;line-height:1.7;color:var(--ink);flex:1}
+.hnCard small{font-size:11.5px;color:var(--ink2);font-weight:700}
+.hnEmpty{text-align:center}
+.hnEmpty svg{display:block;margin:4px auto 6px}
+.noteCard .nr.kid span{color:var(--coral-d);font-weight:900}
 </style>
 </head>
 <body>
@@ -3163,6 +3246,7 @@ ruby rt{font-weight:700;color:#6E5B50}
   <div class="gHead">
     <button class="roundBtn" id="plazaBack" aria-label="もどる"><i data-ic="back" data-s="24"></i></button>
     <div class="ttl"><i class="ic-in" data-ic="fountain" data-s="26"></i>おとの ひろば</div>
+    <button class="pillBtn pzRankBtn hide" id="pzRank" aria-label="みんなの ランキング"><i data-ic="star" data-s="20"></i><span>ランキング</span></button>
     <div class="stat pzStat" title="あつめた きんの おんぷ"><i class="ic-in" data-ic="goldnote" data-s="22"></i><b id="pzFound">0</b></div>
   </div>
   <div id="pzCh" class="hide" role="tablist" aria-label="ちょうめ"></div>
@@ -3225,6 +3309,7 @@ ruby rt{font-weight:700;color:#6E5B50}
     <div class="ttl"><i class="ic-in" data-ic="gift" data-s="26"></i>なかまと おくりもの</div>
   </div>
   <button class="mhOpen" id="mhOpen"><span id="mhOpenFace"></span><span><b>たびびとを きがえる</b><small>いろ・かお・ぼうし・もちもの</small></span></button>
+  <button class="mhOpen hnEntryBtn hide" id="hnEntry"><span><i data-ic="hanamaru" data-s="44"></i></span><span><b>せんせいからの はなまる ノート</b><small id="hnEntryTx">レッスンの あとに とどくよ</small></span></button>
   <div id="partyGrid"></div>
 </div>
 
@@ -3243,6 +3328,9 @@ ruby rt{font-weight:700;color:#6E5B50}
   <div class="stScroll" id="stScroll"><div class="stWrap" id="stBody"></div></div>
 </div>
 <div class="ov stOv" id="stOv"><div class="stSheet" id="stSheet"></div></div>
+<div class="ov" id="letOv"><div class="letSheet" id="letSheet" role="dialog" aria-label="教室だより"></div></div>
+<div class="ov" id="rkOv"><div class="rkSheet" id="rkSheet" role="dialog" aria-label="みんなの ランキング"></div></div>
+<div class="ov" id="hnOv"><div class="rkSheet" id="hnSheet" role="dialog" aria-label="せんせいからの はなまる ノート"></div></div>
 
 <div class="screen" id="family">
   <div id="famHead">
@@ -3416,9 +3504,25 @@ ruby rt{font-weight:700;color:#6E5B50}
    ・同じ地図に 教室みんなの主人公（ニックネーム・順位なし）
    ・おうちのひと：予定・振替・おしらせ・れんらくちょう
    ========================================================= */
-const APP_VER = 'v2026.10.19-1';   /* なおしたら かならず あげる（アップした ものが あたらしいか、おうちのかた→設定の いちばん したで たしかめられる） */
+const APP_VER = 'v2026.10.27-2';   /* なおしたら かならず あげる（アップした ものが あたらしいか、おうちのかた→設定の いちばん したで たしかめられる） */
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+/* 教室だより（v2026.10.27-1）：先生の 画面（teacher.html）と おなじ 一文・おなじ 写真の きまり */
+const LETTER_TAIL = '\n\n（つづきは、アプリの「おうちのかた」→「お知らせ」で読めます）';
+const letImgOk = s => typeof s === 'string' && s.length < 1500000 && /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(s);
+/* 見本モードの 写真（教室の ピアノの 絵）。ほんとうの 写真では ない */
+function letDemoPhoto(){
+  try{
+    const c = document.createElement('canvas'); c.width = 960; c.height = 640; const x = c.getContext('2d');
+    const g = x.createLinearGradient(0, 0, 0, 640); g.addColorStop(0, '#F3E3C8'); g.addColorStop(1, '#E9CFA7'); x.fillStyle = g; x.fillRect(0, 0, 960, 640);
+    x.fillStyle = '#FBF3E4'; x.fillRect(60, 60, 360, 240); x.strokeStyle = '#B79A72'; x.lineWidth = 10; x.strokeRect(60, 60, 360, 240);
+    x.fillStyle = '#3B2A22'; x.fillRect(0, 380, 960, 40);
+    for(let i = 0; i < 16; i++){ x.fillStyle = '#FFFDF8'; x.fillRect(i * 60 + 2, 420, 56, 220); }
+    [0, 1, 3, 4, 5, 7, 8, 10, 11, 12, 14, 15].forEach(i => { x.fillStyle = '#2B1E18'; x.fillRect(i * 60 + 40, 420, 38, 130); });
+    [['#E07A5F', 640, 250], ['#E3B143', 740, 270], ['#6FA35E', 840, 250]].forEach(([col, cx, cy]) => { x.fillStyle = col; x.beginPath(); x.moveTo(cx, cy - 90); x.lineTo(cx + 40, cy + 40); x.lineTo(cx - 40, cy + 40); x.closePath(); x.fill(); });
+    return c.toDataURL('image/jpeg', .8);
+  }catch(e){ return null; }
+}
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 /* 歩の よみかた：1ぽ・2ほ・3ぽ・4ほ・5ほ・6ぽ・7ほ・8ぽ・9ほ・10ぽ（じゅっぽ） */
 const po = n => [0, 1, 3, 4, 6, 8].includes(Math.abs(Math.round(+n || 0)) % 10) ? 'ぽ' : 'ほ';
@@ -4137,6 +4241,17 @@ const Demo = (() => {
       survey: { q: 'ご参加は？', opts: ['参加', '不参加'], due: addDays(todayStr(), 10) } },
     { id: 'n2', title: 'アプリが新しくなりました', body: '「おとの くに」の冒険が始まりました。ピアノのおだいができたら、主人公が進みます。', created_at: new Date(now - 5 * 864e5).toISOString(), pinned: false }
   ];
+  /* 教室だより（見本） */
+  const letters = [
+    { id: 'n0', issue: '10月号', title: '教室だより 10月号　秋の発表会にむけて', created_at: new Date(now - 8 * 864e5).toISOString(), pinned: false, read: false,
+      body: '（見本）すずしくなって、ピアノの音がよくひびく季節になりました。今月のレッスンのようすと、11月の発表会のことをお知らせします。' + LETTER_TAIL,
+      blocks: [{ h: '今月のレッスンから', t: '（見本）リズムあそびで、2分音符の「ぎゅー」を体で感じてから、曲の中で弾いてみました。', img: letDemoPhoto(), cap: 'リズムあそびのようす' },
+        { h: 'おうちでの練習', t: '（見本）1日1回、先生のおだいを弾いたら、となりで聞いて「きいたよ」を押してください。' },
+        { h: 'これからの予定', t: '（見本）11月23日（日）　発表会\n12月　クリスマス会（くわしくは、あらためてお知らせします）' }] },
+    { id: 'n00', issue: '9月号', title: '教室だより 9月号　2学期がはじまりました', created_at: new Date(now - 38 * 864e5).toISOString(), pinned: false, read: true,
+      body: '（見本）2学期もよろしくお願いします。' + LETTER_TAIL, blocks: [{ h: '夏のあいだに', t: '（見本）おうちで弾いた曲を、レッスンで聞かせてください。' }] }
+  ];
+  letters.forEach(l => notices.push({ id: l.id, title: l.title, body: l.body, created_at: l.created_at, pinned: false, read: l.read }));
   const msgs = [
     { id: 1, sender: 'teacher', body: 'きのうのレッスン、左手がとても安定していました。おうちでもゆっくり3回でOKです。', created_at: new Date(now - 3 * 864e5).toISOString() },
     { id: 2, sender: 'family', body: 'ありがとうございます！毎日夕ごはんの前にやっています。', created_at: new Date(now - 3 * 864e5 + 36e5).toISOString() }
@@ -4145,7 +4260,7 @@ const Demo = (() => {
   const adultNotes = S.mode === 'adult' || S.mode === 'junior' || ['adult', 'junior'].includes(QS.get('mode'));
   const notes = [
     adultNotes ? { id: 'dn2', day: addDays(todayStr(), -2), did: ['きょく', 'テクニック'], pieces: 'メヌエット ト長調', good: '前半のフレーズの終わりが、とても自然におさまるようになりました。', home: '中間部は左手だけを♩＝72で。和音の移りかわりを耳で確かめながら。', read: false, created_at: new Date(now - 2 * 864e5).toISOString() }
-      : { id: 'dn2', day: addDays(todayStr(), -2), did: ['リズム', 'きょく'], pieces: 'かえるのうた', good: 'はずむ リズムが とても 安定していました。右手の ゆびも よく うごいていました。', home: 'かたての れんしゅうから、ゆっくり 3回で OKです。', read: false, created_at: new Date(now - 2 * 864e5).toISOString() },
+      : { id: 'dn2', day: addDays(todayStr(), -2), did: ['リズム', 'きょく'], pieces: 'かえるのうた', good: 'はずむ リズムが とても 安定していました。右手の ゆびも よく うごいていました。', kid: 'リズムが とっても じょうずだったよ! おうちでも たくさん ひいてね。', kid_stamp: 'star', home: 'かたての れんしゅうから、ゆっくり 3回で OKです。', read: false, created_at: new Date(now - 2 * 864e5).toISOString() },
     { id: 'dn1', day: addDays(todayStr(), -9), did: ['おんぷを よむ'], pieces: 'ドレミの うた', good: 'ト音記号の ドレミを すらすら 読めました。', home: 'アプリの おんぷカードを 毎日。', read: true, created_at: new Date(now - 9 * 864e5).toISOString() }];
   const att = [{ day: todayStr(), in_at: new Date(now - 25 * 60e3).toISOString(), out_at: null }];
   return {
@@ -4231,6 +4346,38 @@ const Demo = (() => {
     async readMsgs(){ unread = 0; return 1; },
     async readNotes(){ notes.forEach(n => { n.read = true; }); return 1; },
     async noticeRead(id){ const n = notices.find(x => x.id === id); if(n) n.read = true; return true; },
+    async ranking(){
+      const t = todayStr(), ws = weekStart(t);
+      let days = 0, odai = 0;
+      for(let i = 0; i < 7; i++){ const d = addDays(ws, i); if(d > t) break; const L = S.log[d]; if(!L) continue;
+        const od = Object.keys((L.odai && typeof L.odai === 'object') ? L.odai : {}).length; odai += od; if(od || L.practice || L.rhythm || L.note || L.piano || L.hw) days++; }
+      const sumv = o => Object.values(o && typeof o === 'object' ? o : {}).reduce((a, v) => a + (+v || 0), 0);
+      const mine = { days, odai, rpg: (S.rpg && S.rpg.lv) || 0, drop: Math.max((S.drop && +S.drop.best) || 0, ...(((S.drop && S.drop.bests) || [0]).map(v => +v || 0))),
+        tile: sumv(S.tile && S.tile.best), mole: sumv(S.mole && S.mole.best), kodama: (S.kodama && +S.kodama.best) || 0 };
+      const gen = { days: [6, 5, 5, 4, 4, 3, 3, 2, 1, 1, 0], odai: [12, 10, 9, 8, 7, 6, 4, 3, 2, 1, 0], rpg: [14, 12, 11, 9, 8, 7, 6, 5, 4, 2, 0], drop: [3820, 3100, 2650, 2200, 1980, 1500, 1320, 900, 640, 300, 0],
+        tile: [5400, 4800, 4100, 3600, 2900, 2500, 1800, 1200, 800, 400, 0], mole: [41, 37, 30, 26, 22, 18, 15, 12, 8, 5, 0], kodama: [14, 12, 11, 9, 8, 7, 6, 5, 4, 3, 0] };
+      const boards = Object.keys(gen).map((k, bi) => {
+        const all = friends.slice(0, 11).map((f, i) => ({ nick: f.nick, avatar: f.avatar, v: gen[k][(i + bi * 3) % 11], me: false }))
+          .concat([{ nick: S.hero.name || 'たびびと', avatar: avatarMe(), v: mine[k] | 0, me: true }]).filter(r => r.v > 0).sort((a, b) => b.v - a.v);
+        let rk = 0, pv = null; all.forEach((r, i) => { if(r.v !== pv){ rk = i + 1; pv = r.v; } r.rank = rk; });
+        const m = all.find(r => r.me);
+        return { k, rows: all.filter(r => r.rank <= 10).slice(0, 12), me: m ? { rank: m.rank, v: m.v } : null, n: all.length };
+      });
+      return { ok: true, off: false, week_start: ws, today: t, boards };
+    },
+    async kotoba(){
+      const ago = d => new Date(now - d * 864e5).toISOString(), dd = d => addDays(todayStr(), -d);
+      const L = [
+        { id: 'dk1', body: 'リズムが とっても じょうずだったよ! おうちでも たくさん ひいてね。', seal: 'star', day: dd(4), pieces: 'かえるのうた', created_at: ago(4) },
+        { id: 'dk2', body: 'さいごまで あきらめずに ひけたね!', seal: 'hanamaru', day: dd(11), pieces: 'ちょうちょう', created_at: ago(11) },
+        { id: 'dk3', body: 'おとが きれいに なってきたね!', seal: 'heart', day: dd(18), created_at: ago(18) },
+        { id: 'dk4', body: 'はじめての きょく、よく がんばったね!', seal: 'clap', day: dd(25), created_at: ago(25) }];
+      if(QS.has('hanamaru')) L.unshift({ id: 'dn1', body: 'メヌエット、とっても きれいに ひけたね。つぎも たのしみに しているよ!', seal: 'hanamaru', day: todayStr(), pieces: 'メヌエット', created_at: new Date().toISOString() });
+      return L.map(x => Object.assign({ stamp: null, pieces: null }, x));
+    },
+    async letters(){ return letters.map(l => ({ id: l.id, title: l.title, issue: l.issue, body: l.body, created_at: l.created_at, pinned: l.pinned, read: l.read, photos: l.blocks.filter(b => b.img).length })); },
+    async letter(id){ const l = letters.find(x => x.id === id); if(!l) return { ok: false, reason: 'notice' }; l.read = true; const n = notices.find(x => x.id === id); if(n) n.read = true;
+      return { ok: true, id: l.id, title: l.title, issue: l.issue, body: l.body, created_at: l.created_at, blocks: JSON.parse(JSON.stringify(l.blocks)) }; },
     async noticeAnswer(id, a, note){ const n = notices.find(x => x.id === id); if(!n || !n.survey) return { ok: false }; n.answer = a; n.answer_note = note || null; n.read = true; return { ok: true }; },
     async profile(){ return true; },
     async setKeys(on){ return true; },
@@ -4272,6 +4419,10 @@ const Live = {
   async readMsgs(){ return rpc('mp2_read_messages', { p_student_id: studentId }); },
   async readNotes(){ return rpc('mp2_read_notes', { p_student_id: studentId }); },
   async noticeRead(id){ return rpc('mp2_notice_read', { p_student_id: studentId, p_notice_id: id }); },
+  async letters(){ return rpc('mp2_letters', { p_student_id: studentId }); },
+  async ranking(){ return rpc('mp2_ranking', { p_student_id: studentId }); },
+  async kotoba(){ return rpc('mp2_kotoba', { p_student_id: studentId }); },
+  async letter(id){ return rpc('mp2_letter', { p_student_id: studentId, p_notice_id: id }); },
   async noticeAnswer(id, a, note){ return rpc('mp2_notice_answer', { p_student_id: studentId, p_notice_id: id, p_answer: a, p_note: note || null }); },
   async profile(nick, avatar, optOut){ return rpc('mp2_profile', { p_student_id: studentId, p_nickname: nick, p_avatar: avatar, p_map_opt_out: optOut }); },
   async setKeys(on){ return rpc('mp2_set_keys', { p_student_id: studentId, p_on: !!on }); },
@@ -4305,15 +4456,19 @@ let syncTimer = 0, lastSynced = '';
 function queueStateSync(){
   if(DEMO || !linked()) return;
   clearTimeout(syncTimer);
-  syncTimer = setTimeout(async () => {
-    const st = {};
-    SYNC_KEYS.forEach(k => { if(S[k] !== undefined) st[k] = S[k]; });
-    if(S.rec) st.rec = { init: S.rec.init, seen: S.rec.seen };
-    const js = JSON.stringify(st);
-    if(js === lastSynced) return;
-    st._ts = Date.now();
-    try{ if(await Live.saveState(st)){ lastSynced = js; S._syncTs = st._ts; try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){} } }catch(e){}
-  }, 4000);
+  syncTimer = setTimeout(stateSyncNow, 4000);
+}
+/* いますぐ おくる（ランキングを ひらく まえ など。v2026.10.27-1） */
+async function stateSyncNow(){
+  if(DEMO || !linked()) return;
+  clearTimeout(syncTimer);
+  const st = {};
+  SYNC_KEYS.forEach(k => { if(S[k] !== undefined) st[k] = S[k]; });
+  if(S.rec) st.rec = { init: S.rec.init, seen: S.rec.seen };
+  const js = JSON.stringify(st);
+  if(js === lastSynced) return;
+  st._ts = Date.now();
+  try{ if(await Live.saveState(st)){ lastSynced = js; S._syncTs = st._ts; try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){} } }catch(e){}
 }
 /* サーバーの ほうが あたらしい（または この きかいで はじめて つないだ）ときだけ とりこむ */
 function mergeServerState(gs){
@@ -7186,22 +7341,33 @@ function hanamaruSVG(size = 150){
   return `<svg width="${size}" height="${size}" viewBox="0 0 150 150"><circle cx="75" cy="75" r="66" fill="#FFF3E6"/><path d="${flower}" fill="none" stroke="#D9644C" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="${spiral}" fill="none" stroke="#D9644C" stroke-width="5.5" stroke-linecap="round"/><path d="M104 12 q10 -4 14 5 M24 20 q-8 3 -6 12" stroke="#E3B143" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`;
 }
 let hanaBusy = false;
+/* v2026.10.27-1：「先生からの ことば」（mp2_kotoba）を つかう。子どもへの ひとこと・シール・なんまいめ が わかる。SQL まえは HOME.teacher_notes */
 async function showHanamaru(){
   if(hanaBusy || curScreen !== 'home' || document.querySelector('.ov.show')) return;
-  const notes = (HOME && Array.isArray(HOME.teacher_notes)) ? HOME.teacher_notes : [];
+  hanaBusy = true;
+  const kl = await kotobaLoad();
+  if(curScreen !== 'home' || document.querySelector('.ov.show')){ hanaBusy = false; return; }
+  const notes = Array.isArray(kl) ? kl : (HOME && Array.isArray(HOME.teacher_notes)) ? HOME.teacher_notes : [];
   if(!S.notesSeen){ S.notesSeen = notes.filter(n => Date.now() - new Date(n.created_at) > 3 * 864e5).map(n => String(n.id)); }
-  const fresh = notes.filter(n => !S.notesSeen.includes(String(n.id))).slice(0, 3);
-  if(!fresh.length) return;
-  hanaBusy = true; POP_TEACHER = true;
-  $('rwArt').innerHTML = hanamaruSVG(150);
-  rwHead('せんせいから', 'はなまる!');
-  $('rwText').innerHTML = fresh.map(n => `<span style="display:block;font-size:17px;color:var(--ink);font-weight:900;line-height:1.7;margin-top:4px">${n.stamp ? esc(n.stamp) + ' ' : ''}${esc(n.body || '')}</span>`).join('');
+  /* 2しゅうかんより まえの ものは もう ださない（ノートで よめる） */
+  const fresh = notes.filter(n => !S.notesSeen.includes(String(n.id)) && Date.now() - new Date(n.created_at) < 14 * 864e5).slice(0, 3);
+  if(!fresh.length){ hanaBusy = false; return; }
+  POP_TEACHER = true;
+  const seal = sealOk(fresh[0].seal), word = SEAL_WORD[seal];
+  $('rwArt').innerHTML = sealArt(seal, 150);
+  rwHead('せんせいから', word);
+  const total = Array.isArray(kl) ? kl.length : 0;
+  let toNote = false;
+  $('rwText').innerHTML = fresh.map(n => `<span style="display:block;font-size:17px;color:var(--ink);font-weight:900;line-height:1.7;margin-top:4px">${n.stamp ? esc(n.stamp) + ' ' : ''}${esc(n.body || '')}</span>`).join('')
+    + (total ? `<span class="hnCount">はなまる ノート　${total}まいめ</span><br><button type="button" class="pillBtn hnOpenBtn" id="hnFromPop">${ICON('book', 20)}ノートを みる</button>` : '');
   $('rewardOv').classList.add('show');
-  fanfare(); confetti(26); say('せんせいから はなまる! ' + fresh.map(n => n.body || '').join('。'));
+  const hb = $('hnFromPop'); if(hb) hb.addEventListener('click', () => { toNote = true; $('rwClose').click(); });
+  fanfare(); confetti(26); say('せんせいから ' + word.replace('!', '') + '! ' + fresh.map(n => n.body || '').join('。'));
   await waitClose('rwClose');
   $('rewardOv').classList.remove('show');
-  S.notesSeen = S.notesSeen.concat(fresh.map(n => String(n.id))).slice(-40); saveState();
+  S.notesSeen = S.notesSeen.concat(fresh.map(n => String(n.id))).slice(-160); saveState();
   hanaBusy = false;
+  if(toNote) openHanaNote();
 }
 
 /* ---------- ヘッダー・ドック ---------- */
@@ -7571,6 +7737,7 @@ function openParty(){
   });
   $('partyGrid').innerHTML = h;
   $('mhOpenFace').innerHTML = heroSVG(avatarMe(), 56);
+  hnEntry();
   $('partyGrid').querySelectorAll('.wear').forEach(b => b.addEventListener('click', () => {
     if(!b.dataset.w) return;
     S.wear = b.dataset.w; saveState(); popSfx();
@@ -7639,6 +7806,7 @@ async function openPlaza(keep){
   try{ PZ_FRIENDS = (await API.map()) || []; }catch(e){ PZ_FRIENDS = (typeof MAPDATA !== 'undefined' && MAPDATA) || []; }
   drawPlaza();
   $('pzFound').textContent = S.foundNotes || 0;
+  rkPeek();
   clearInterval(pzTimer); let tick = 0;
   pzTimer = setInterval(() => { if(curScreen !== 'plaza'){ clearInterval(pzTimer); return; } pzWander(); if(++tick % 11 === 0 && !pzShow) pzRotate(); }, 3600);
   if(!S.plazaIntro){ S.plazaIntro = 1; saveState(); setTimeout(() => pzSay(null, 'ここは おとの ひろば。なかまの いえを タッチすると、その なかまの おうちに あそびに いけるよ'), 600); }
@@ -8072,6 +8240,8 @@ function pzAct(act, g, e){
   }
   if(act === 'board'){
     pzWalkTo(PZ.BD[0] + 40, PZ.BD[1] + 14);
+    /* けいじばんには みんなの ランキング（v2026.10.27-1）。先生が オフに したときは まえと おなじ */
+    if(rkOk() && !S.rankOff){ setTimeout(openRanking, 450); return; }
     const cl = (HOME && HOME.class) || null, today = PZ_FRIENDS.filter(f => f.today).length;
     const txt = (cl ? `みんなの もくひょう：${cl.month_total} / ${cl.goal}${po(cl.goal)}（あと ${Math.max(0, cl.goal - cl.month_total)}${po(Math.max(0, cl.goal - cl.month_total))}で ${cl.festival_name || 'おまつり'}）。` : '') + `きょう ピアノに むかった なかま：${today}にん`;
     setTimeout(() => pzSay(null, txt), 400);
@@ -13485,13 +13655,15 @@ async function openFamily(){
 async function loadFamily(){
   if(!linked()){ FAM = null; return; }
   try{ FAM = await API.family(); }catch(e){ FAM = null; }
+  /* 教室だより（SQL を 流す まえは null：ふつうの お知らせと して 出す） */
+  if(FAM){ try{ const ls = await API.letters(); FAM.letters = Array.isArray(ls) ? ls : null; }catch(e){ FAM.letters = null; } }
 }
 document.querySelectorAll('.fTab').forEach(t => t.addEventListener('click', async () => {
   famTab = t.dataset.t; famSel = null;
   document.querySelectorAll('.fTab').forEach(x => x.classList.toggle('on', x === t));
   renderFam();
   if(famTab === 'msg' && linked()){ try{ await Promise.all([API.readMsgs(), API.readNotes()]); if(HOME) HOME.unread = 0; (FAM && FAM.notes || []).forEach(n => { n.read = true; }); }catch(e){} }
-  if(famTab === 'notice' && FAM && FAM.notices){ for(const n of FAM.notices.filter(x => !x.read)){ try{ await API.noticeRead(n.id); n.wasNew = true; n.read = true; }catch(e){} } }
+  if(famTab === 'notice' && FAM && FAM.notices){ const lids = new Set(famLetters().map(l => l.id)); for(const n of FAM.notices.filter(x => !x.read && !lids.has(x.id))){ try{ await API.noticeRead(n.id); n.wasNew = true; n.read = true; }catch(e){} } }
   famDots();
 }));
 $('famBack').addEventListener('click', () => {
@@ -13512,7 +13684,9 @@ function famDots(){
   document.querySelectorAll('.fTab .dot').forEach(d => d.remove());
   const msgNew = (HOME && HOME.unread > 0) || (FAM && (FAM.notes || []).some(n => !n.read));
   const today = todayStr();
-  const ntNew = FAM && (FAM.notices || []).some(n => !n.read || (n.survey && !n.answer && (!n.survey.due || n.survey.due >= today)));
+  const lids = new Set(famLetters().map(l => l.id));
+  const ntNew = FAM && ((FAM.notices || []).some(n => (!n.read && !lids.has(n.id)) || (n.survey && !n.answer && (!n.survey.due || n.survey.due >= today)))
+    || famLetters().some(l => !l.read && letAgeDays(l.created_at) <= 30));
   if(msgNew) document.querySelector('.fTab[data-t="msg"]').insertAdjacentHTML('beforeend', '<span class="dot"></span>');
   if(ntNew) document.querySelector('.fTab[data-t="notice"]').insertAdjacentHTML('beforeend', '<span class="dot"></span>');
 }
@@ -13682,6 +13856,7 @@ function noteCard(n, open){
   return `<div class="noteCard${n.read ? '' : ' fresh'}"><div class="nh"><b>${+d.slice(5, 7)}/${+d.slice(8)}のレッスン</b>${n.read ? '' : '<span class="chip new">新着</span>'}${(n.did || []).map(x => `<span class="chip">${esc(DID_KANJI[x] || x)}</span>`).join('')}</div>
     ${n.pieces ? `<div class="nr"><small>取り組んでいる曲</small><span>${esc(n.pieces)}</span></div>` : ''}
     ${n.good ? `<div class="nr good"><small>良かったところ</small><span>${esc(n.good)}</span></div>` : ''}
+    ${n.kid ? `<div class="nr kid"><small>お子さんへのひとこと（アプリにも届いています）</small><span>${esc(n.kid)}</span></div>` : ''}
     ${n.home && open ? `<div class="nr home"><small>おうちでの練習</small><span>${esc(n.home)}</span></div>` : n.home ? `<div class="nr home"><small>おうちでの練習</small><span>${esc(n.home)}</span></div>` : ''}</div>`;
 }
 function famMessages(){
@@ -13732,18 +13907,22 @@ function wireMessages(){
 
 /* ---------- おしらせ（ひらくと 既読。アンケートは ボタンで こたえる） ---------- */
 function famNotices(){
-  const ns = FAM.notices || [], today = todayStr();
-  if(!ns.length) return '<div class="fCard"><p>おしらせはまだありません。</p></div>';
-  return ns.map(n => { const sv = n.survey, closed = sv && sv.due && sv.due < today;
+  const today = todayStr(), lets = famLetters(), lids = new Set(lets.map(l => l.id));
+  const ns = (FAM.notices || []).filter(n => !lids.has(n.id));
+  if(!ns.length && !lets.length) return '<div class="fCard"><p>おしらせはまだありません。</p></div>';
+  /* いちばん 新しい 教室だよりは 上に（まだ 読んでいない か 45日 いない）。ほかは 下の「これまでの教室だより」 */
+  const top = lets.find(l => l.pinned) || (lets[0] && (!lets[0].read || letAgeDays(lets[0].created_at) <= 45) ? lets[0] : null);
+  return (top ? letCardFam(top) : '') + ns.map(n => { const sv = n.survey, closed = sv && sv.due && sv.due < today;
     const fresh = !n.read || n.wasNew;
     return `<div class="fCard${fresh ? ' fresh' : ''}" data-n="${esc(n.id)}"><h3>${ICON(n.pinned ? 'pin' : 'mega', 22)}${esc(n.title)}${fresh ? '<span class="chip new">新着</span>' : ''}</h3><p style="white-space:pre-wrap">${esc(n.body || '')}</p>
       ${sv ? `<div class="svCard"><b>${esc(sv.q || 'アンケート')}</b>${sv.due ? `<small>${+sv.due.slice(5, 7)}/${+sv.due.slice(8)}まで${closed ? '（しめきりました）' : ''}</small>` : ''}
         <div class="svBtns">${(sv.opts || []).map(o => `<button class="svB${n.answer === o ? ' on' : ''}" data-ans="${esc(o)}" ${closed ? 'disabled' : ''}>${esc(o)}</button>`).join('')}</div>
         ${closed ? '' : `<input class="fInput" data-note maxlength="200" placeholder="ひとこと（任意）" value="${esc(n.answer_note || '')}">`}
         ${n.answer ? `<div class="svDone">${ICON('check', 18)}「${esc(n.answer)}」で回答しました${closed ? '' : '（変更できます）'}</div>` : ''}</div>` : ''}
-      <p style="font-size:11px;color:var(--mute)">${fmtJ(n.created_at)}</p></div>`; }).join('');
+      <p style="font-size:11px;color:var(--mute)">${fmtJ(n.created_at)}</p></div>`; }).join('') + letBackFam(lets.filter(l => l !== top));
 }
 function wireNotices(){
+  document.querySelectorAll('#famBody [data-letopen]').forEach(b => b.addEventListener('click', () => openLetterFam(b.dataset.letopen)));
   document.querySelectorAll('#famBody [data-n]').forEach(card => card.querySelectorAll('[data-ans]').forEach(b => b.addEventListener('click', async () => {
     const n = (FAM.notices || []).find(x => x.id === card.dataset.n); if(!n) return;
     const note = (card.querySelector('[data-note]') || {}).value || '';
@@ -13755,6 +13934,179 @@ function wireNotices(){
     b.disabled = false;
   })));
 }
+
+/* ---------- 教室だより（v2026.10.27-1）：先生の 画面で 書いた 写真つきの おたより ----------
+   ・いちばん 新しい 号は「お知らせ」の いちばん上。「読む」で ひらくと 既読
+   ・前の 号は「これまでの教室だより」から いつでも 読める
+   ・SQL（mp2-2026-10-27.sql）を 流す まえは、ふつうの お知らせと して 出る */
+let LETF_ID = null;
+const letSubF = n => { const pre = '教室だより' + (n.issue ? ' ' + n.issue : ''); let t = n.title || ''; if(t.startsWith(pre)) t = t.slice(pre.length); return t.replace(/^[\s　]+/, ''); };
+const letLeadF = body => String(body || '').replace(LETTER_TAIL.trim(), '').trim();
+const letAgeDays = iso => (Date.now() - new Date(iso).getTime()) / 864e5;
+function famLetters(){ return FAM && Array.isArray(FAM.letters) ? FAM.letters : []; }
+/* 先生の 画面（teacher.html の letPaper）と おなじ 形 */
+function letPaper(d, school){
+  const dt = new Date(d.date || Date.now());
+  return `<article class="lp"><header class="lpHead"><span class="lpKick">教室だより</span>${d.issue ? `<span class="lpIss">${esc(d.issue)}</span>` : ''}
+    ${d.sub ? `<h2>${esc(d.sub)}</h2>` : ''}<p class="lpFrom">${esc(school || '')}　${dt.getMonth() + 1}月${dt.getDate()}日</p></header>
+    ${d.lead ? `<p class="lpLead">${esc(d.lead)}</p>` : ''}
+    ${(d.blocks || []).map(b => `<section class="lpSec">${b.h ? `<h3>${esc(b.h)}</h3>` : ''}${b.t ? `<p>${esc(b.t)}</p>` : ''}${letImgOk(b.img) ? `<figure><img src="${b.img}" alt="${esc(b.cap || '')}">${b.cap ? `<figcaption>${esc(b.cap)}</figcaption>` : ''}</figure>` : ''}</section>`).join('')}
+    <p class="lpEnd">${esc(school || '')}</p></article>`;
+}
+function letCardFam(l){
+  const fresh = !l.read, sub = letSubF(l), lead = letLeadF(l.body);
+  return `<div class="fCard letCard${fresh ? ' fresh' : ''}"><div class="lcTop"><span class="lcKick">${ICON('letter', 20)}教室だより</span>${l.issue ? `<span class="lcIss">${esc(l.issue)}</span>` : ''}${fresh ? '<span class="chip new">新着</span>' : ''}</div>
+    ${sub ? `<h3 class="lcT">${esc(sub)}</h3>` : ''}${lead ? `<p class="lcLead">${esc(lead)}</p>` : ''}
+    <button class="fBtn c" data-letopen="${esc(l.id)}">${ICON('book', 22)}読む${l.photos ? `<small>写真 ${l.photos | 0}枚</small>` : ''}</button>
+    <p style="font-size:11px;color:var(--mute);margin-top:6px">${fmtJ(l.created_at)}</p></div>`;
+}
+function letBackFam(ls){
+  if(!ls.length) return '';
+  return `<div class="fCard lBack"><h3>${ICON('book', 22)}これまでの教室だより</h3>${ls.map(l => `<button class="lBackRow" data-letopen="${esc(l.id)}"><span class="iss">${esc(l.issue || '教室だより')}</span><span class="tt">${esc(letSubF(l) || letLeadF(l.body).slice(0, 30))}</span>${l.read ? '' : '<span class="chip new">未読</span>'}<span class="dt">${new Date(l.created_at).getMonth() + 1}/${new Date(l.created_at).getDate()}</span></button>`).join('')}</div>`;
+}
+function letCloseFam(){ $('letOv').classList.remove('show'); LETF_ID = null; if(famTab === 'notice' && $('family') && $('family').classList.contains('show')) renderFam(); }
+async function openLetterFam(id){
+  const sh = $('letSheet'); LETF_ID = id;
+  const bar = `<div class="letBar"><button class="letX" id="letX" aria-label="もどる">${ICON('back', 20)}もどる</button></div>`;
+  sh.innerHTML = bar + '<div class="fCard"><p>よみこみ中…</p></div>';
+  $('letOv').classList.add('show'); sh.scrollTop = 0;
+  $('letX').addEventListener('click', letCloseFam);
+  let n = null; try{ n = await API.letter(id); }catch(e){ n = null; }
+  if(LETF_ID !== id) return;
+  if(!n || n.ok === false){
+    sh.innerHTML = bar + `<div class="fCard"><h3>${ICON('wifi', 22)}開けませんでした</h3><p>電波のよいところで、もう一度お試しください。</p><button class="fBtn s" id="letRetry">もういちど</button></div>`;
+    $('letX').addEventListener('click', letCloseFam); $('letRetry').addEventListener('click', () => openLetterFam(id)); return;
+  }
+  [famLetters(), (FAM && FAM.notices) || []].forEach(a => a.forEach(x => { if(x.id === id) x.read = true; }));
+  famDots();
+  const d = { issue: n.issue || '', sub: letSubF(n), lead: letLeadF(n.body), blocks: Array.isArray(n.blocks) ? n.blocks : [], date: n.created_at };
+  sh.innerHTML = bar + letPaper(d, FAM && FAM.school_name) + `<div class="letFoot"><button class="fBtn o" id="letMsg">${ICON('chat', 20)}先生にひとこと送る</button><button class="fBtn" id="letX2">とじる</button></div>`;
+  $('letX').addEventListener('click', letCloseFam); $('letX2').addEventListener('click', letCloseFam);
+  $('letMsg').addEventListener('click', () => { letCloseFam(); const t = document.querySelector('.fTab[data-t="msg"]'); if(t) t.click(); });
+}
+$('letOv').addEventListener('click', e => { if(e.target === $('letOv')) letCloseFam(); });
+
+/* =========================================================
+   ひろばの けいじばん：ランキング（v2026.10.27-1）
+   けいてぃ 10/27「アプリのゲームで今だれが点数どれだけとっているか、ランキング形式で見れるようにして。練習時間ランキングも」
+   ・ニックネームだけ・上位10にん・0の 子は でない・ちずに でない 子は でない（先生の 画面で オフに できる）
+   ・れんしゅうは こんしゅう（にちようから）。ゲームは いちばんの てんすう
+   ・ひらく まえに じぶんの きろくを おくる（いま とった てんすうが すぐ のるように）
+   ========================================================= */
+const RK_BOARDS = [
+  { k: 'days', g: 'p', n: 'ピアノを した ひ', sub: 'こんしゅう（にちようびから）', u: 'にち', ic: 'piano', none: 'ピアノを ひくと ここに のるよ' },
+  { k: 'odai', g: 'p', n: 'クリアした おだい', sub: 'こんしゅう（にちようびから）', u: 'こ', ic: 'note', none: 'せんせいの おだいを クリアすると のるよ' },
+  { k: 'rpg', g: 'g', n: 'ぼうけんの レベル', sub: 'おとの ぼうけん', u: '', lv: true, ic: 'flag', none: 'おとの ぼうけんに いってみよう' },
+  { k: 'drop', g: 'g', n: 'おんぷ ドロップ', sub: 'いちばんの てんすう', u: 'てん', ic: 'notes', none: 'あそびの おかで あそぶと のるよ' },
+  { k: 'tile', g: 'g', n: 'おとの タイル', sub: 'きょくごとの いちばんを たした てんすう', u: 'てん', ic: 'piano', none: 'あそびの おかで あそぶと のるよ' },
+  { k: 'mole', g: 'g', n: 'おんぷもぐら', sub: 'みつけた かず（レベルごとの いちばんを たしたもの）', u: 'こ', ic: 'note', none: 'あそびの おかで あそぶと のるよ' },
+  { k: 'kodama', g: 'g', n: 'こだまの やぐら', sub: 'いちばん できた かず', u: 'こ', ic: 'drum', none: 'あそびの おかで あそぶと のるよ' }
+];
+let RK = { b: 'days', data: null, at: 0, busy: false };
+const rkOk = () => DEMO || linked();
+function rkPill(){ const b = $('pzRank'); if(b) b.classList.toggle('hide', !rkOk() || !!S.rankOff); }
+/* ひろばを ひらいた とき：うしろで たしかめる（先生が オフに した／オンに もどした） */
+async function rkPeek(){
+  rkPill();
+  if(!rkOk() || RK.busy || Date.now() - RK.at < 6e5) return;
+  try{ const r = await API.ranking(); RK.at = Date.now(); if(r && r.ok){ RK.data = r; const off = !!r.off; if(off !== !!S.rankOff){ S.rankOff = off; saveState(); } } }catch(e){}
+  rkPill();
+}
+function rkVal(B, v){ return B.lv ? `レベル ${v}` : `${(v | 0).toLocaleString('ja-JP')}<small>${B.u}</small>`; }
+function rkRow(B, r){
+  const rk = r.rank | 0;
+  return `<div class="rkR${r.me ? ' me' : ''}"><span class="rkN${rk <= 3 ? ' r' + rk : ''}">${rk}</span><span class="rkFace">${heroSVG(r.avatar || {}, 40)}</span>
+    <span class="rkNick">${esc(r.nick || 'ともだち')}${r.me ? '<small>じぶん</small>' : ''}</span><span class="rkVal">${rkVal(B, r.v)}</span></div>`;
+}
+function rkRender(){
+  const sh = $('rkSheet'), D = RK.data, B = RK_BOARDS.find(b => b.k === RK.b) || RK_BOARDS[0];
+  let h = `<div class="rkTop"><button class="letX" id="rkX" aria-label="もどる">${ICON('back', 20)}もどる</button><h2><small>ひろばの けいじばん</small>みんなの ランキング</h2></div>`;
+  if(!D){ sh.innerHTML = h + '<div class="fCard"><p>よみこみ ちゅう…</p></div>'; $('rkX').addEventListener('click', rkClose); return; }
+  if(D.off){ sh.innerHTML = h + '<div class="fCard"><p>いまは ランキングは おやすみ だよ。</p></div>'; $('rkX').addEventListener('click', rkClose); return; }
+  const bd = (D.boards || []).find(x => x.k === B.k) || { rows: [], me: null, n: 0 };
+  h += ['p', 'g'].map(g => `<div class="rkGl">${g === 'p' ? 'れんしゅう' : 'ゲーム'}</div><div class="rkChips">${RK_BOARDS.filter(b => b.g === g).map(b => `<button type="button" data-rk="${b.k}" class="${b.k === B.k ? 'on' : ''}">${ICON(b.ic, 18)}${esc(b.n)}</button>`).join('')}</div>`).join('');
+  h += `<div class="rkBoard"><h3>${ICON(B.ic, 24)}${esc(B.n)}</h3><div class="rkSub">${esc(B.sub)}</div>`;
+  const rows = bd.rows || [], me = bd.me;
+  if(!rows.length) h += `<p class="rkEmpty">まだ だれも いないよ。いちばんのりを めざそう!</p>`;
+  h += rows.map(r => rkRow(B, r)).join('');
+  const inTop = rows.some(r => r.me);
+  if(me && me.v > 0 && !inTop){
+    const tenth = rows.length ? rows[rows.length - 1].v : 0, gap = Math.max(0, tenth - me.v);
+    h += `<div class="rkGap">・・・</div>${rkRow(B, { rank: me.rank, v: me.v, me: true, nick: S.hero.name || 'たびびと', avatar: avatarMe() })}
+      <p class="rkHint">${gap > 0 ? `あと ${B.lv ? gap + ' レベル' : gap.toLocaleString('ja-JP') + ' ' + B.u}で 10ばんに とどくよ` : 'もうすこしで 10ばんに とどくよ'}</p>`;
+  } else if(!me || !(me.v > 0)) h += `<p class="rkHint">${esc(B.none)}</p>`;
+  h += `</div><p class="rkNote">ランキングには ニックネームだけ でるよ。${B.g === 'p' ? '<br>にちようびに また 0から はじまるよ。' : ''}<br>きのうの じぶんより ふえたら、<br>それが いちばん すごい!</p>`;
+  const keep = sh.scrollTop; sh.innerHTML = h; sh.scrollTop = keep;
+  $('rkX').addEventListener('click', rkClose);
+  sh.querySelectorAll('[data-rk]').forEach(b => b.addEventListener('click', () => { popSfx(); RK.b = b.dataset.rk; S.rkB = RK.b; saveState(); rkRender(); say(RK_BOARDS.find(x => x.k === RK.b).n); }));
+}
+function rkClose(){ $('rkOv').classList.remove('show'); }
+async function openRanking(){
+  if(!rkOk()){ toast('きょうしつと つながると みられるよ'); return; }
+  if(RK_BOARDS.some(b => b.k === S.rkB)) RK.b = S.rkB;
+  const fresh = RK.data && Date.now() - RK.at < 15000;
+  if(!fresh) RK.data = null;
+  rkRender(); $('rkOv').classList.add('show'); $('rkSheet').scrollTop = 0;
+  say('みんなの ランキング');
+  if(fresh) return;
+  RK.busy = true;
+  try{ if(!DEMO){ if(typeof flushPending === 'function') await flushPending().catch(() => {}); if(typeof stateSyncNow === 'function') await stateSyncNow(); } }catch(e){}
+  try{ const r = await API.ranking(); if(r && r.ok){ RK.data = r; RK.at = Date.now(); const off = !!r.off; if(off !== !!S.rankOff){ S.rankOff = off; saveState(); rkPill(); } } else RK.data = { off: false, boards: [] }; }
+  catch(e){ RK.data = null; $('rkSheet').innerHTML = `<div class="rkTop"><button class="letX" id="rkX">${ICON('back', 20)}もどる</button><h2><small>ひろばの けいじばん</small>みんなの ランキング</h2></div><div class="fCard"><h3>${ICON('wifi', 22)}つながりませんでした</h3><p>でんぱの よい ところで、もういちど ひらいてね。</p></div>`; $('rkX').addEventListener('click', rkClose); RK.busy = false; return; }
+  RK.busy = false;
+  if($('rkOv').classList.contains('show')) rkRender();
+}
+$('rkOv').addEventListener('click', e => { if(e.target === $('rkOv')) rkClose(); });
+$('pzRank').addEventListener('click', () => { ensureAudio(); popSfx(); openRanking(); });
+
+/* =========================================================
+   せんせいからの はなまる ノート（v2026.10.27-1）
+   けいてぃ 10/27「レッスンの終わりに先生のコメント送れるようにして。励みにさせたい」→ 子どもに もっと うれしく 出す
+   ・レッスンノートの「子どもへの ひとこと」（なければ「よかったところ」）と、連絡帳で「子どもにも」を えらんだ ことば
+   ・とどいたら お祝いで 出る（シール：はなまる・きらきら・ハート・ぱちぱち）。あとから ノートで なんどでも 読める
+   ========================================================= */
+let KOTOBA = null, KOTOBA_AT = 0;
+const SEAL_WORD = { hanamaru: 'はなまる!', star: 'きらきら!', heart: 'ハート!', clap: 'ぱちぱち!' };
+const sealOk = k => SEAL_WORD[k] ? k : 'hanamaru';
+function sealArt(k, size = 150){
+  k = sealOk(k);
+  if(k === 'hanamaru') return hanamaruSVG(size);
+  return `<span class="sealBig" style="width:${size}px;height:${size}px">${ICON(k, Math.round(size * .62))}</span>`;
+}
+async function kotobaLoad(force){
+  if(!rkOk()) return null;
+  if(!force && KOTOBA && Date.now() - KOTOBA_AT < 18e4) return KOTOBA;
+  try{ const r = await Promise.race([API.kotoba(), sleep(3500).then(() => null)]); if(Array.isArray(r)){ KOTOBA = r; KOTOBA_AT = Date.now(); } }catch(e){}
+  return KOTOBA;
+}
+const kDay = n => { const d = n.day || String(n.created_at || '').slice(0, 10); const [, m, dd] = d.split('-').map(Number); return m ? `${m}がつ ${dd}にち` : ''; };
+function hnRender(){
+  const sh = $('hnSheet'), L = KOTOBA || [];
+  let h = `<div class="rkTop"><button class="letX" id="hnX" aria-label="もどる">${ICON('back', 20)}もどる</button><h2><small>せんせいからの</small>はなまる ノート</h2>${L.length ? `<span class="hnN">${L.length}<small>まい</small></span>` : ''}</div>`;
+  if(!L.length) h += `<div class="fCard hnEmpty">${hanamaruSVG(96)}<p>レッスンの あとに、せんせいから はなまるが とどくよ。とどいたら ここに たまっていくよ。</p></div>`;
+  else h += `<div class="hnGrid">${L.map(n => `<div class="hnCard s-${sealOk(n.seal)}"><span class="hnSeal">${sealOk(n.seal) === 'hanamaru' ? hanamaruSVG(46) : ICON(sealOk(n.seal), 34)}</span>
+      <p>${n.stamp ? esc(n.stamp) + ' ' : ''}${esc(n.body || '')}</p><small>${esc(kDay(n))}${n.pieces ? '・' + esc(n.pieces) : ''}</small></div>`).join('')}</div>`;
+  sh.innerHTML = h;
+  $('hnX').addEventListener('click', () => $('hnOv').classList.remove('show'));
+}
+async function openHanaNote(){
+  if(!rkOk()){ toast('きょうしつと つながると とどくよ'); return; }
+  $('hnSheet').innerHTML = `<div class="rkTop"><button class="letX" id="hnX">${ICON('back', 20)}もどる</button><h2><small>せんせいからの</small>はなまる ノート</h2></div><div class="fCard"><p>よみこみ ちゅう…</p></div>`;
+  $('hnX').addEventListener('click', () => $('hnOv').classList.remove('show'));
+  $('hnOv').classList.add('show'); $('hnSheet').scrollTop = 0;
+  await kotobaLoad(true);
+  if($('hnOv').classList.contains('show')) hnRender();
+  say('せんせいからの はなまる ノート');
+}
+$('hnOv').addEventListener('click', e => { if(e.target === $('hnOv')) $('hnOv').classList.remove('show'); });
+/* なかまの がめんの いりぐち */
+function hnEntry(){
+  const b = $('hnEntry'); if(!b) return;
+  b.classList.toggle('hide', !rkOk());
+  const draw = () => { const n = (KOTOBA || []).length; $('hnEntryTx').textContent = n ? `${n}まい あつまったよ` : 'レッスンの あとに とどくよ'; };
+  draw(); kotobaLoad().then(draw);
+}
+$('hnEntry').addEventListener('click', () => { popSfx(); openHanaNote(); });
 
 /* ---------- れんしゅう ---------- */
 function famPractice(){
@@ -16775,7 +17127,7 @@ window.addEventListener('keydown', e => {
   const ovOpen = document.querySelector('.ov.show');
   /* Esc：まえの 画面へ */
   if(e.code === 'Escape'){
-    if(ovOpen){ if(ovOpen.id === 'gateOv') $('gateCancel').click(); return; }
+    if(ovOpen){ if(ovOpen.id === 'gateOv') $('gateCancel').click(); if(ovOpen.id === 'letOv') letCloseFam(); if(ovOpen.id === 'rkOv') rkClose(); if(ovOpen.id === 'hnOv') ovOpen.classList.remove('show'); return; }
     const back = document.querySelector('.screen.show .gHead .roundBtn');
     if(back && curScreen !== 'home'){ e.preventDefault(); back.click(); }
     return;
