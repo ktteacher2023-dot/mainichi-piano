@@ -3507,7 +3507,7 @@ ruby rt{font-weight:700;color:#6E5B50}
    ・同じ地図に 教室みんなの主人公（ニックネーム・順位なし）
    ・おうちのひと：予定・振替・おしらせ・れんらくちょう
    ========================================================= */
-const APP_VER = 'v2026.11.18-1';   /* なおしたら かならず あげる（アップした ものが あたらしいか、おうちのかた→設定の いちばん したで たしかめられる） */
+const APP_VER = 'v2026.11.18-2';   /* なおしたら かならず あげる（アップした ものが あたらしいか、おうちのかた→設定の いちばん したで たしかめられる） */
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* 教室だより（v2026.10.27-1）：先生の 画面（teacher.html）と おなじ 一文・おなじ 写真の きまり */
@@ -21944,7 +21944,7 @@ function mpsStop(){ if(MPS_C){ try{ MPS_C.stop(); }catch(e){} MPS_C = null; } }
 <div id="bkOv" aria-label="おとの くに だいぼうけん"><div class="bkWait" id="bkWait"></div><button type="button" class="btn3d white bkBack" id="bkBack">まちへ もどる</button></div>
 <script>
 /* =========================================================
-   おとの くに だいぼうけん（v2026.11.18-1）
+   おとの くに だいぼうけん（v2026.11.18-2：run.html で ひらく・blob は 予備）
    けいてぃ（11/18）「まいにちピアノの冒険のゲームはけいてぃのサブスクと同じようにしてほしい」
    → えらんだ 形：つながった子だけ／いまの おとの ぼうけんは だいぼうけんに 入れかえる（レベルは 引きつがない）
    ・本体（bouken.html）は 会員の ツールの 置き場（かぎつき）に ある。教室と つながった 子だけが 会員の 関数（kt-member の mp_tool）から うけとる
@@ -22025,19 +22025,31 @@ async function openBouken(){
     return;
   }
   bkRestore();
-  if(BK.url) URL.revokeObjectURL(BK.url);
-  BK.url = URL.createObjectURL(new Blob([d.html], { type: 'text/html' }));
+  if(BK.url){ URL.revokeObjectURL(BK.url); BK.url = null; }
+  /* 11/18-2：Android の LINE の 中などで blob: の iframe が まっくらの ままに なることが あった
+     → まずは 会員の 部屋と おなじ ktteacher.net/heya/run.html に 書きこんで ひらく（https の ページ）。
+       8びょう たっても ひらかなければ blob: で もういちど。20びょうで だめなら ことばで しらせる */
+  const hash = '#host=mp&rk=' + bkRoom() + '&adv=' + bkB64u(JSON.stringify(bkCfg())) + '&me=' + bkB64u(JSON.stringify(bkMe()));
   const f = document.createElement('iframe');
-  f.title = 'おとの くに だいぼうけん'; f.allow = 'fullscreen; autoplay';
-  f.src = BK.url + '#host=mp&rk=' + bkRoom() + '&adv=' + bkB64u(JSON.stringify(bkCfg())) + '&me=' + bkB64u(JSON.stringify(bkMe()));
-  f.addEventListener('load', () => { ov.classList.add('ready'); try{ f.contentWindow.focus(); }catch(e){} });
-  ov.appendChild(f); BK.frame = f;
+  f.title = 'おとの くに だいぼうけん'; f.allow = 'fullscreen; autoplay'; f.style.visibility = 'hidden';
+  BK.html = d.html; BK.mode = 'run'; BK.frame = f;
+  const ok = () => { if(!BK.open || BK.frame !== f || ov.classList.contains('ready')) return; clearTimeout(BK.t1); clearTimeout(BK.t2); f.style.visibility = ''; ov.classList.add('ready'); try{ f.contentWindow.focus(); }catch(e){} };
+  BK.ok = ok;
+  f.addEventListener('load', () => { if(BK.mode === 'blob') ok(); });
+  bkMsg('だいぼうけんを ひらいているよ…');
+  f.src = '/heya/run.html?v=2026110201' + hash;
+  ov.appendChild(f);
+  clearTimeout(BK.t1); clearTimeout(BK.t2);
+  BK.t1 = setTimeout(() => { if(!BK.open || BK.frame !== f || ov.classList.contains('ready')) return;
+    BK.mode = 'blob'; BK.url = URL.createObjectURL(new Blob([d.html], { type: 'text/html' })); f.src = BK.url + hash; }, 8000);
+  BK.t2 = setTimeout(() => { if(!BK.open || BK.frame !== f || ov.classList.contains('ready')) return;
+    f.style.visibility = 'hidden'; bkMsg('ぼうけんが ひらけなかったよ', '「まちへ もどる」で もどって、もういちど ためしてね。LINE の 中で ひらいて いるときは、右上の ︙ から「ブラウザで ひらく」（Chrome・Safari）を ためしてね'); }, 20000);
   bkSync(null, true);
 }
 function bkClose(){
   if(!BK.open) return;
   bkSync(null, true);
-  BK.open = false;
+  BK.open = false; clearTimeout(BK.t1); clearTimeout(BK.t2); BK.html = null;
   const ov = $('bkOv'); ov.classList.remove('show', 'ready'); ov.querySelectorAll('iframe').forEach(f => f.remove()); BK.frame = null;
   if(BK.url){ URL.revokeObjectURL(BK.url); BK.url = null; }
   if(typeof rpgTownBtn === 'function') try{ rpgTownBtn(); }catch(e){}
@@ -22046,6 +22058,8 @@ $('bkBack').addEventListener('click', () => { popSfx && popSfx(); bkClose(); });
 addEventListener('message', e => {
   if(!BK.frame || e.source !== BK.frame.contentWindow) return;
   const m = e.data || {};
+  if(m.type === 'kt-run-ready' && e.origin === location.origin && BK.mode === 'run' && BK.html){ try{ BK.frame.contentWindow.postMessage({ type: 'kt-run', html: BK.html }, location.origin); }catch(err){} return; }
+  if(m.type === 'kt-run-done' && BK.mode === 'run'){ BK.ok && BK.ok(); return; }
   if(m.kt === 'shelf') bkClose();
   else if(m.kt === 'mp') bkSync(m, false);
 });
