@@ -3507,7 +3507,7 @@ ruby rt{font-weight:700;color:#6E5B50}
    ・同じ地図に 教室みんなの主人公（ニックネーム・順位なし）
    ・おうちのひと：予定・振替・おしらせ・れんらくちょう
    ========================================================= */
-const APP_VER = 'v2026.10.27-3';   /* なおしたら かならず あげる（アップした ものが あたらしいか、おうちのかた→設定の いちばん したで たしかめられる） */
+const APP_VER = 'v2026.11.18-1';   /* なおしたら かならず あげる（アップした ものが あたらしいか、おうちのかた→設定の いちばん したで たしかめられる） */
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* 教室だより（v2026.10.27-1）：先生の 画面（teacher.html）と おなじ 一文・おなじ 写真の きまり */
@@ -4453,8 +4453,8 @@ const SYNC_KEYS = ['hero', 'heroSetLocal', 'wear', 'gifts', 'town', 'seeds', 'mi
   'nFail', 'slSeen',
   /* あそびの きまり・おうちのひとの アンケート */
   'playRule', 'fb', 'lvMon',
-  /* おとの ぼうけん（RPG） */
-  'rpg'];
+  /* おとの ぼうけん（RPG）・だいぼうけん（2026-11-18） */
+  'rpg', 'bk'];
 let syncTimer = 0, lastSynced = '';
 function queueStateSync(){
   if(DEMO || !linked()) return;
@@ -7037,12 +7037,16 @@ function posOn(list){
   const p = (list || []).find(x => x && x.m);
   return !(p && p.off);
 }
+/* おだい：いま れんしゅうしている きょく（先生が 入れた 1〜3曲。2026-11-18 から 3曲まで）＋ ポジション れんしゅう。
+   ぜんぶ できたら ピアノは クリア（サーバーの mp2_log も おなじ 数＝mp2_odai_need） */
+const ODAI_PIECES = 3;
 function odaiList(){
   const o = (HOME && HOME.me && Array.isArray(HOME.me.odai) && HOME.me.odai.length) ? HOME.me.odai : (S.odaiCache && S.odaiCache.length ? S.odaiCache : DEFAULT_ODAI);
-  const piece = o.find(x => x && x.t && !x.m) || DEFAULT_ODAI[0];
-  if(!posOn(o)) return [piece];
+  const pcs = o.filter(x => x && x.t && !x.m).slice(0, ODAI_PIECES);
+  const pieces = pcs.length ? pcs : [DEFAULT_ODAI[0]];
+  if(!posOn(o)) return pieces;
   const pos = o.find(x => x && x.m) || DEFAULT_POS;
-  return [piece, pos];
+  return pieces.concat([pos]);
 }
 
 /* ---------- 地図の 上の 主人公たち ---------- */
@@ -10550,7 +10554,7 @@ function lostReturn(id){
 /* =========================================================
    ピアノの じかん：先生の おだいを ピアノで ひく
    ・ひけたら ○を タッチ（「正しく ひけた かいすう」を かぞえる）
-   ・おだいは 2つ（いま れんしゅうしている きょく・ポジション れんしゅう）。どちらも できたら ピアノは クリア
+   ・おだいは いま れんしゅうしている きょく（1〜3曲）と ポジション れんしゅう。ぜんぶ できたら ピアノは クリア
      （先生が ポジション練習を「なし」に した 子は 1つ）
    ・○の かずは 先生が きめる（1〜99）。21かい からは ○の かわりに「かぞえる ボタン」
    ・おうちのひとが「きいたよ」→ かけざんに こたえて → 1ほ（1日1かい。子どもだけでは おせない）
@@ -10579,7 +10583,7 @@ function openOdai(){
   h += `<div class="odToday"><h4>きょうの 3つ <small>1つ できるごとに 1ぽ</small></h4><div class="odT3">${DAILY3.map(k => `<button type="button" class="odT${ds.done[k] ? ' on' : ''}${k === 'piano' ? ' here' : ''}" data-k="${k}">${ICON(IC[k], 30)}<b>${NM[k]}</b><small>${ds.done[k] ? 'できた!' : k === 'piano' ? 'いま ここ' : 'やってみる ▶'}</small></button>`).join('')}</div></div>`;
   /* ピアノの へや（したの あきを うめる。おだいを えらぶと この へやで ひく） */
   h += `<div class="odRoom"><svg viewBox="0 0 320 190" aria-hidden="true">${pianoSceneSVG(avatarMe()).replace('id="sceneHero"', '').replace('id="sceneNotes"', '')}</svg>
-    <p>ピアノの まえに すわったら、うえの おだいを えらんでね。ひけたら ○を タッチ。2つ できたら ピアノは クリア!</p></div>`;
+    <p>ピアノの まえに すわったら、うえの おだいを えらんでね。ひけたら ○を タッチ。${list.length > 1 ? 'ぜんぶ' : ''} できたら ピアノは クリア!</p></div>`;
   $('odaiList').innerHTML = h;
   $('odaiList').querySelectorAll('.odT').forEach(b => b.addEventListener('click', () => {
     const k = b.dataset.k; if(k === 'piano') return;
@@ -13999,7 +14003,7 @@ $('letOv').addEventListener('click', e => { if(e.target === $('letOv')) letClose
 const RK_BOARDS = [
   { k: 'days', g: 'p', n: 'ピアノを した ひ', sub: 'こんしゅう（にちようびから）', u: 'にち', ic: 'piano', none: 'ピアノを ひくと ここに のるよ' },
   { k: 'odai', g: 'p', n: 'クリアした おだい', sub: 'こんしゅう（にちようびから）', u: 'こ', ic: 'note', none: 'せんせいの おだいを クリアすると のるよ' },
-  { k: 'rpg', g: 'g', n: 'ぼうけんの レベル', sub: 'おとの ぼうけん', u: '', lv: true, ic: 'flag', none: 'おとの ぼうけんに いってみよう' },
+  { k: 'rpg', g: 'g', n: 'ぼうけんの レベル', sub: 'おとの くに だいぼうけん', u: '', lv: true, ic: 'flag', none: 'だいぼうけんに いってみよう' },
   { k: 'drop', g: 'g', n: 'おんぷ ドロップ', sub: 'いちばんの てんすう', u: 'てん', ic: 'notes', none: 'あそびの おかで あそぶと のるよ' },
   { k: 'tile', g: 'g', n: 'おとの タイル', sub: 'きょくごとの いちばんを たした てんすう', u: 'てん', ic: 'piano', none: 'あそびの おかで あそぶと のるよ' },
   { k: 'mole', g: 'g', n: 'おんぷもぐら', sub: 'みつけた かず（レベルごとの いちばんを たしたもの）', u: 'こ', ic: 'note', none: 'あそびの おかで あそぶと のるよ' },
@@ -14544,7 +14548,7 @@ function stOdaiHTML(){
       return `<div class="stOd${done ? ' done' : ''}" data-od="${esc(o.id)}"><div class="t"><b>${esc(stOdaiTitle(o))}</b>${o.h ? `<small>${esc(o.h)}</small>` : ''}</div>
         ${n > REP_DOTS ? `<div class="reps cnt"><button type="button" class="rp big${done ? ' on' : ''}" data-k="${got}" aria-label="${got + 1}回め">${done ? stIc('check') : '＋1'}</button><span class="cntTx"><b>${got}</b> / ${n}回</span><span class="cntBar"><i style="width:${Math.round(got / n * 100)}%"></i></span></div>`
           : `<div class="reps">${Array.from({ length: n }, (_, k) => `<button type="button" class="rp${k < got ? ' on' : ''}" data-k="${k}" aria-label="${k + 1}回め">${k < got ? stIc('check') : k + 1}</button>`).join('')}</div>`}
-        ${kzHas(o) ? `<button type="button" class="stLinkBtn sm" data-kz="${i}">${ti('eye', 16)}譜例を見る</button><div class="stKz" data-kzbox="${i}"></div>` : ''}</div>`; }).join('')}</section>`;
+        ${kzHas(o) ? `<button type="button" class="stLinkBtn sm" data-kz="${i}">${ti('eye', 16)}譜例を見る</button><div class="stKz" data-kzbox="${i}"></div>` : ''}${!kzHas(o) && o.sx && typeof MPS !== 'undefined' ? `<button type="button" class="stLinkBtn sm" data-sxv="${i}">${ti('eye', 16)}楽譜を見る・聞く</button>` : ''}</div>`; }).join('')}</section>`;
 }
 async function stRep(odEl, k){
   const id = odEl.dataset.od, o = odaiList().find(x => x.id === id); if(!o) return;
@@ -14643,6 +14647,7 @@ function wireStudio(b){
   on('stNotesAll', () => { openFamily().then(() => { const t = document.querySelector('.fTab[data-t="msg"]'); if(t) t.click(); }); });
   on('stMapBtn', () => { jrMap = true; goHome(); });
   b.querySelectorAll('.stOd .rp').forEach(x => x.addEventListener('click', () => stRep(x.closest('.stOd'), +x.dataset.k)));
+  b.querySelectorAll('[data-sxv]').forEach(x => x.addEventListener('click', () => { const o = odaiList()[+x.dataset.sxv]; if(!o || !o.sx) return; const host = document.createElement('div'); document.body.appendChild(host); MPS.mount(host, o.sx, { title: o.t, big: true, onClose: () => host.remove() }); }));
   b.querySelectorAll('[data-kz]').forEach(x => x.addEventListener('click', () => {
     const box = b.querySelector(`[data-kzbox="${x.dataset.kz}"]`), o = odaiList()[+x.dataset.kz];
     if(box.innerHTML){ kzStop(); box.innerHTML = ''; x.innerHTML = ti('eye', 16) + '譜例を見る'; return; }
@@ -21925,6 +21930,134 @@ const MPS = (() => {
 
 let MPS_C = null;
 function mpsStop(){ if(MPS_C){ try{ MPS_C.stop(); }catch(e){} MPS_C = null; } }
+</script>
+<style>
+#bkOv{position:fixed;inset:0;z-index:9500;background:#2A1F19;display:none}
+#bkOv.show{display:block}
+#bkOv iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:#2A1F19}
+#bkOv .bkWait{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#FFF6E6;font-weight:900;text-align:center;padding:24px}
+#bkOv .bkWait p{margin:0;font-size:16px;line-height:1.7}
+#bkOv .bkWait small{display:block;font-size:12.5px;font-weight:700;opacity:.85}
+#bkOv .bkBack{position:absolute;left:12px;top:calc(12px + env(safe-area-inset-top));z-index:2}
+#bkOv.ready .bkWait,#bkOv.ready .bkBack{display:none}
+</style>
+<div id="bkOv" aria-label="おとの くに だいぼうけん"><div class="bkWait" id="bkWait"></div><button type="button" class="btn3d white bkBack" id="bkBack">まちへ もどる</button></div>
+<script>
+/* =========================================================
+   おとの くに だいぼうけん（v2026.11.18-1）
+   けいてぃ（11/18）「まいにちピアノの冒険のゲームはけいてぃのサブスクと同じようにしてほしい」
+   → えらんだ 形：つながった子だけ／いまの おとの ぼうけんは だいぼうけんに 入れかえる（レベルは 引きつがない）
+   ・本体（bouken.html）は 会員の ツールの 置き場（かぎつき）に ある。教室と つながった 子だけが 会員の 関数（kt-member の mp_tool）から うけとる
+     （サブスクの ぼうけんと おなじ ファイル。サブスクで なおすと こちらも かわる）
+   ・まちの「ぼうけん」から ひらく。ひらく まえに あそびの きまり（れんしゅうを 1つ・1日の じかん）。あそんで いる じかんも かぞえる
+   ・きろくは この 端末（kt_bk1_mp＋生徒の ID）と 教室の サーバー（S.bk。きしゅへんこう しても のこる）。レベルは ランキングの「ぼうけんの レベル」へ
+   ・わざは 6つ ぜんぶ・こたえは ドレミ・むずかしさは 先生の 画面（生徒 → スタートの レベル）。きめて いなければ こども＝はじめて／ジュニア＝なれてきた／おとな＝じょうず
+   ・まえの おとの ぼうけん（openRPG）の コードは のこして ある（もどすときは さいごの openRPG = … を けす）
+   ========================================================= */
+const BK = { fn: SB_URL + '/functions/v1/kt-member', alt: 'https://ktteacher.net/api/heya', open: false, url: null, syncT: 0 };
+const bkRoom = () => ('mp' + String(studentId || '').replace(/[^0-9a-fA-F]/g, '').slice(0, 10)).slice(0, 12);
+const bkKey = () => 'kt_bk1_' + bkRoom();
+const bkB64u = str => { const b = new TextEncoder().encode(str); let bin = ''; b.forEach(x => bin += String.fromCharCode(x)); return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); };
+/* 本体を 端末に のこす（同じ 版なら サーバーは 本体を おくらない） */
+const BKC = (() => { let p = null;
+  const db = () => p || (p = new Promise(res => { try{ const r = indexedDB.open('kt_tools', 1); r.onupgradeneeded = () => r.result.createObjectStore('h'); r.onsuccess = () => res(r.result); r.onerror = () => res(null); r.onblocked = () => res(null); }catch(e){ res(null); } setTimeout(() => res(null), 3000); }));
+  const get = async k => { const d = await db(); if(!d) return null; return new Promise(res => { try{ const q = d.transaction('h').objectStore('h').get(k); q.onsuccess = () => res(q.result || null); q.onerror = () => res(null); }catch(e){ res(null); } }); };
+  const put = async (k, v) => { const d = await db(); if(!d) return; try{ d.transaction('h', 'readwrite').objectStore('h').put(v, k); }catch(e){} };
+  return { get, put };
+})();
+async function bkCall(body){
+  const payload = JSON.stringify(Object.assign({ action: 'mp_tool' }, body));
+  const one = async u => { const r = await fetch(u, { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SB_ANON, Authorization: 'Bearer ' + SB_ANON }, body: payload }); return await r.json(); };
+  try{ return await one(BK.fn); }catch(e){}
+  try{ return await one(BK.alt); }catch(e){ return { ok: false, reason: 'net' }; }
+}
+async function bkHtml(){
+  const key = 'mp:bouken', c = await BKC.get(key);
+  let d = await bkCall({ tool: 'bouken', sid: studentId, have: c && c.hash ? c.hash : undefined });
+  if(d && d.ok && d.same){ if(c && c.html) d.html = c.html; else d = await bkCall({ tool: 'bouken', sid: studentId }); }
+  if(d && d.ok && d.html && d.hash && !d.same) BKC.put(key, { hash: d.hash, html: d.html });
+  if((!d || d.reason === 'net') && c && c.html) return { ok: true, html: c.html };   /* ネットが ないときは まえに うけとった 版 */
+  return d || { ok: false, reason: 'net' };
+}
+function bkBand(){
+  const sl = (HOME && HOME.me && HOME.me.start_levels) || {}, b = +sl.bk;
+  if([1, 2, 3].includes(b)) return b;
+  const m = (HOME && HOME.me && HOME.me.mode) || S.mode || 'kids';
+  return m === 'adult' ? 3 : m === 'junior' ? 2 : 1;
+}
+function bkCfg(){ return { v: 2, w: ['t', 'b', 'k', 'g', 'r', 'o'], band: bkBand(), ref: true, test: { k: 'pick', n: 10 }, bgm: true, nm: 'd', duel: false }; }
+function bkMe(){
+  const av = typeof avatarMe === 'function' ? avatarMe() : {};
+  const nm = String((HOME && HOME.me && HOME.me.nickname) || (S.hero && S.hero.name) || '').trim().slice(0, 6);
+  return Object.assign({}, av, { name: nm });
+}
+/* 教室に のこした きろくを この 端末へ（きしゅへんこう・はじめての 端末） */
+function bkRestore(){
+  if(!S.bk || !S.bk.st) return;
+  try{ const cur = JSON.parse(localStorage.getItem(bkKey()) || 'null'); if(cur && cur.hero && (cur.xp | 0) >= (S.bk.st.xp | 0)) return; localStorage.setItem(bkKey(), JSON.stringify(S.bk.st)); }catch(e){}
+}
+/* この 端末の きろくを 教室へ（ランキングの レベルも） */
+function bkSync(m, force){
+  if(!studentId) return;
+  const now = Date.now(); if(!force && now - BK.syncT < 15000){ clearTimeout(BK._t); BK._t = setTimeout(() => bkSync(m, true), 15000 - (now - BK.syncT)); return; }
+  BK.syncT = now;
+  let st = null; try{ st = JSON.parse(localStorage.getItem(bkKey()) || 'null'); }catch(e){}
+  if(!st || !st.hero) return;
+  const lv = (m && +m.lv) || (S.bk && S.bk.lv) || 1, xp = st.xp | 0;
+  S.bk = { st, lv, xp, at: new Date().toISOString() };
+  S.rpg = S.rpg && typeof S.rpg === 'object' ? S.rpg : {};
+  if(!S.rpg.old) S.rpg.old = { lv: S.rpg.lv || 0, xp: S.rpg.xp || 0 };   /* まえの おとの ぼうけんの レベル（もどす ときの ため） */
+  S.rpg.lv = lv; S.rpg.xp = xp;
+  saveState();
+}
+function bkMsg(t, sub){ $('bkWait').innerHTML = `${typeof friendSVG === 'function' ? friendSVG('pipi', 96) : ''}<p>${t}${sub ? `<small>${sub}</small>` : ''}</p>`; }
+async function openBouken(){
+  stopMic && stopMic(); hush();
+  const ov = $('bkOv'); ov.classList.remove('ready'); ov.querySelectorAll('iframe').forEach(f => f.remove()); ov.classList.add('show'); BK.open = true;
+  if(DEMO || !studentId){ bkMsg(DEMO ? '見本では だいぼうけんは ひらけません' : 'きょうしつと つながると あそべるよ', DEMO ? '教室と つながった 子どもの アプリで あそべます' : 'おうちのひと → せってい → きょうしつと つなぐ'); return; }
+  bkMsg('だいぼうけんの じゅんびを しているよ…');
+  const d = await bkHtml();
+  if(!BK.open) return;
+  if(!d || !d.ok || !d.html){
+    const r = d && d.reason;
+    bkMsg(r === 'plan' ? 'いまは ぼうけんに いけないよ' : r === 'student' ? 'きょうしつと つながって いないみたい' : r === 'net' ? 'インターネットに つながらなかったよ' : 'ぼうけんの じゅんびが まだ みたい',
+      r === 'plan' ? '教室の ご契約が おやすみに なっています' : r === 'student' ? 'せんせいに つたえてね' : r === 'net' ? 'つながる ところで もういちど ためしてね' : 'せんせいに「だいぼうけんの じゅんびが まだ」と つたえてね');
+    return;
+  }
+  bkRestore();
+  if(BK.url) URL.revokeObjectURL(BK.url);
+  BK.url = URL.createObjectURL(new Blob([d.html], { type: 'text/html' }));
+  const f = document.createElement('iframe');
+  f.title = 'おとの くに だいぼうけん'; f.allow = 'fullscreen; autoplay';
+  f.src = BK.url + '#host=mp&rk=' + bkRoom() + '&adv=' + bkB64u(JSON.stringify(bkCfg())) + '&me=' + bkB64u(JSON.stringify(bkMe()));
+  f.addEventListener('load', () => { ov.classList.add('ready'); try{ f.contentWindow.focus(); }catch(e){} });
+  ov.appendChild(f); BK.frame = f;
+  bkSync(null, true);
+}
+function bkClose(){
+  if(!BK.open) return;
+  bkSync(null, true);
+  BK.open = false;
+  const ov = $('bkOv'); ov.classList.remove('show', 'ready'); ov.querySelectorAll('iframe').forEach(f => f.remove()); BK.frame = null;
+  if(BK.url){ URL.revokeObjectURL(BK.url); BK.url = null; }
+  if(typeof rpgTownBtn === 'function') try{ rpgTownBtn(); }catch(e){}
+}
+$('bkBack').addEventListener('click', () => { popSfx && popSfx(); bkClose(); });
+addEventListener('message', e => {
+  if(!BK.frame || e.source !== BK.frame.contentWindow) return;
+  const m = e.data || {};
+  if(m.kt === 'shelf') bkClose();
+  else if(m.kt === 'mp') bkSync(m, false);
+});
+document.addEventListener('visibilitychange', () => { if(document.hidden && BK.open) bkSync(null, true); });
+/* まちの「ぼうけん」→ だいぼうけん（あそびの きまりを つける） */
+openRPG = function(){ return playGate(() => openBouken()); };
+/* まちの ボタン：たびの ちからの 数は もう 出さない */
+rpgTownBtn = function(){ const b = $('townRpg'); if(!b) return; const show = !TOWN_VIEW && !townEditing; b.classList.toggle('hide', !show); if(!show) return;
+  const ic = b.querySelector('.rtIc'); if(ic && !ic.firstChild) ic.innerHTML = rpgGateIcon(24); $('townRpgN').textContent = ''; b.classList.remove('lit'); b.setAttribute('aria-label', 'おとの くに だいぼうけんへ'); };
+/* あそんで いる じかん：だいぼうけんが 見えて いる あいだも かぞえる */
+{ const o = playCounting; playCounting = function(){ if(BK.open) return $('bkOv').classList.contains('ready') && document.visibilityState === 'visible'; return o(); }; }
+{ const o = playTimeUp; playTimeUp = function(){ if(BK.open){ bkClose(); playLock('over', null); return; } return o(); }; }
 </script>
 <style>.scTag{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:999px;background:#FFD54A;color:#3B2A22;font-size:11px;font-weight:900;vertical-align:1px}</style>
 </body>
