@@ -1478,7 +1478,7 @@ details.adv summary{font-size:12.5px;font-weight:900;color:var(--ink2);cursor:po
     <div id="rsMsg" class="authMsg" role="status"></div>
   </div>
   <div class="legal"><a href="terms.html" target="_blank">利用規約</a>・<a href="privacy.html" target="_blank">プライバシーポリシー</a>・<a href="tokushoho.html" target="_blank">特定商取引法に基づく表記</a></div>
-  <div class="legal verTag">v2026.11.18-1</div>
+  <div class="legal verTag">v2026.11.24-1</div>
 </div>
 
 <!-- 本体 -->
@@ -7564,7 +7564,7 @@ async function viewSettings(m){
       <span class="muted" style="flex:1">「保存」でアプリに反映されます</span><button class="btn g" id="cSave">保存</button></div>
     ${ntCardHTML()}${roomsTeachersHTML(invites)}${calCardHTML()}${DEMO_MULTI ? `<div class="card"><button class="btn w" id="asStaff">${ti('eye', 18)}講師の画面を見てみる（見本）</button></div>` : ''}
     <div class="row" style="justify-content:center;margin-top:8px;gap:18px;flex-wrap:wrap"><button class="linkBtn" id="suShow">${ti('flag', 16)}「はじめの準備」をもう一度出す</button>${DEMO ? '' : `<button class="linkBtn" id="logoutBtn2">${ti('door', 16)}ログアウト</button>`}</div>
-    <div class="verTag">先生の画面 v2026.11.18-1</div>`;
+    <div class="verTag">先生の画面 v2026.11.24-1</div>`;
   m.innerHTML = h;
   $('suShow').addEventListener('click', () => { try{ localStorage.removeItem(SETUP_KEY()); }catch(e){} SETUP_FORCE = true; goTab('today'); });
   /* 保存の バーは なにか かえた ときだけ 出す（あいた すきまや 重なりを ださない） */
@@ -7736,6 +7736,49 @@ const MPS = (() => {
     if(typeof DecompressionStream !== 'function') throw new Error('nodecomp');
     return await new Response(new Blob([unb64(sx.d)]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
   }
+  /* Fine・D.C.・D.S.・To Coda の 文字を たす（2026-11-24 けいてぃ「まいにちピアノが正しく表示されない」）
+     楽譜ソフトに よっては、<sound fine="yes"/> などの「とぶ しるし」だけを 書いて、文字（<words>）を 書かない。
+     OpenSheetMusicDisplay は 文字が ないと、楽譜に 出さず、きく ときも D.C. で もどらない。
+     文字が もう ある ときは 何も しない */
+  function fixJumps(xml){
+    try{
+      if(!/\b(fine|dacapo|dalsegno|tocoda)="/i.test(xml)) return xml;
+      const d = new DOMParser().parseFromString(xml, 'application/xml');
+      if(d.querySelector('parsererror')) return xml;
+      const hasFine = !!d.querySelector('sound[fine]');
+      const hasCoda = !!d.querySelector('sound[coda], coda');
+      const label = snd => {
+        if(snd.hasAttribute('fine')) return 'Fine';
+        if(snd.hasAttribute('dacapo') && snd.getAttribute('dacapo') !== 'no') return hasFine ? 'D.C. al Fine' : 'D.C.';
+        if(snd.hasAttribute('dalsegno')) return hasFine ? 'D.S. al Fine' : hasCoda ? 'D.S. al Coda' : 'D.S.';
+        if(snd.hasAttribute('tocoda')) return 'To Coda';
+        return '';
+      };
+      let changed = false;
+      d.querySelectorAll('sound').forEach(snd => {
+        const txt = label(snd); if(!txt) return;
+        const dir = snd.parentNode && snd.parentNode.nodeName === 'direction' ? snd.parentNode : null;
+        if(dir){
+          if(dir.querySelector('direction-type > words')) return;
+          const dt = d.createElement('direction-type'), w = d.createElement('words'); w.textContent = txt; dt.appendChild(w);
+          const first = dir.querySelector('direction-type');
+          if(first) dir.insertBefore(dt, first); else dir.insertBefore(dt, dir.firstChild);
+          changed = true; return;
+        }
+        if(snd.parentNode && snd.parentNode.nodeName === 'measure'){
+          const meas = snd.parentNode;
+          const nd = d.createElement('direction'); nd.setAttribute('placement', 'above');
+          const dt = d.createElement('direction-type'), w = d.createElement('words'); w.textContent = txt; dt.appendChild(w); nd.appendChild(dt);
+          meas.insertBefore(nd, snd); nd.appendChild(snd);
+          changed = true;
+        }
+      });
+      if(!changed) return xml;
+      let o = new XMLSerializer().serializeToString(d);
+      if(!/^\s*<\?xml/.test(o)) o = '<?xml version="1.0" encoding="UTF-8"?>' + o;
+      return o;
+    }catch(e){ return xml; }
+  }
   /* .mxl（zip）は JSZip で ひらく */
   async function readFile(file){
     const name = file.name || '';
@@ -7811,8 +7854,21 @@ const MPS = (() => {
   function timeline(osmd){
     const c = osmd.cursor; c.reset(); const ev = [];
     let guard = 0;
+    /* t：楽譜の 中の 場所（くりかえすと もどる）→ ひく じゅんの 時間に なおす（2026-11-24）
+       前は くりかえしの 2回めが 1回めと 同じ 時間に かさなって 鳴っていた */
+    let prevM = -1, prevT = -1, mStart = 0, mLen = 0, playedMStart = 0;
+    const mInfo = () => { const m = c.Iterator.CurrentMeasure; return m ? [m.AbsoluteTimestamp.RealValue, m.Duration.RealValue] : [0, 0]; };
     while(!c.Iterator.EndReached && guard++ < 20000){
-      const t = c.Iterator.currentTimeStamp.RealValue, notes = [];
+      const src = c.Iterator.currentTimeStamp.RealValue, mi = c.Iterator.CurrentMeasureIndex, notes = [];
+      if(mi !== prevM){
+        const [s0, l0] = mInfo();
+        if(prevM < 0) playedMStart = s0;
+        else if(mi === prevM + 1 && Math.abs(s0 - (mStart + mLen)) < 1e-6 && src >= prevT) playedMStart = playedMStart + (s0 - mStart);
+        else playedMStart = playedMStart + mLen;   /* とんだ（くりかえし・D.C.・1かっこ など）→ 前の 小節の おわりの つぎから */
+        mStart = s0; mLen = l0; prevM = mi;
+      }
+      prevT = src;
+      const t = playedMStart + (src - mStart);
       (c.Iterator.CurrentVoiceEntries || []).forEach(ve => {
         const staff = ve.ParentSourceStaffEntry && ve.ParentSourceStaffEntry.ParentStaff ? ve.ParentSourceStaffEntry.ParentStaff.idInMusicSheet : 0;
         (ve.Notes || []).forEach(n => {
@@ -7869,7 +7925,7 @@ const MPS = (() => {
     });
     try{
       if(!/^\s*<\?xml/.test(xml)) xml = '<?xml version="1.0" encoding="UTF-8"?>' + xml;
-      await osmd.load(xml);
+      await osmd.load(fixJumps(xml));
       const w0 = el.clientWidth || innerWidth; osmd.zoom = opt.big ? (w0 < 600 ? 0.85 : w0 > 1000 ? 1.35 : 1.1) : (w0 < 600 ? 0.72 : 0.95);
       osmd.render();
     }catch(e){ sheet.innerHTML = '<div class="mpsMsg">この がくふは よみこめませんでした（MusicXML を たしかめてね）</div>'; return { stop(){} }; }
@@ -7938,7 +7994,7 @@ const MPS = (() => {
     if(cl) cl.addEventListener('click', () => { stop(); if(opt.onClose) opt.onClose(); });
     return { stop, osmd };
   }
-  return { mount, encode, decode, readFile, info, minify, loadLib };
+  return { mount, encode, decode, readFile, info, minify, loadLib, fixJumps };
 })();
 
 </script>
